@@ -15,6 +15,10 @@ import { pushMilestoneOnChain } from '../lib/trustless-work/milestone.js';
 import type { Repo, Issue, Contributor, Assignment } from '../types/index.js';
 import { isMaintainer, isAssignedContributor } from '../lib/auth.js';
 import { postComment } from '../lib/github/comments.js';
+import {
+  disputeResolverStellarPublicKey,
+  disputeResolverStellarSecretKey,
+} from '../lib/stellar/resolver.js';
 
 /* ------------------------------------------------------------------ */
 /* POST /api/repos/connect                                              */
@@ -184,7 +188,7 @@ export async function createEscrowUnsignedHandler(
           serviceProvider: platformKey,
           platformAddress: platformKey,
           releaseSigner: platformKey, // platform auto-releases
-          disputeResolver: 'GDC7GQGFJHEWFI3H6GAAYVYCUOPSENNUN2KDJBG3D5PFOX35FTRSYACX', // Hardcoded Resolver Wallet
+          disputeResolver: disputeResolverStellarPublicKey,
         },
         platformFee: 0,
         milestones: [{ description: `Escrow Initialized`, amount: 0.01, receiver: platformKey }],
@@ -415,8 +419,8 @@ export async function refundEscrowHandler(
     const milestones = escrowData.milestones ?? [];
 
     // 2. Determine refund strategy based on roles
-    const resolverPubKey = 'GDC7GQGFJHEWFI3H6GAAYVYCUOPSENNUN2KDJBG3D5PFOX35FTRSYACX';
-    const resolverSecret = 'SBEWHMYXIJ6K5L22KX3ZU4VFQSYT53ELTWZQB65OERU6N5AJHQUIBCR6';
+    const resolverPubKey = disputeResolverStellarPublicKey;
+    const resolverSecret = disputeResolverStellarSecretKey;
     const isDualWallet = escrowData.roles?.disputeResolver === resolverPubKey;
 
     if (isDualWallet) {

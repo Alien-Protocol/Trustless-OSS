@@ -1,5 +1,6 @@
 import { twFetch } from './client.js';
 import { signAndSendTransaction } from '../stellar/signer.js';
+import { disputeResolverStellarPublicKey } from '../stellar/resolver.js';
 import { logger } from '../logger.js';
 
 const log = logger.child({ module: 'escrow' });
@@ -12,9 +13,9 @@ export async function createRepoEscrow(params: {
   repoName: string;
 }): Promise<{ contractId: string }> {
   const platformKey = process.env.PLATFORM_STELLAR_PUBLIC_KEY!;
-  const resolverKey = 'GDC7GQGFJHEWFI3H6GAAYVYCUOPSENNUN2KDJBG3D5PFOX35FTRSYACX';
+  const resolverKey = disputeResolverStellarPublicKey;
 
-  log.debug({ resolverKey }, 'hardcoded resolver key active');
+  log.debug({ resolverKey }, 'resolver key active');
 
   const response = (await twFetch('/deployer/multi-release', {
     method: 'POST',

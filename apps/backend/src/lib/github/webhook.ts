@@ -5,6 +5,10 @@ import { pushMilestoneOnChain, releaseEscrowMilestone } from '../trustless-work/
 import { twFetch } from '../trustless-work/client.js';
 import type { Repo, Contributor, Issue, Assignment } from '../../types/index.js';
 import { logger } from '../logger.js';
+import {
+  disputeResolverStellarPublicKey,
+  disputeResolverStellarSecretKey,
+} from '../stellar/resolver.js';
 
 const log = logger.child({ module: 'github-webhook' });
 
@@ -397,8 +401,8 @@ export async function handleIssueCommentCreated(payload: Record<string, unknown>
 
       // Resolve 100% to maintainer
       try {
-        const resolverPubKey = 'GDC7GQGFJHEWFI3H6GAAYVYCUOPSENNUN2KDJBG3D5PFOX35FTRSYACX';
-        const resolverSecret = 'SBEWHMYXIJ6K5L22KX3ZU4VFQSYT53ELTWZQB65OERU6N5AJHQUIBCR6';
+        const resolverPubKey = disputeResolverStellarPublicKey;
+        const resolverSecret = disputeResolverStellarSecretKey;
 
         // Fetch live escrow to check resolver
         const escrowArray = (await twFetch(
@@ -1066,8 +1070,8 @@ export async function handlePRMerged(payload: Record<string, unknown>): Promise<
         distributions.push({ address: maintainer.stellar_wallet, amount: maintainerAmount });
       }
 
-      const resolverPubKey = 'GDC7GQGFJHEWFI3H6GAAYVYCUOPSENNUN2KDJBG3D5PFOX35FTRSYACX';
-      const resolverSecret = 'SBEWHMYXIJ6K5L22KX3ZU4VFQSYT53ELTWZQB65OERU6N5AJHQUIBCR6';
+      const resolverPubKey = disputeResolverStellarPublicKey;
+      const resolverSecret = disputeResolverStellarSecretKey;
 
       // Fetch live escrow to check resolver
       const escrowArray = (await twFetch(
