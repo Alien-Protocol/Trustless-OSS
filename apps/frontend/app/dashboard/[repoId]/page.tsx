@@ -10,6 +10,40 @@ import DeleteRepoButton from './DeleteRepoButton';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
+type Repo = {
+  id: string;
+  github_repo_id: number;
+  full_name: string;
+  owner_github_id: number;
+  owner_username: string;
+  installer_github_id: number | null;
+  github_installation_id: number | null;
+  escrow_contract_id: string | null;
+  escrow_balance: number;
+  reward_low: number;
+  reward_medium: number;
+  reward_high: number;
+  is_fork: boolean;
+  is_private: boolean;
+  owner_type: 'User' | 'Organization';
+  created_at: string;
+};
+
+async function getRepo(repoId: string, token: string): Promise<Repo | null> {
+  try {
+    const res = await fetch(`${BACKEND}/api/repos/${repoId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    return data.data ?? data.repo ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function getIssues(repoId: string, token: string) {
   try {
     const res = await fetch(`${BACKEND}/api/repos/${repoId}/issues`, {
@@ -17,7 +51,7 @@ async function getIssues(repoId: string, token: string) {
       cache: 'no-store',
     });
     const data = await res.json();
-    return data.issues ?? [];
+    return data.data ?? data.issues ?? [];
   } catch {
     return [];
   }
@@ -56,9 +90,8 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
     data: { session },
   } = await supabase.auth.getSession();
 
-  const { data: repo } = await supabase.from('repos').select('*').eq('id', repoId).single();
-
-  const issues = await getIssues(repoId, session?.access_token ?? '');
+  const token = session?.access_token ?? '';
+  const [repo, issues] = await Promise.all([getRepo(repoId, token), getIssues(repoId, token)]);
 
   const githubId = Number(user.user_metadata?.provider_id ?? user.user_metadata?.sub);
   const isRepoMaintainer =
@@ -120,8 +153,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                   <div className="flex flex-col items-end">
                     <div className="label-brutal text-slate-500 mb-1">CONTRACT_LIQUIDITY</div>
                     <div className="text-4xl font-black text-slate-950">
-                      {repo.escrow_balance.toFixed(2)}{' '}
-                      <span className="text-lg text-slate-500">USDC</span>
+                      {repo.escrow_balance} <span className="text-lg text-slate-500">USDC</span>
                     </div>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-6 relative w-full sm:w-auto">
                       {isRepoMaintainer && (

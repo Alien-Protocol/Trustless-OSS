@@ -100,7 +100,7 @@ function ConnectForm() {
         return;
       }
 
-      const kit = getWalletKit();
+      const kit = await getWalletKit();
 
       const { address } = await kit.authModal();
       if (!address) throw new Error('No public key returned');

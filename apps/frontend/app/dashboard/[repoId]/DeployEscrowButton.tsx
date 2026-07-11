@@ -18,7 +18,7 @@ export default function DeployEscrowButton({ repoId, token }: { repoId: string; 
     setError('');
 
     try {
-      const kit = getWalletKit();
+      const kit = await getWalletKit();
 
       // 1. Open modal and get address
       const { address } = await kit.authModal();

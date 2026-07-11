@@ -28,13 +28,11 @@ export default function FundEscrowButton({ repoId, token }: { repoId: string; to
     setShowModal(false);
 
     try {
-      const kit = getWalletKit();
+      const kit = await getWalletKit();
 
-      // 1. Open wallet kit modal and get address
       const { address } = await kit.authModal();
       if (!address) throw new Error('No public key returned');
 
-      // 2. Get unsigned transaction
       const res1 = await fetch(`${BACKEND}/api/escrow/fund-unsigned`, {
         method: 'POST',
         headers: {
@@ -47,6 +45,8 @@ export default function FundEscrowButton({ repoId, token }: { repoId: string; to
           funderWallet: address,
         }),
       });
+
+      console.log(res1);
 
       if (!res1.ok) {
         const errData = await res1.json();
