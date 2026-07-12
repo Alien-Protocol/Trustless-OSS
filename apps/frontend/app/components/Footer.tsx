@@ -25,7 +25,29 @@ const footerLinks = [
   },
 ];
 
+const statusConfig = {
+  operational: {
+    dotColor: 'bg-emerald-400',
+    pulseColor: 'bg-emerald-300',
+    label: 'Operational',
+  },
+  degraded: {
+    dotColor: 'bg-yellow-400',
+    pulseColor: 'bg-yellow-300',
+    label: 'Degraded',
+  },
+  down: {
+    dotColor: 'bg-red-400',
+    pulseColor: 'bg-red-300',
+    label: 'Down',
+  },
+};
+
 export default function Footer() {
+  // Simula el estado del sistema (puede venir de una API)
+  const systemStatus = 'operational'; // 'operational' | 'degraded' | 'down'
+  const status = statusConfig[systemStatus];
+
   return (
     <footer className="relative z-10 border-t-[4px] border-slate-950 bg-slate-50 px-3 py-5 sm:px-4 md:px-5">
       <div className="flex w-full flex-col gap-4">
@@ -65,12 +87,17 @@ export default function Footer() {
               )
             )}
 
+            {/* Status Indicator - Corregido con bg-* en lugar de text-* */}
             <div className="inline-flex items-center gap-2 border-2 border-slate-950 bg-blue-600 px-3 py-2 text-white">
               <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-80" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                <span
+                  className={`absolute inline-flex h-full w-full animate-ping rounded-full ${status.pulseColor} opacity-80`}
+                />
+                <span
+                  className={`relative inline-flex h-2.5 w-2.5 rounded-full ${status.dotColor}`}
+                />
               </span>
-              <span>Operational</span>
+              <span>{status.label}</span>
             </div>
           </div>
         </div>
