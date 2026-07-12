@@ -14,33 +14,39 @@ import {
 
 const FundsMovementChart = () => {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setData([
-        { month: 'Jul', locked: 24000, released: 8000 },
-        { month: 'Aug', locked: 26000, released: 10000 },
-        { month: 'Sep', locked: 28000, released: 12000 },
-        { month: 'Oct', locked: 30000, released: 15000 },
-        { month: 'Nov', locked: 32000, released: 18000 },
-        { month: 'Dec', locked: 34000, released: 20000 },
-        { month: 'Jan', locked: 36000, released: 22000 },
-        { month: 'Feb', locked: 38000, released: 25000 },
-        { month: 'Mar', locked: 40000, released: 28000 },
-        { month: 'Apr', locked: 42000, released: 30000 },
-        { month: 'May', locked: 44000, released: 32000 },
-        { month: 'Jun', locked: 46000, released: 34000 },
-      ]);
-      setLoading(false);
-    }, 800);
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/funds-movement');
+        if (!response.ok) {
+          throw new Error('Failed to fetch funds data');
+        }
+        const result = await response.json();
+        setData(result);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load funds movement data');
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    fetchData();
   }, []);
 
   if (loading) {
     return (
       <div className="h-72 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700" />
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-600 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+        <p className="font-medium">{error}</p>
+      </div>
     );
   }
 
