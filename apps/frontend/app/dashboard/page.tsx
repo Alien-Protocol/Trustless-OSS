@@ -5,7 +5,42 @@ import InstallationSuccessHandler from './InstallationSuccessHandler';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
-async function getRepos(token: string): Promise<{ repos: any[]; error: string | null }> {
+type DashboardRepo = {
+  id: string;
+  full_name: string;
+  escrow_contract_id: string | null;
+  escrow_balance: number;
+  created_at: string;
+};
+
+type JsonObject = Record<string, unknown>;
+
+function toNumber(value: unknown): number {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : 0;
+}
+
+function normalizeRepo(data: unknown): DashboardRepo | null {
+  if (!data || typeof data !== 'object') return null;
+
+  const repo = data as DashboardRepo;
+  return {
+    ...repo,
+    escrow_balance: toNumber(repo.escrow_balance),
+  };
+}
+
+function isDashboardRepo(repo: DashboardRepo | null): repo is DashboardRepo {
+  return repo !== null;
+}
+
+function formatUsdcBalance(value: number): string {
+  return new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+async function getRepos(token: string): Promise<{ repos: DashboardRepo[]; error: string | null }> {
   const url = `${BACKEND}/api/repos`;
   try {
     const res = await fetch(url, {
@@ -13,9 +48,9 @@ async function getRepos(token: string): Promise<{ repos: any[]; error: string | 
       cache: 'no-store',
     });
     const text = await res.text();
-    let data: any;
+    let data: JsonObject;
     try {
-      data = JSON.parse(text);
+      data = JSON.parse(text) as JsonObject;
     } catch {
       return {
         repos: [],
@@ -23,11 +58,23 @@ async function getRepos(token: string): Promise<{ repos: any[]; error: string | 
       };
     }
     if (!res.ok) {
-      return { repos: [], error: data.error ?? `API error ${res.status}` };
+      return {
+        repos: [],
+        error: typeof data.error === 'string' ? data.error : `API error ${res.status}`,
+      };
     }
-    return { repos: data.data ?? data.repos ?? [], error: null };
-  } catch (e: any) {
-    return { repos: [], error: `Fetch to "${url}" failed: ${e.message}` };
+    const rawRepos = Array.isArray(data.data)
+      ? data.data
+      : Array.isArray(data.repos)
+        ? data.repos
+        : [];
+    const repos = Array.isArray(rawRepos)
+      ? rawRepos.map(normalizeRepo).filter(isDashboardRepo)
+      : [];
+    return { repos, error: null };
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Unknown error';
+    return { repos: [], error: `Fetch to "${url}" failed: ${message}` };
   }
 }
 
@@ -106,71 +153,63 @@ export default async function DashboardPage(props: DashboardProps) {
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {repos.map(
-            (repo: {
-              id: string;
-              full_name: string;
-              escrow_contract_id: string | null;
-              escrow_balance: number;
-              created_at: string;
-            }) => (
-              <div
-                key={repo.id}
-                className={`bg-white brutal-border p-6 flex flex-col h-full relative ${isNew(repo.created_at) ? 'brutal-shadow-blue border-blue-600' : 'brutal-shadow'}`}
-              >
-                {isNew(repo.created_at) && (
-                  <div className="absolute -top-4 -right-4 bg-blue-600 text-white px-3 py-1 font-bold font-mono text-xs uppercase border-2 border-slate-950">
-                    NEW
-                  </div>
-                )}
+          {repos.map((repo) => (
+            <div
+              key={repo.id}
+              className={`bg-white brutal-border p-6 flex flex-col h-full relative ${isNew(repo.created_at) ? 'brutal-shadow-blue border-blue-600' : 'brutal-shadow'}`}
+            >
+              {isNew(repo.created_at) && (
+                <div className="absolute -top-4 -right-4 bg-blue-600 text-white px-3 py-1 font-bold font-mono text-xs uppercase border-2 border-slate-950">
+                  NEW
+                </div>
+              )}
 
-                <div className="flex items-start justify-between mb-6">
-                  <div className="w-12 h-12 bg-slate-950 text-white flex items-center justify-center border-4 border-slate-950 font-black text-2xl">
-                    {repo.full_name[0].toUpperCase()}
+              <div className="flex items-start justify-between mb-6">
+                <div className="w-12 h-12 bg-slate-950 text-white flex items-center justify-center border-4 border-slate-950 font-black text-2xl">
+                  {repo.full_name[0].toUpperCase()}
+                </div>
+                {repo.escrow_contract_id ? (
+                  <span className="status-badge status-completed">ESCROW_ACTIVE</span>
+                ) : (
+                  <span className="status-badge status-pending">UNCONFIGURED</span>
+                )}
+              </div>
+
+              <h3 className="title-brutal text-xl text-slate-950 mb-1 truncate">
+                {repo.full_name.split('/')[1] || repo.full_name}
+              </h3>
+              <p className="text-xs text-slate-500 font-mono font-bold uppercase truncate mb-8">
+                {repo.full_name.split('/')[0]}
+              </p>
+
+              <div className="flex flex-col mt-auto pt-4 border-t-4 border-slate-950 border-dashed">
+                <div className="flex justify-between items-end mb-4">
+                  <div className="label-brutal text-slate-500">BALANCE</div>
+                  <div className="text-xl font-black font-mono text-slate-950">
+                    {formatUsdcBalance(repo.escrow_balance)} <span className="text-sm">USDC</span>
                   </div>
-                  {repo.escrow_contract_id ? (
-                    <span className="status-badge status-completed">ESCROW_ACTIVE</span>
-                  ) : (
-                    <span className="status-badge status-pending">UNCONFIGURED</span>
-                  )}
                 </div>
 
-                <h3 className="title-brutal text-xl text-slate-950 mb-1 truncate">
-                  {repo.full_name.split('/')[1] || repo.full_name}
-                </h3>
-                <p className="text-xs text-slate-500 font-mono font-bold uppercase truncate mb-8">
-                  {repo.full_name.split('/')[0]}
-                </p>
-
-                <div className="flex flex-col mt-auto pt-4 border-t-4 border-slate-950 border-dashed">
-                  <div className="flex justify-between items-end mb-4">
-                    <div className="label-brutal text-slate-500">BALANCE</div>
-                    <div className="text-xl font-black font-mono text-slate-950">
-                      {repo.escrow_balance} <span className="text-sm">USDC</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <Link
-                      href={`/dashboard/${repo.id}`}
-                      className="brutal-button flex-1 py-2 text-sm"
-                    >
-                      MANAGE
-                    </Link>
-                    <a
-                      href={`https://github.com/${repo.full_name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="brutal-button-outline px-4 py-2 text-sm flex items-center justify-center"
-                      title="View on GitHub"
-                    >
-                      ↗
-                    </a>
-                  </div>
+                <div className="flex items-center gap-4">
+                  <Link
+                    href={`/dashboard/${repo.id}`}
+                    className="brutal-button flex-1 py-2 text-sm"
+                  >
+                    MANAGE
+                  </Link>
+                  <a
+                    href={`https://github.com/${repo.full_name}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="brutal-button-outline px-4 py-2 text-sm flex items-center justify-center"
+                    title="View on GitHub"
+                  >
+                    ↗
+                  </a>
                 </div>
               </div>
-            )
-          )}
+            </div>
+          ))}
         </div>
       )}
     </div>

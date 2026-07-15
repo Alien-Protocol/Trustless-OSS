@@ -29,6 +29,24 @@ type Repo = {
   created_at: string;
 };
 
+function toNumber(value: unknown): number {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : 0;
+}
+
+function normalizeRepo(data: unknown): Repo | null {
+  if (!data || typeof data !== 'object') return null;
+
+  const repo = data as Repo;
+  return {
+    ...repo,
+    escrow_balance: toNumber(repo.escrow_balance),
+    reward_low: toNumber(repo.reward_low),
+    reward_medium: toNumber(repo.reward_medium),
+    reward_high: toNumber(repo.reward_high),
+  };
+}
+
 async function getRepo(repoId: string, token: string): Promise<Repo | null> {
   try {
     const res = await fetch(`${BACKEND}/api/repos/${repoId}`, {
@@ -38,7 +56,7 @@ async function getRepo(repoId: string, token: string): Promise<Repo | null> {
     if (!res.ok) return null;
 
     const data = await res.json();
-    return data.data ?? data.repo ?? null;
+    return normalizeRepo(data.data ?? data.repo ?? null);
   } catch {
     return null;
   }
@@ -153,7 +171,8 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                   <div className="flex flex-col items-end">
                     <div className="label-brutal text-slate-500 mb-1">CONTRACT_LIQUIDITY</div>
                     <div className="text-4xl font-black text-slate-950">
-                      {repo.escrow_balance} <span className="text-lg text-slate-500">USDC</span>
+                      {repo.escrow_balance.toFixed(2)}{' '}
+                      <span className="text-lg text-slate-500">USDC</span>
                     </div>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-6 relative w-full sm:w-auto">
                       {isRepoMaintainer && (
