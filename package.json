@@ -8,10 +8,8 @@
   },
   "scripts": {
     "dev": "turbo dev --filter=@trustless-oss/frontend",
-    "dev:backend": "turbo dev --filter=@trustless-oss/backend",
     "dev:frontend": "turbo dev --filter=@trustless-oss/frontend",
     "build": "turbo build",
-    "build:backend": "turbo build --filter=@trustless-oss/backend",
     "build:frontend": "turbo build --filter=@trustless-oss/frontend",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
@@ -29,10 +27,6 @@
     "turbo": "^2.0.0"
   },
   "lint-staged": {
-    "apps/backend/src/**/*.ts": [
-      "prettier --write",
-      "pnpm --filter @trustless-oss/backend exec eslint --fix"
-    ],
     "apps/frontend/**/*.{ts,tsx}": [
       "prettier --write",
       "pnpm --filter @trustless-oss/frontend exec eslint --fix"

@@ -1,5 +1,5 @@
 packages:
-  - "apps/*"
+  - "apps/frontend"
 allowBuilds:
   '@reown/appkit': true
   '@stellar/stellar-sdk': true

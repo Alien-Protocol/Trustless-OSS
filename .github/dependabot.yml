@@ -1,28 +1,6 @@
 version: 2
 
 updates:
-  # Backend dependencies
-  - package-ecosystem: "npm"
-    directory: "/backend"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-    open-pull-requests-limit: 5
-    reviewers:
-      - "ryzen-xp" # Replace with your GitHub username
-    labels:
-      - "dependencies"
-      - "backend"
-    commit-message:
-      prefix: "chore(deps)"
-    ignore:
-      # Ignore major version bumps — review manually
-      - dependency-name: "@stellar/stellar-sdk"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@octokit/app"
-        update-types: ["version-update:semver-major"]
-
   # Frontend dependencies  
   - package-ecosystem: "npm"
     directory: "/frontend"
