@@ -7,7 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "turbo dev",
+    "dev": "turbo dev --filter=@trustless-oss/frontend",
     "dev:backend": "turbo dev --filter=@trustless-oss/backend",
     "dev:frontend": "turbo dev --filter=@trustless-oss/frontend",
     "build": "turbo build",
