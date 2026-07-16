@@ -34,7 +34,12 @@ export default function DeployEscrowButton({ repoId, token }: { repoId: string; 
         body: JSON.stringify({ repoId, maintainerWallet: address }),
       });
 
-      if (!res1.ok) throw new Error(await res1.text());
+      if (!res1.ok) {
+        const errorData = await res1.json().catch(() => null);
+        throw new Error(
+          errorData?.error || errorData?.message || 'Failed to create escrow transaction'
+        );
+      }
       const { unsignedTransaction } = await res1.json();
 
       // 3. Sign transaction
@@ -50,7 +55,12 @@ export default function DeployEscrowButton({ repoId, token }: { repoId: string; 
         body: JSON.stringify({ repoId, signedXdr: signedTxXdr }),
       });
 
-      if (!res2.ok) throw new Error(await res2.text());
+      if (!res2.ok) {
+        const errorData = await res2.json().catch(() => null);
+        throw new Error(
+          errorData?.error || errorData?.message || 'Failed to submit escrow deployment'
+        );
+      }
       window.location.reload();
     } catch (err: any) {
       setError(err.message || 'Failed to deploy');

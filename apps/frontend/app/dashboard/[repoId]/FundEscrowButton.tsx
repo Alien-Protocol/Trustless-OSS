@@ -50,10 +50,11 @@ export default function FundEscrowButton({ repoId, token }: { repoId: string; to
 
       if (!res1.ok) {
         const errData = await res1.json();
-        if (errData.message?.includes('insufficient funds')) {
+        const errorMessage = errData.error || errData.message || '';
+        if (errorMessage.toLowerCase().includes('insufficient funds')) {
           throw new Error('Insufficient funds in your wallet to cover the escrow + gas.');
         }
-        throw new Error(errData.message || 'Failed to generate funding transaction');
+        throw new Error(errorMessage || 'Failed to generate funding transaction');
       }
 
       const { unsignedTransaction } = await res1.json();
@@ -73,7 +74,7 @@ export default function FundEscrowButton({ repoId, token }: { repoId: string; to
 
       if (!res2.ok) {
         const errData = await res2.json();
-        throw new Error(errData.message || 'Failed to submit funding transaction');
+        throw new Error(errData.error || errData.message || 'Failed to submit funding transaction');
       }
 
       window.location.reload();
