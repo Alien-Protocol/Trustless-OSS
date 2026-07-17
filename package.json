@@ -11,7 +11,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage --coverage.enabled=true --coverage.provider=v8 --coverage.include=app/components/RepositoryEscrowCard.tsx --coverage.thresholds.lines=90 --coverage.thresholds.functions=90 --coverage.thresholds.branches=90 --coverage.thresholds.statements=90",
+    "test:coverage": "vitest run --coverage --coverage.enabled=true --coverage.provider=v8 --coverage.include=app/components/RepositoryEscrowCard.tsx --coverage.include=app/components/EscrowEventLog.tsx --coverage.include=app/lib/eventStream.ts --coverage.thresholds.lines=90 --coverage.thresholds.functions=90 --coverage.thresholds.branches=90 --coverage.thresholds.statements=90",
     "lint": "eslint 'app/**/*.{ts,tsx}' 'lib/**/*.{ts,tsx}' --max-warnings=-1",
     "lint:fix": "eslint 'app/**/*.{ts,tsx}' 'lib/**/*.{ts,tsx}' --fix",
     "typecheck": "tsc --noEmit",
