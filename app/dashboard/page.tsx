@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import InstallationSuccessHandler from './InstallationSuccessHandler';
 import RepositoryEscrowCard from '@/app/components/RepositoryEscrowCard';
 import type { Repo } from '@/app/types';
+import EscrowEventLog from '@/app/components/EscrowEventLog';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
@@ -184,6 +185,10 @@ export default async function DashboardPage(props: DashboardProps) {
           ))}
         </div>
       )}
+
+      <div className="mt-16">
+        <EscrowEventLog />
+      </div>
     </div>
   );
 }
