@@ -2,18 +2,17 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import InstallationSuccessHandler from './InstallationSuccessHandler';
+import RepositoryEscrowCard from '@/app/components/RepositoryEscrowCard';
+import type { Repo } from '@/app/types';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
-type DashboardRepo = {
-  id: string;
-  full_name: string;
-  escrow_contract_id: string | null;
-  escrow_balance: number;
-  created_at: string;
-};
+type DashboardRepo = Repo & { created_at: string };
 
 type JsonObject = Record<string, unknown>;
+type XlmPriceResponse = { stellar?: { usd?: unknown } };
+
+const XLM_PRICE_URL = 'https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=usd';
 
 function toNumber(value: unknown): number {
   const numberValue = Number(value);
@@ -27,17 +26,14 @@ function normalizeRepo(data: unknown): DashboardRepo | null {
   return {
     ...repo,
     escrow_balance: toNumber(repo.escrow_balance),
+    xlm_balance: repo.xlm_balance === undefined ? undefined : toNumber(repo.xlm_balance),
+    stellar_balance:
+      repo.stellar_balance === undefined ? undefined : toNumber(repo.stellar_balance),
   };
 }
 
 function isDashboardRepo(repo: DashboardRepo | null): repo is DashboardRepo {
   return repo !== null;
-}
-
-function formatUsdcBalance(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 2,
-  }).format(value);
 }
 
 async function getRepos(token: string): Promise<{ repos: DashboardRepo[]; error: string | null }> {
@@ -78,6 +74,22 @@ async function getRepos(token: string): Promise<{ repos: DashboardRepo[]; error:
   }
 }
 
+async function getXlmUsdPrice(): Promise<number | null> {
+  try {
+    const response = await fetch(XLM_PRICE_URL, {
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 60 },
+    });
+    if (!response.ok) return null;
+
+    const data = (await response.json()) as XlmPriceResponse;
+    const price = Number(data.stellar?.usd);
+    return Number.isFinite(price) ? price : null;
+  } catch {
+    return null;
+  }
+}
+
 interface DashboardProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
@@ -95,7 +107,10 @@ export default async function DashboardPage(props: DashboardProps) {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-  const { repos, error: reposError } = await getRepos(session?.access_token ?? '');
+  const [{ repos, error: reposError }, xlmUsdPrice] = await Promise.all([
+    getRepos(session?.access_token ?? ''),
+    getXlmUsdPrice(),
+  ]);
 
   const isNew = (createdAt: string) => {
     const created = new Date(createdAt).getTime();
@@ -154,60 +169,17 @@ export default async function DashboardPage(props: DashboardProps) {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {repos.map((repo) => (
-            <div
-              key={repo.id}
-              className={`bg-white brutal-border p-6 flex flex-col h-full relative ${isNew(repo.created_at) ? 'brutal-shadow-blue border-blue-600' : 'brutal-shadow'}`}
-            >
+            <div key={repo.id} className="relative">
               {isNew(repo.created_at) && (
-                <div className="absolute -top-4 -right-4 bg-blue-600 text-white px-3 py-1 font-bold font-mono text-xs uppercase border-2 border-slate-950">
+                <div className="absolute -top-4 -right-4 z-10 bg-blue-600 text-white px-3 py-1 font-bold font-mono text-xs uppercase border-2 border-slate-950">
                   NEW
                 </div>
               )}
-
-              <div className="flex items-start justify-between mb-6">
-                <div className="w-12 h-12 bg-slate-950 text-white flex items-center justify-center border-4 border-slate-950 font-black text-2xl">
-                  {repo.full_name[0].toUpperCase()}
-                </div>
-                {repo.escrow_contract_id ? (
-                  <span className="status-badge status-completed">ESCROW_ACTIVE</span>
-                ) : (
-                  <span className="status-badge status-pending">UNCONFIGURED</span>
-                )}
-              </div>
-
-              <h3 className="title-brutal text-xl text-slate-950 mb-1 truncate">
-                {repo.full_name.split('/')[1] || repo.full_name}
-              </h3>
-              <p className="text-xs text-slate-500 font-mono font-bold uppercase truncate mb-8">
-                {repo.full_name.split('/')[0]}
-              </p>
-
-              <div className="flex flex-col mt-auto pt-4 border-t-4 border-slate-950 border-dashed">
-                <div className="flex justify-between items-end mb-4">
-                  <div className="label-brutal text-slate-500">BALANCE</div>
-                  <div className="text-xl font-black font-mono text-slate-950">
-                    {formatUsdcBalance(repo.escrow_balance)} <span className="text-sm">USDC</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <Link
-                    href={`/dashboard/${repo.id}`}
-                    className="brutal-button flex-1 py-2 text-sm"
-                  >
-                    MANAGE
-                  </Link>
-                  <a
-                    href={`https://github.com/${repo.full_name}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="brutal-button-outline px-4 py-2 text-sm flex items-center justify-center"
-                    title="View on GitHub"
-                  >
-                    ↗
-                  </a>
-                </div>
-              </div>
+              <RepositoryEscrowCard
+                repo={repo}
+                token={session?.access_token ?? ''}
+                xlmUsdPrice={xlmUsdPrice}
+              />
             </div>
           ))}
         </div>

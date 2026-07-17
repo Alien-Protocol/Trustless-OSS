@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import DeployEscrowButton from './DeployEscrowButton';
+import DeployEscrowButton from '@/app/components/DeployEscrowButton';
 import FundEscrowButton from './FundEscrowButton';
 import RewardSettingsForm from './RewardSettingsForm';
 import RetryProcessButton from './ReleaseBountyButton';
