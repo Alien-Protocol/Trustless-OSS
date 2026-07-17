@@ -1,10 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { getWalletKit } from '../../lib/walletKit';
-import LoadingLogo from '../../components/LoadingLogo';
+import { Settings } from 'lucide-react';
+import { getWalletKit } from '@/app/lib/walletKit';
 
-export default function DeployEscrowButton({ repoId, token }: { repoId: string; token: string }) {
+interface DeployEscrowButtonProps {
+  repoId: string;
+  token: string;
+  label?: string;
+  loadingLabel?: string;
+  className?: string;
+}
+
+export default function DeployEscrowButton({
+  repoId,
+  token,
+  label = 'DEPLOY ESCROW CONTRACT',
+  loadingLabel = 'DEPLOYING...',
+  className = '',
+}: DeployEscrowButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -19,12 +33,9 @@ export default function DeployEscrowButton({ repoId, token }: { repoId: string; 
 
     try {
       const kit = await getWalletKit();
-
-      // 1. Open modal and get address
       const { address } = await kit.authModal();
       if (!address) throw new Error('No public key returned');
 
-      // 2. Get unsigned transaction
       const res1 = await fetch(`${BACKEND}/api/escrow/create-unsigned`, {
         method: 'POST',
         headers: {
@@ -42,10 +53,7 @@ export default function DeployEscrowButton({ repoId, token }: { repoId: string; 
       }
       const { unsignedTransaction } = await res1.json();
 
-      // 3. Sign transaction
       const { signedTxXdr } = await kit.signTransaction(unsignedTransaction);
-
-      // 4. Submit signed transaction
       const res2 = await fetch(`${BACKEND}/api/escrow/submit-deploy`, {
         method: 'POST',
         headers: {
@@ -62,30 +70,29 @@ export default function DeployEscrowButton({ repoId, token }: { repoId: string; 
         );
       }
       window.location.reload();
-    } catch (err: any) {
-      setError(err.message || 'Failed to deploy');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to deploy');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="mt-2 flex flex-col items-start">
+    <div className="flex w-full flex-col items-stretch">
       <button
         onClick={handleDeploy}
-        disabled={loading}
-        className="brutal-button px-6 py-3 text-sm flex items-center justify-center gap-3 min-w-[180px]"
+        disabled={loading || !token}
+        className={`brutal-button min-h-11 w-full px-4 py-3 text-xs sm:text-sm ${className}`}
       >
-        {loading ? (
-          <>
-            <LoadingLogo size="tiny" variant="circle" />
-            <span>DEPLOYING...</span>
-          </>
-        ) : (
-          'DEPLOY ESCROW CONTRACT'
-        )}
+        <Settings
+          size={17}
+          strokeWidth={2.5}
+          aria-hidden="true"
+          className={loading ? 'animate-spin' : ''}
+        />
+        <span aria-live="polite">{loading ? loadingLabel : label}</span>
       </button>
-      {error && <div className="text-red-400 text-xs mt-2 max-w-[200px] text-left">{error}</div>}
+      {error && <div className="mt-2 text-left text-xs text-red-600">{error}</div>}
     </div>
   );
 }

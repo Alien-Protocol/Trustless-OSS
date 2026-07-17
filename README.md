@@ -43,6 +43,7 @@ flowchart LR
     TrustlessWork -->|send USDC| ContributorWallet[Contributor Wallet]
 ```
 
+
 ## Labels and commands
 
 ### Supported issue labels
