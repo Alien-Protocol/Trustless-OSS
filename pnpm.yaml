@@ -1,0 +1,21 @@
+overrides:
+  protobufjs: ">=7.5.6"
+  postcss: ">=8.5.10"
+  uuid: ">=11.1.1"
+  ws: ">=8.21.0"
+  undici: ">=7.28.0"
+
+onlyBuiltDependencies:
+  - "@reown/appkit"
+  - "@stellar/stellar-sdk"
+  - blake-hash
+  - bufferutil
+  - esbuild
+  - msgpackr-extract
+  - protobufjs
+  - secp256k1
+  - sharp
+  - tiny-secp256k1
+  - unrs-resolver
+  - usb
+  - utf-8-validate

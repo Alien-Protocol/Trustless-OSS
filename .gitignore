@@ -1,14 +1,22 @@
 # Dependencies
 node_modules
 .pnpm-store
-
-# Turbo
-.turbo
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # Build outputs
+/.next/
+/out/
+/build
 dist
-.next
-out
+
+# Testing
+/coverage
 
 # Env files
 .env
@@ -19,16 +27,27 @@ out
 *.log
 npm-debug.log*
 pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # OS
 .DS_Store
 Thumbs.db
+*.pem
 
 # Editor
 .vscode/settings.json
 .idea
 
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
 # Test Snapshots
 test_snapshot/
 
+# Misc
 .codex
