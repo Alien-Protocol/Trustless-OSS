@@ -1,165 +1,192 @@
-<img width="4500" height="1100" alt="TOSS-Banner" src="https://github.com/user-attachments/assets/d41757e4-5123-41c1-a8b0-09b53176f6d2" />
+<div align="center">
+  <img width="100%" alt="Trustless OSS banner" src="https://github.com/user-attachments/assets/d41757e4-5123-41c1-a8b0-09b53176f6d2" />
 
-## What this project is
+  <br />
+  <br />
 
-Trustless OSS is a GitHub-integrated bounty platform that turns labeled issues into on-chain USDC payouts.
-Maintainers deploy and fund a Trustless Work escrow, and contributors receive funds automatically when a linked PR merges.
+  <h1>Trustless OSS</h1>
 
-## Why it exists
+  <p>
+    <strong>Automated, on-chain bounties for open-source contributors.</strong>
+  </p>
 
-Open source maintainers need a way to pay contributors without manual escrow transfers or trust-based bookkeeping.
-This project uses GitHub webhooks, issue labels, and Trustless Work milestones to automate payout execution.
+  <p>
+    Connect a GitHub repository, fund a Stellar USDC escrow, attach rewards to issues,<br />
+    and release contributor payouts when the linked pull request is merged.
+  </p>
 
-## What it does
+  <p>
+    <a href="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/ci-frontend.yml">
+      <img alt="Frontend CI" src="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/ci-frontend.yml/badge.svg" />
+    </a>
+    <a href="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/pr-checks.yml">
+      <img alt="PR Validation" src="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/pr-checks.yml/badge.svg" />
+    </a>
+    <a href="LICENSE">
+      <img alt="License" src="https://img.shields.io/badge/license-see%20LICENSE-7c3aed" />
+    </a>
+  </p>
 
-- Connects GitHub repos via GitHub App and Supabase auth
-- Deploys a Trustless Work multi-release escrow on Stellar
-- Marks issues as bounties with `rewarded` + difficulty labels
-- Supports `custom` bounties via maintainer comment commands
-- Prompts assigned contributors to connect their Stellar wallet
-- Creates Trustless Work milestones on assignment
-- Releases funds automatically when a PR referencing the issue is merged
-- Supports partial payout splits, rejection/dispute, retry, and refund
-- Includes a dashboard refund flow to withdraw remaining escrow funds and cancel active bounties
+  <p>
+    <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white" />
+    <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white" />
+    <img alt="TypeScript 5" src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white" />
+    <img alt="Tailwind CSS 4" src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white" />
+    <img alt="pnpm 11" src="https://img.shields.io/badge/pnpm-11-F69220?logo=pnpm&logoColor=white" />
+    <img alt="Node.js 22 or newer" src="https://img.shields.io/badge/Node.js-22%2B-5FA04E?logo=nodedotjs&logoColor=white" />
+  </p>
 
-## Live workflow
+  <p>
+    <a href="#-how-it-works">How it works</a> ·
+    <a href="#-software-stack">Software stack</a> ·
+    <a href="#-quick-start">Quick start</a> ·
+    <a href="docs/BOT_COMMANDS.md">Bot commands</a>
+  </p>
+</div>
+
+---
+
+## ✨ What is Trustless OSS?
+
+Trustless OSS connects GitHub contribution workflows with programmable escrow payments. Maintainers can reserve rewards for issues while contributors get a clear, verifiable path from assignment to payout.
+
+This repository contains the **standalone web application**. It provides the GitHub-authenticated dashboard, repository setup, Stellar wallet interactions, escrow controls, contributor onboarding, and calls to the separately deployed Trustless OSS backend API.
+
+### Why it exists
+
+- **For maintainers:** replace spreadsheets, manual transfers, and payout coordination with a repeatable bounty workflow.
+- **For contributors:** make the reward, milestone, and payout state visible before the work is completed.
+- **For communities:** connect code review and pull-request merges to transparent USDC escrow activity.
+
+## 🚀 Core capabilities
+
+| Capability               | What it provides                                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------- |
+| 🔗 GitHub integration    | GitHub OAuth, GitHub App installation, and repository synchronization                          |
+| 🏦 Escrow dashboard      | Deploy, fund, inspect, refund, and monitor Trustless Work escrows                              |
+| 🏷️ Issue bounties        | Fixed reward tiers and custom USDC rewards driven by GitHub labels                             |
+| 👛 Wallet onboarding     | Stellar wallet connection and contributor payout-address registration                          |
+| ⚡ Automated releases    | Milestone payout orchestration after a linked pull request is merged                           |
+| 🌉 Cross-chain selection | CCTP payout destination UI for supported contributor networks                                  |
+| 📡 Activity visibility   | Repository balances, issue state, contributors, and escrow event history                       |
+| 🛡️ Project safeguards    | Linting, type checks, production builds, dependency audits, PR validation, and secret scanning |
+
+## 🔄 How it works
 
 ```mermaid
 flowchart LR
-    Maintainer -->|connect repo| App[Trustless OSS App]
-    Maintainer -->|deploy escrow| TrustlessWork[Trustless Work]
-    Maintainer -->|label issue| GitHub[GitHub]
-    GitHub -->|webhook| App
-    App -->|create pending bounty| DB[Supabase]
-    GitHub -->|assign issue| App
-    App -->|ask wallet| Contributor[Contributor]
-    Contributor -->|connect wallet| App
-    App -->|push milestone| TrustlessWork
-    GitHub -->|PR merged| App
-    App -->|approve + release| TrustlessWork
-    TrustlessWork -->|send USDC| ContributorWallet[Contributor Wallet]
+    A[Maintainer connects<br/>a GitHub repository] --> B[Deploy and fund<br/>Stellar USDC escrow]
+    B --> C[Label an issue<br/>rewarded + reward tier]
+    C --> D[Contributor is assigned<br/>and connects a wallet]
+    D --> E[Backend creates<br/>an escrow milestone]
+    E --> F[Contributor opens a PR<br/>linked to the issue]
+    F --> G{PR merged?}
+    G -- Yes --> H[Approve and release<br/>the milestone]
+    H --> I[Contributor receives<br/>USDC payout]
+    G -- No --> J[Funds remain<br/>in escrow]
+
+    classDef github fill:#24292f,color:#fff,stroke:#111827,stroke-width:2px;
+    classDef app fill:#2563eb,color:#fff,stroke:#1e3a8a,stroke-width:2px;
+    classDef chain fill:#10b981,color:#052e16,stroke:#047857,stroke-width:2px;
+    class A,C,D,F,G github;
+    class E app;
+    class B,H,I,J chain;
 ```
 
+For automatic matching, the pull-request body must reference the bounty issue with a closing keyword such as `Closes #123`, `Fixes #123`, or `Resolves #123`.
 
-## Labels and commands
+## 🧰 Software stack
 
-### Supported issue labels
+| Layer                       | Software                                                                                                                | Role in the project                                                            |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Web framework               | [Next.js 16](https://nextjs.org/) + [React 19](https://react.dev/)                                                      | App Router pages, server rendering, route handlers, and interactive UI         |
+| Language                    | [TypeScript 5](https://www.typescriptlang.org/)                                                                         | Typed application and integration code                                         |
+| Styling                     | [Tailwind CSS 4](https://tailwindcss.com/)                                                                              | Responsive visual system and component styling                                 |
+| Authentication and realtime | [Supabase](https://supabase.com/)                                                                                       | GitHub authentication, session handling, and optional escrow event streaming   |
+| Source control integration  | [GitHub App](https://docs.github.com/en/apps)                                                                           | Repository installation, issue events, assignments, and pull-request lifecycle |
+| Wallet layer                | [Stellar Wallets Kit](https://github.com/Creit-Tech/Stellar-Wallets-Kit) + [Freighter API](https://docs.freighter.app/) | Wallet discovery, connection, and transaction signing                          |
+| Blockchain SDK              | [Stellar SDK](https://stellar.github.io/js-stellar-sdk/)                                                                | Stellar transaction and network integration                                    |
+| Escrow protocol             | [Trustless Work](https://www.trustlesswork.com/)                                                                        | Multi-release escrow deployment, funding, milestones, release, and refunds     |
+| Settlement asset            | [USDC](https://www.circle.com/usdc)                                                                                     | Bounty funding and contributor payouts                                         |
+| Cross-chain routing         | [Circle CCTP](https://developers.circle.com/cctp)                                                                       | Contributor payout routing surfaced by the cross-chain destination UI          |
+| Testing                     | [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/)                                         | Component and application-logic tests with coverage thresholds                 |
+| Code quality                | ESLint + Prettier + TypeScript                                                                                          | Static analysis, formatting, and type safety                                   |
+| Package manager             | [pnpm 11](https://pnpm.io/)                                                                                             | Reproducible dependency installation and project scripts                       |
+| Deployment                  | [Vercel](https://vercel.com/)                                                                                           | Next.js build and hosting configuration                                        |
+| Automation                  | [GitHub Actions](https://github.com/features/actions)                                                                   | CI builds, audits, PR policy checks, and secret scanning                       |
 
-- `rewarded` — marks an issue as bounty-enabled
-- `low` / `medium` / `high` — fixed reward tiers
-- `custom` — manual amount required via command
+## 🧭 Architecture
 
-### Custom bounty flow
+```text
+GitHub OAuth / GitHub App
+           │
+           ▼
+┌──────────────────────────────┐
+│ Trustless OSS Web App        │
+│ Next.js · React · TypeScript │
+└───────────┬──────────┬───────┘
+            │          │
+            │          └──────────► Supabase
+            │                        Auth + optional realtime events
+            ▼
+   External backend API
+            │
+            ├──────────► GitHub event orchestration
+            │
+            └──────────► Trustless Work escrow on Stellar
+                                      │
+                                      └──► USDC payout / CCTP route
+```
 
-If `custom` is applied, the maintainer must comment:
+> **Repository boundary:** backend webhook processing, database persistence, and payout orchestration are consumed through `NEXT_PUBLIC_BACKEND_URL`; their implementation is not part of this frontend repository.
 
-- `@Trustless-OSS 150`
-
-If the amount is missing, the bot will ask for it.
-
-### Bot commands
-
-#### Maintainer commands
-
-| Command                                        | Purpose                                             |
-| ---------------------------------------------- | --------------------------------------------------- |
-| `@Trustless-OSS /pay <percentage>`             | Save a partial payout split before merge            |
-| `@Trustless-OSS /split <percentage>`           | Alias for `/pay`, set contributor share             |
-| `@Trustless-OSS /work <percentage>`            | Alias for `/pay`, set contribution share            |
-| `@Trustless-OSS /work-completion <percentage>` | Save a work-completion percentage for split payouts |
-| `@Trustless-OSS /reject`                       | Reject the work and refund the escrow               |
-| `@Trustless-OSS /rejected`                     | Same as `/reject`                                   |
-| `@Trustless-OSS /no`                           | Same as `/reject`, dispute and refund the bounty    |
-| `@Trustless-OSS /retry`                        | Retry a failed payout or release transaction        |
-
-#### Contributor commands
-
-| Command                          | Purpose                           |
-| -------------------------------- | --------------------------------- |
-| `@Trustless-OSS /wallet`         | Request the wallet connect link   |
-| `@Trustless-OSS /address`        | Request the wallet connect link   |
-| `@Trustless-OSS /connect`        | Request the wallet connect link   |
-| `@Trustless-OSS /change-address` | Request a new wallet connect link |
-
-#### General command
-
-| Command                | Purpose                               |
-| ---------------------- | ------------------------------------- |
-| `@Trustless-OSS /help` | Show available bot commands and usage |
-
-> Note: The project does not use `bonus:50` label in code. The active custom flow is `custom` + `@Trustless-OSS <amount>`.
-
-## Issue linking requirement
-
-For automatic payout, a merged PR must reference the issue in its body using keywords like:
-
-- `closes #123`
-- `fixes #123`
-- `resolves #123`
-
-This is how the app matches the merged PR to the bounty issue.
-
-## Dispute and refund support
-
-- `@Trustless-OSS /reject` triggers a dispute flow and returns funds to the maintainer
-- `@Trustless-OSS /pay <percentage>` saves partial payout intent
-- Dashboard supports an escrow refund button to withdraw remaining USDC and cancel active issues
-- Refund flow uses Trustless Work dispute/resolve logic to pull remaining funds back to the maintainer's wallet
-- This is still a hackathon proof-of-concept: platform signing and maintainer dispute resolution are centralized v1 choices
-
-## Refund funds feature
-
-Maintainers can refund escrow funds from the dashboard when a repo is connected and a wallet is linked.
-Refunding withdraws remaining USDC from the on-chain escrow, cancels pending/active issues, and updates the app state.
-
-If the maintainer wallet is not connected, the app asks to connect it before refunding.
-
-## Recommended user flow
-
-1. Maintainer logs in and connects a repo.
-2. Deploy the Trustless Work escrow contract from the dashboard.
-3. Fund the escrow with USDC.
-4. Add `rewarded` + `low|medium|high|custom` to an issue.
-5. Assign a contributor.
-6. Contributor follows the bot link to connect their Stellar wallet.
-7. Submit a PR that references the issue.
-8. When the PR merges, the system releases the bounty.
-
-## Project setup
+## ⚡ Quick start
 
 ### Prerequisites
 
-- Node.js >= 22
-- pnpm >= 11
+- [Node.js](https://nodejs.org/) **22 or newer**
+- [pnpm](https://pnpm.io/installation) **11**
+- Supabase project credentials
+- A running Trustless OSS backend API
+- A GitHub App configured for repository installation
 
-### Installation & Development
+### Installation
 
 ```bash
-# Install dependencies
-pnpm install
+git clone https://github.com/ryzen-xp/Trustless-OSS.git
+cd Trustless-OSS
 
-# Copy environment variables template
-cp .env.example .env
-
-# Run development server
+pnpm install --frozen-lockfile
+cp .env.example .env.local
 pnpm dev
 ```
 
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
 ### Environment variables
 
-Fill in the following variables in `.env`:
+| Variable                        | Required | Purpose                                                  |
+| ------------------------------- | :------: | -------------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      |   Yes    | Supabase project URL                                     |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` |   Yes    | Public Supabase anonymous key                            |
+| `NEXT_PUBLIC_BACKEND_URL`       |   Yes    | Base URL of the external Trustless OSS API               |
+| `NEXT_PUBLIC_GITHUB_APP_SLUG`   |   Yes    | GitHub App slug used by the repository connection flow   |
+| `NEXT_PUBLIC_APP_URL`           |   Yes    | Public web-app URL; use `http://localhost:3000` locally  |
+| `NEXT_PUBLIC_EVENT_STREAM`      |    No    | Set to `supabase` to subscribe to realtime escrow events |
 
-- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase authentication client keys
-- `NEXT_PUBLIC_BACKEND_URL` — API endpoint of the backend service
-- `NEXT_PUBLIC_GITHUB_APP_SLUG` — GitHub App slug for repositories connection
-- `NEXT_PUBLIC_APP_URL` — URL where this application is running (e.g., http://localhost:3000)
+Public `NEXT_PUBLIC_*` values are included in the browser bundle. Never place private keys, service-role keys, wallet secrets, or signing credentials in them.
 
-### Key Files
+## 🧪 Development commands
 
-- `app/connect/page.tsx` — contributor wallet onboarding flow
-- `app/dashboard/[repoId]/page.tsx` — repository details, escrow details, and issue state view
-- `app/dashboard/connect-repo/page.tsx` — GitHub App connection layout
+| Command              | Purpose                                                 |
+| -------------------- | ------------------------------------------------------- |
+| `pnpm dev`           | Start the local Next.js development server with Webpack |
+| `pnpm build`         | Create a production build                               |
+| `pnpm start`         | Serve the production build                              |
+| `pnpm test`          | Run the Vitest suite once                               |
+| `pnpm test:coverage` | Run focused coverage checks with 90% thresholds         |
+| `pnpm lint`          | Run ESLint across `app/` and `lib/`                     |
+| `pnpm typecheck`     | Check TypeScript without emitting files                 |
+| `pnpm format:check`  | Check TypeScript and TSX formatting                     |
 
-## Notes
-
-This repo contains the standalone frontend application of the Trustless OSS platform. It interacts with the backend service to trigger milestone updates and escrow queries.
+Commands used in GitHub issue comments are documented separately in the [bot command guide](docs/BOT_COMMANDS.md).
