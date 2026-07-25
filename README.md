@@ -2,9 +2,7 @@
   <img width="100%" alt="Trustless OSS banner" src="https://github.com/user-attachments/assets/d41757e4-5123-41c1-a8b0-09b53176f6d2" />
 
   <br />
-  <br />
 
-  <h1>Trustless OSS</h1>
 
   <p>
     <strong>Automated, on-chain bounties for open-source contributors.</strong>
