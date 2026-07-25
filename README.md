@@ -1,7 +1,4 @@
-<div align="center">
-  <h1>Trustless OSS</h1>
-  <p><strong>Live demo:</strong> <a href="https://trustless-oss.vercel.app/">https://trustless-oss-web.vercel.app/</a></p>
-</div>
+<img width="4500" height="1100" alt="TOSS-Banner" src="https://github.com/user-attachments/assets/d41757e4-5123-41c1-a8b0-09b53176f6d2" />
 
 ## What this project is
 
