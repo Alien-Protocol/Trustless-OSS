@@ -7,6 +7,14 @@
   --color-blue: #2563eb;
   --color-text: #020617;
   --color-border: #020617;
+  --landing-surface-color: #eef5ff;
+  --landing-surface-image:
+    linear-gradient(rgba(37, 99, 235, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.055) 1px, transparent 1px),
+    radial-gradient(circle at 8% 12%, rgba(96, 165, 250, 0.2), transparent 24%),
+    radial-gradient(circle at 92% 34%, rgba(37, 99, 235, 0.14), transparent 26%),
+    radial-gradient(circle at 48% 76%, rgba(14, 165, 233, 0.1), transparent 32%),
+    linear-gradient(145deg, #f4f8ff 0%, #eaf3ff 48%, #f7fbff 100%);
 }
 
 .dark {
@@ -174,6 +182,25 @@ html {
   }
 }
 
+@keyframes hero-usdc-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(-8deg);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0) rotate(8deg);
+  }
+}
+
+@keyframes hero-orbit-turn {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes landing-watermark-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  50% { transform: translate3d(0, -12px, 0) rotate(2deg); }
+}
+
 @keyframes logo-diagonal-drift-tiny {
   0%, 100% { transform: translate3d(0, 0, 0); }
   50% { transform: translate3d(-7px, -5px, 0); }
@@ -220,31 +247,121 @@ html {
   50% { opacity: 1; }
 }
 
-@keyframes cctp-smoke-drift {
+@keyframes cctp-smoke-inbound {
   0% {
-    opacity: 0.06;
+    opacity: 0;
+    stroke-dashoffset: 220;
+  }
+  12% {
+    opacity: 0.18;
+  }
+  46% {
+    opacity: 0.72;
+    stroke-dashoffset: 0;
+  }
+  58%, 100% {
+    opacity: 0;
+    stroke-dashoffset: -170;
+  }
+}
+
+@keyframes cctp-smoke-outbound {
+  0%, 58% {
+    opacity: 0;
     stroke-dashoffset: 190;
   }
-  18% {
-    opacity: 0.42;
+  70% {
+    opacity: 0.58;
   }
-  42% {
-    opacity: 0.62;
+  90% {
+    opacity: 0.32;
+    stroke-dashoffset: -90;
   }
   100% {
-    opacity: 0.1;
-    stroke-dashoffset: -140;
+    opacity: 0;
+    stroke-dashoffset: -150;
   }
 }
 
 @keyframes cctp-impact-flash {
-  0%, 70% {
+  0%, 52% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.35);
   }
-  78% {
-    opacity: 0.9;
+  58% {
+    opacity: 1;
     transform: translate(-50%, -50%) scale(0.8);
+  }
+  72%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.85);
+  }
+}
+
+@keyframes cctp-impact-shatter {
+  0%, 54% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.4);
+  }
+  59% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.7);
+  }
+  66% {
+    opacity: 0.9;
+  }
+  76%, 100% {
+    opacity: 0;
+    transform: translate3d(var(--shard-x), var(--shard-y), 0) rotate(var(--shard-rotate)) scale(1);
+  }
+}
+
+@keyframes cctp-energy-expand {
+  0%, 53% {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  58% {
+    opacity: 0.72;
+  }
+  75%, 100% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+
+@keyframes cctp-hub-impact {
+  0%, 53%, 64%, 100% {
+    transform: scale(1);
+    letter-spacing: 0.16em;
+  }
+  58% {
+    transform: scale(1.12);
+    letter-spacing: 0.22em;
+  }
+}
+
+@keyframes cctp-source-launch {
+  0%, 4% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+  10% {
+    opacity: 0.72;
+  }
+  24%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.7);
+  }
+}
+
+@keyframes cctp-destination-activate {
+  0%, 70% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.72);
+  }
+  88% {
+    opacity: 0.68;
   }
   100% {
     opacity: 0;
@@ -252,21 +369,14 @@ html {
   }
 }
 
-@keyframes cctp-impact-shatter {
-  0%, 74% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.4);
+@keyframes cctp-field-breathe {
+  0%, 100% {
+    opacity: 0.22;
+    transform: translate(-50%, -50%) scale(0.92) rotate(0deg);
   }
-  82% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.7);
-  }
-  90% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0;
-    transform: translate3d(var(--shard-x), var(--shard-y), 0) rotate(var(--shard-rotate)) scale(1);
+  58% {
+    opacity: 0.52;
+    transform: translate(-50%, -50%) scale(1.04) rotate(8deg);
   }
 }
 
@@ -324,20 +434,176 @@ html {
   animation: logo-diagonal-drift-lg 2.1s ease-in-out infinite;
 }
 
-.cctp-flow-map {
-  min-height: clamp(520px, 62vw, 720px);
+.landing-page-shell {
+  background-color: var(--landing-surface-color);
+  background-image: var(--landing-surface-image);
+  background-size: 32px 32px, 32px 32px, auto, auto, auto, auto;
+}
+
+.home-navbar {
+  background-color: var(--landing-surface-color);
+  background-image: var(--landing-surface-image);
+  background-attachment: fixed;
+  background-size: 32px 32px, 32px 32px, auto, auto, auto, auto;
+}
+
+.landing-watermark {
+  position: absolute;
+  z-index: 0;
+  opacity: 0.055;
+  pointer-events: none;
+  user-select: none;
+  animation: landing-watermark-drift 9s ease-in-out infinite;
+}
+
+img.landing-watermark {
+  opacity: 0.08;
+}
+
+.partner-logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  filter: saturate(1.35) contrast(1.3) drop-shadow(0 5px 8px rgba(2, 6, 23, 0.18));
+  transition: filter 200ms ease, transform 200ms ease;
+}
+
+.partner-logo-link:hover {
+  filter: saturate(1.5) contrast(1.4) drop-shadow(0 7px 10px rgba(37, 99, 235, 0.24));
+  transform: translateY(-2px);
+}
+
+.partner-logo-original,
+.partner-logo-original:hover {
+  filter: none;
+}
+
+.supported-partners-band {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(147, 197, 253, 0.34), transparent 72%);
+}
+
+.supported-partners-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(37, 99, 235, 0.2) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+  opacity: 0.28;
+  mask-image: radial-gradient(ellipse at center, black 18%, transparent 76%);
+  pointer-events: none;
+}
+
+.supported-partners-orb {
+  position: absolute;
+  border: 2px solid rgba(37, 99, 235, 0.22);
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.supported-partners-orb-one {
+  top: -7rem;
+  left: -5rem;
+  height: 13rem;
+  width: 13rem;
+}
+
+.supported-partners-orb-two {
+  right: -6rem;
+  bottom: -9rem;
+  height: 17rem;
+  width: 17rem;
+}
+
+.site-footer {
+  background-color: var(--landing-surface-color);
+  background-image: var(--landing-surface-image);
+  background-attachment: fixed;
+  background-size: 32px 32px, 32px 32px, auto, auto, auto, auto;
+}
+
+.site-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.11), transparent 32%),
-    radial-gradient(circle at 86% 50%, rgba(14, 165, 233, 0.08), transparent 34%),
-    linear-gradient(rgba(37, 99, 235, 0.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.055) 1px, transparent 1px);
-  background-repeat: no-repeat, no-repeat, repeat, repeat;
-  background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+    linear-gradient(rgba(96, 165, 250, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.07) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: linear-gradient(90deg, black, transparent 68%);
+  pointer-events: none;
+}
+
+.site-footer-link {
+  position: relative;
+  width: fit-content;
+  color: inherit;
+  transition: color 180ms ease;
+}
+
+.site-footer-link::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0.25rem;
+  left: 0;
+  height: 2px;
+  background: #60a5fa;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 180ms ease;
+}
+
+.site-footer-link:hover {
+  color: #2563eb;
+}
+
+.site-footer-link:hover::after {
+  transform: scaleX(1);
+}
+
+.escrow-event-log-feed {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.045) 1px, transparent 1px),
+    radial-gradient(circle at 88% 10%, rgba(96, 165, 250, 0.2), transparent 26%);
+  background-size: 24px 24px, 24px 24px, auto;
+}
+
+.cctp-flow-map {
+  isolation: isolate;
+  min-height: clamp(430px, 48vw, 580px);
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.16), transparent 30%),
+    radial-gradient(circle at 86% 50%, rgba(14, 165, 233, 0.11), transparent 34%),
+    radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.08), transparent 23%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.cctp-flow-map::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 0;
+  height: min(48vw, 34rem);
+  width: min(48vw, 34rem);
+  border: 2px dashed rgba(37, 99, 235, 0.34);
+  border-radius: 9999px;
+  box-shadow:
+    inset 0 0 60px rgba(37, 99, 235, 0.1),
+    0 0 80px rgba(37, 99, 235, 0.08);
+  animation: cctp-field-breathe 5.4s ease-in-out infinite;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .cctp-flow-svg {
   position: absolute;
   inset: 0;
+  z-index: 1;
   height: 100%;
   width: 100%;
   overflow: visible;
@@ -352,8 +618,11 @@ html {
   stroke-dashoffset: 190;
   opacity: 0.06;
   filter: blur(10px);
-  animation: cctp-smoke-drift 2.8s ease-out infinite;
   vector-effect: non-scaling-stroke;
+}
+
+.cctp-smoke-trails-inbound use {
+  animation: cctp-smoke-inbound 5.4s ease-out infinite;
 }
 
 .cctp-smoke-trails .cctp-smoke-core {
@@ -365,6 +634,7 @@ html {
 
 .cctp-smoke-trails-outbound use {
   stroke: rgba(14, 165, 233, 0.42);
+  animation: cctp-smoke-outbound 5.4s ease-out infinite;
 }
 
 .cctp-smoke-trails-outbound .cctp-smoke-core {
@@ -379,6 +649,13 @@ html {
     drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
 }
 
+.cctp-flow-coin-inbound {
+  filter:
+    drop-shadow(-20px 14px 16px rgba(37, 99, 235, 0.44))
+    drop-shadow(-34px 22px 24px rgba(14, 165, 233, 0.22))
+    drop-shadow(0 0 14px rgba(255, 255, 255, 0.95));
+}
+
 .cctp-flow-coin-small {
   animation-duration: 1.5s;
 }
@@ -387,6 +664,7 @@ html {
   --node-anchor: translate(-50%, -50%);
   position: absolute;
   z-index: 2;
+  isolation: isolate;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -395,6 +673,7 @@ html {
   background: white;
   box-shadow: 8px 8px 0 0 var(--color-blue);
   animation: cctp-node-float 3.4s ease-in-out infinite;
+  transform: var(--node-anchor);
 }
 
 .cctp-source-logo {
@@ -404,13 +683,19 @@ html {
   width: 7.75rem;
 }
 
-.cctp-mini-usdc {
+.cctp-source-launch {
   position: absolute;
-  right: -0.65rem;
-  bottom: -0.45rem;
-  border: 3px solid var(--color-border);
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  height: 7.75rem;
+  width: 7.75rem;
+  border: 3px solid rgba(16, 185, 129, 0.6);
   border-radius: 9999px;
-  background: white;
+  box-shadow: 0 0 34px rgba(16, 185, 129, 0.26);
+  opacity: 0;
+  animation: cctp-source-launch 5.4s ease-out infinite;
+  transform: translate(-50%, -50%) scale(0.7);
 }
 
 .cctp-bridge-logo {
@@ -438,6 +723,38 @@ html {
   animation: cctp-bridge-pulse 2.4s ease-in-out infinite;
 }
 
+.cctp-bridge-logo::after {
+  content: "";
+  position: absolute;
+  inset: -0.7rem;
+  z-index: -1;
+  border: 2px dashed rgba(255, 255, 255, 0.64);
+  border-radius: 9999px;
+  animation: hero-orbit-turn 12s linear infinite;
+}
+
+.cctp-bridge-core {
+  position: relative;
+  z-index: 2;
+  animation: cctp-hub-impact 5.4s ease-out infinite;
+}
+
+.cctp-energy-ring {
+  fill: none;
+  opacity: 0;
+  stroke: rgba(37, 99, 235, 0.74);
+  stroke-width: 3;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: cctp-energy-expand 5.4s ease-out infinite;
+  vector-effect: non-scaling-stroke;
+}
+
+.cctp-energy-ring-two {
+  stroke: rgba(14, 165, 233, 0.48);
+  animation-delay: 120ms;
+}
+
 .cctp-impact-burst {
   position: absolute;
   inset: 50%;
@@ -455,8 +772,10 @@ html {
   box-shadow:
     0 0 22px rgba(255, 255, 255, 0.65),
     0 0 34px rgba(14, 165, 233, 0.38);
-  animation: cctp-impact-flash 2.8s ease-out infinite;
+  animation: cctp-impact-flash 5.4s ease-out infinite;
+  opacity: 0;
   pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.35);
 }
 
 .cctp-impact-shard {
@@ -473,7 +792,8 @@ html {
   box-shadow:
     0 0 10px rgba(255, 255, 255, 0.65),
     0 0 18px rgba(14, 165, 233, 0.24);
-  animation: cctp-impact-shatter 2.8s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  animation: cctp-impact-shatter 5.4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+  opacity: 0;
 }
 
 .cctp-impact-shard-0 { --shard-x: -52px; --shard-y: -34px; --shard-rotate: -32deg; }
@@ -493,43 +813,27 @@ html {
   width: 5.4rem;
 }
 
+.cctp-destination-pulse {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  border: 3px solid rgba(37, 99, 235, 0.55);
+  border-radius: 9999px;
+  box-shadow: 0 0 28px rgba(37, 99, 235, 0.25);
+  opacity: 0;
+  animation: cctp-destination-activate 5.4s ease-out infinite;
+  transform: translate(-50%, -50%) scale(0.72);
+}
+
 .cctp-destination-logo-0 { top: 10%; left: 78%; animation-delay: 0ms; }
 .cctp-destination-logo-1 { top: 24.4%; left: 86%; animation-delay: 140ms; }
 .cctp-destination-logo-2 { top: 38.6%; left: 91%; animation-delay: 280ms; }
 .cctp-destination-logo-3 { top: 61.4%; left: 91%; animation-delay: 420ms; }
 .cctp-destination-logo-4 { top: 75.6%; left: 86%; animation-delay: 560ms; }
 .cctp-destination-logo-5 { top: 90%; left: 78%; animation-delay: 700ms; }
-
-@media (max-width: 767px) {
-  .cctp-flow-map {
-    min-height: 760px;
-  }
-
-  .cctp-source-logo {
-    left: 16%;
-    height: 6rem;
-    width: 6rem;
-  }
-
-  .cctp-bridge-logo {
-    height: 6.75rem;
-    width: 6.75rem;
-    font-size: 1rem;
-  }
-
-  .cctp-destination-logo {
-    left: 50%;
-    height: 4.2rem;
-    width: 4.2rem;
-  }
-
-  .cctp-destination-logo-0 { top: 11%; left: 78%; }
-  .cctp-destination-logo-1 { top: 25%; left: 87%; }
-  .cctp-destination-logo-2 { top: 39%; left: 91%; }
-  .cctp-destination-logo-3 { top: 61%; left: 91%; }
-  .cctp-destination-logo-4 { top: 75%; left: 87%; }
-  .cctp-destination-logo-5 { top: 89%; left: 78%; }
-}
 
 .bg-dot-drift {
   animation: drift 20s linear infinite;
@@ -546,29 +850,161 @@ html {
 .hero-stagger-5 { animation-delay: 320ms; }
 .hero-stagger-6 { animation-delay: 390ms; }
 
-.hero-terminal {
-  background: #020817;
-  border: 4px solid var(--color-border);
-  color: var(--color-bg);
-  font-family: var(--font-mono);
-  min-width: 0;
-  overflow: hidden;
+.home-hero {
+  background: transparent;
+  isolation: isolate;
+  overflow: clip;
+  padding-bottom: clamp(3.25rem, 7vw, 6rem);
   position: relative;
 }
 
-.hero-terminal::after {
+.home-hero::before {
   content: "";
   position: absolute;
-  inset: 0;
-  pointer-events: none;
+  right: -9rem;
+  top: -6rem;
+  z-index: -1;
+  height: 34rem;
+  width: 34rem;
+  border: 4px solid rgba(37, 99, 235, 0.18);
   background:
-    linear-gradient(rgba(255, 255, 255, 0.03) 50%, rgba(2, 8, 23, 0.05) 50%),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.08), transparent, rgba(16, 185, 129, 0.05));
-  background-size: 100% 4px, 4px 100%;
+    linear-gradient(rgba(37, 99, 235, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.09) 1px, transparent 1px);
+  background-size: 28px 28px;
+  transform: rotate(8deg);
+  pointer-events: none;
+}
+
+.home-bounty-preview {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.035) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.home-hero-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.home-hero-wordmark {
+  position: absolute;
+  right: -1rem;
+  top: 6%;
+  color: rgba(37, 99, 235, 0.055);
+  font-family: var(--font-mono);
+  font-size: clamp(8rem, 20vw, 20rem);
+  font-weight: 900;
+  letter-spacing: -0.1em;
+  line-height: 1;
+  transform: rotate(-8deg);
+  user-select: none;
+}
+
+.home-hero-orbit {
+  position: absolute;
+  right: 2%;
+  top: 8%;
+  height: min(45vw, 42rem);
+  width: min(45vw, 42rem);
+  border: 2px dashed rgba(37, 99, 235, 0.28);
+  border-radius: 9999px;
+  animation: hero-orbit-turn 30s linear infinite;
+}
+
+.home-hero-orbit::before,
+.home-hero-orbit::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+}
+
+.home-hero-orbit::before {
+  inset: 12%;
+  border: 2px solid rgba(37, 99, 235, 0.12);
+}
+
+.home-hero-orbit::after {
+  left: 50%;
+  top: -7px;
+  height: 14px;
+  width: 14px;
+  border: 2px solid var(--color-border);
+  background: var(--color-blue);
+}
+
+.hero-usdc-token {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--color-border);
+  border-radius: 9999px;
+  background: white;
+  box-shadow:
+    7px 7px 0 rgba(2, 6, 23, 0.95),
+    0 0 36px rgba(37, 99, 235, 0.32);
+  animation: hero-usdc-float 4.8s ease-in-out infinite;
+}
+
+.hero-usdc-token img {
+  height: 100%;
+  width: 100%;
+}
+
+.hero-usdc-token-one {
+  right: 39%;
+  top: 3%;
+  height: 5.5rem;
+  width: 5.5rem;
+}
+
+.hero-usdc-token-two {
+  right: -2.25rem;
+  bottom: 11%;
+  height: 7rem;
+  width: 7rem;
+  animation-delay: -1.6s;
+}
+
+.hero-usdc-token-three {
+  left: 48%;
+  bottom: 4%;
+  height: 4rem;
+  width: 4rem;
+  animation-delay: -3s;
+}
+
+@media (max-width: 1023px) {
+  .home-hero-orbit {
+    right: -15rem;
+    top: 4rem;
+    height: 34rem;
+    width: 34rem;
+  }
+
+  .hero-usdc-token-one {
+    right: -1.5rem;
+    top: 8rem;
+    height: 5rem;
+    width: 5rem;
+    opacity: 0.34;
+  }
+
+  .hero-usdc-token-two,
+  .hero-usdc-token-three {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-hero-in,
+  .hero-usdc-token,
+  .home-hero-orbit,
+  .landing-watermark,
   .animate-pulse-brutal,
   .animate-logo-diagonal-tiny,
   .animate-logo-diagonal-nav,
@@ -577,13 +1013,23 @@ html {
   .animate-logo-diagonal-lg,
   .cctp-logo-node,
   .cctp-bridge-logo::before,
+  .cctp-bridge-logo::after,
+  .cctp-bridge-core,
+  .cctp-flow-map::before,
   .cctp-flow-coin,
   .cctp-smoke-trails use,
+  .cctp-energy-ring,
   .cctp-impact-flash,
   .cctp-impact-shard,
+  .cctp-source-launch,
+  .cctp-destination-pulse,
   .animate-blink,
   .bg-dot-drift {
     animation: none;
+  }
+
+  .cctp-flow-coin {
+    display: none;
   }
 }
 
@@ -596,14 +1042,6 @@ html {
   padding: 1rem;
   position: relative;
   overflow: hidden;
-}
-
-.terminal-block::before {
-  content: "> CMD_PROMPT_INPUT";
-  display: block;
-  color: var(--color-blue);
-  font-size: 0.75rem;
-  margin-bottom: 0.5rem;
 }
 
 .terminal-block::after {

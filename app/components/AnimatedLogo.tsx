@@ -66,7 +66,9 @@ export default function AnimatedLogo({
   return (
     <div className={`relative inline-flex ${className}`.trim()}>
       <div
-        className="absolute inset-0 border-4 border-slate-950 bg-blue-600 animate-pulse-brutal"
+        className={`absolute inset-0 border-4 border-slate-950 bg-blue-600 ${
+          animated ? 'animate-pulse-brutal' : ''
+        }`.trim()}
         style={{ transform: config.shadowOffset }}
       />
       <div

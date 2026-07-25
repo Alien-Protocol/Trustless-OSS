@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { vi } from 'vitest';
 import EscrowEventLog from '../EscrowEventLog';
@@ -58,10 +58,13 @@ describe('EscrowEventLog', () => {
     const stream = manualSource();
     render(<EscrowEventLog source={stream.source} />);
 
-    expect(screen.getByText('ESCROW EVENT LOGS (WEB3 EXECUTIONS)')).toBeInTheDocument();
-    expect(screen.getByText(/Real-time webhook relays/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /clear custom log history/i })).toBeInTheDocument();
-    expect(screen.getByText('AWAITING_EVENTS')).toBeInTheDocument();
+    expect(screen.getByText('Live reward updates')).toBeInTheDocument();
+    expect(screen.getByText(/See when a reward is funded/)).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: /clear custom log history/i })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Waiting for updates')).toBeInTheDocument();
+    expect(screen.getByText('New reward activity will appear here.')).toBeInTheDocument();
   });
 
   it('renders actor, badge, project, description, and relative timestamp for an event', () => {
@@ -149,45 +152,40 @@ describe('EscrowEventLog', () => {
     expect(screen.getByText('S')).toBeInTheDocument();
   });
 
-  it('clears the visible log client-side while still accepting new events', () => {
+  it('keeps accepting live events and replaces the oldest visible event', () => {
     const stream = manualSource();
     render(<EscrowEventLog source={stream.source} />);
 
-    emitAndFlush(stream, [makeEvent({ description: 'before clear' })]);
-    expect(screen.getByText('before clear')).toBeInTheDocument();
+    emitAndFlush(
+      stream,
+      Array.from({ length: 5 }, (_, index) =>
+        makeEvent({ description: index === 0 ? 'oldest visible event' : `seed event ${index}` })
+      )
+    );
+    expect(screen.getAllByRole('listitem')).toHaveLength(5);
 
-    fireEvent.click(screen.getByRole('button', { name: /clear custom log history/i }));
-    expect(screen.queryByText('before clear')).not.toBeInTheDocument();
-    expect(screen.getByText('LOG_CLEARED')).toBeInTheDocument();
-
-    act(() => {
-      vi.advanceTimersByTime(1000);
-    });
     emitAndFlush(stream, [
-      makeEvent({ description: 'after clear', timestamp: new Date().toISOString() }),
+      makeEvent({
+        description: 'new live event',
+        timestamp: new Date(Date.now() + 60_000).toISOString(),
+      }),
     ]);
 
-    expect(screen.getByText('after clear')).toBeInTheDocument();
-    expect(screen.queryByText('before clear')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(5);
+    expect(screen.getByText('new live event')).toBeInTheDocument();
+    expect(screen.queryByText('oldest visible event')).not.toBeInTheDocument();
   });
 
-  it('windows large histories and grows the window via LOAD_MORE', () => {
+  it('respects a custom visible event limit without load-more controls', () => {
     const stream = manualSource();
-    render(<EscrowEventLog source={stream.source} pageSize={5} />);
+    render(<EscrowEventLog source={stream.source} pageSize={3} />);
 
     emitAndFlush(
       stream,
       Array.from({ length: 12 }, () => makeEvent())
     );
 
-    expect(screen.getAllByRole('listitem')).toHaveLength(5);
-    const loadMore = screen.getByRole('button', { name: /load_more \(7 older\)/i });
-
-    fireEvent.click(loadMore);
-    expect(screen.getAllByRole('listitem')).toHaveLength(10);
-
-    fireEvent.click(screen.getByRole('button', { name: /load_more \(2 older\)/i }));
-    expect(screen.getAllByRole('listitem')).toHaveLength(12);
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
     expect(screen.queryByRole('button', { name: /load_more/i })).not.toBeInTheDocument();
   });
 
@@ -200,8 +198,8 @@ describe('EscrowEventLog', () => {
       Array.from({ length: 150 }, () => makeEvent())
     );
 
-    expect(screen.getAllByRole('listitem')).toHaveLength(30);
-    expect(screen.getByRole('button', { name: /load_more \(120 older\)/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(5);
+    expect(screen.queryByRole('button', { name: /load_more/i })).not.toBeInTheDocument();
   });
 
   it('falls back to the mock stream when no source is provided', () => {
@@ -211,44 +209,21 @@ describe('EscrowEventLog', () => {
       vi.advanceTimersByTime(150);
     });
 
-    expect(screen.getAllByRole('listitem')).toHaveLength(30);
-    expect(screen.getByRole('button', { name: /load_more/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(5);
+    expect(screen.queryByRole('button', { name: /load_more/i })).not.toBeInTheDocument();
   });
 
-  it('auto-loads more events when the scroll sentinel becomes visible', () => {
-    const observers: Array<{ callback: IntersectionObserverCallback }> = [];
-    class FakeIntersectionObserver {
-      callback: IntersectionObserverCallback;
-      constructor(callback: IntersectionObserverCallback) {
-        this.callback = callback;
-        observers.push(this);
-      }
-      observe() {}
-      disconnect() {}
-    }
-    vi.stubGlobal('IntersectionObserver', FakeIntersectionObserver);
+  it('renders the fixed feed without a scrolling viewport', () => {
+    const stream = manualSource();
+    render(<EscrowEventLog source={stream.source} />);
 
-    try {
-      const stream = manualSource();
-      render(<EscrowEventLog source={stream.source} pageSize={5} />);
-      emitAndFlush(
-        stream,
-        Array.from({ length: 12 }, () => makeEvent())
-      );
-      expect(screen.getAllByRole('listitem')).toHaveLength(5);
+    emitAndFlush(
+      stream,
+      Array.from({ length: 8 }, () => makeEvent())
+    );
 
-      act(() => {
-        const observer = observers[observers.length - 1];
-        observer.callback(
-          [{ isIntersecting: true } as IntersectionObserverEntry],
-          observer as unknown as IntersectionObserver
-        );
-      });
-
-      expect(screen.getAllByRole('listitem')).toHaveLength(10);
-    } finally {
-      vi.unstubAllGlobals();
-    }
+    expect(screen.getByRole('log')).not.toHaveClass('overflow-y-auto');
+    expect(screen.getAllByRole('listitem')).toHaveLength(5);
   });
 
   it('unsubscribes from the source on unmount', () => {

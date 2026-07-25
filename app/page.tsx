@@ -1,26 +1,39 @@
 import Image from 'next/image';
+import { SiGithub, SiGitlab } from 'react-icons/si';
+import { ArrowRight, GitBranch, GitMerge, GitPullRequest, Tags, WalletCards } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
+import EscrowEventLog from './components/EscrowEventLog';
 
 const workflowItems = [
   {
     step: '01',
-    title: 'FUND_ESCROW',
-    desc: 'Maintainer deposits USDC into a Trustless Work multi-release escrow for their repository.',
-    metric: 'USDC',
+    title: 'Connect a repository',
+    desc: 'Install the GitHub App and bring the repository into one maintainer dashboard.',
+    detail: 'GitHub App',
+    icon: GitBranch,
   },
   {
     step: '02',
-    title: 'LABEL_ISSUES',
-    desc: 'Add `rewarded` + difficulty labels to issues. The bot reserves funds automatically.',
-    metric: 'LABEL',
+    title: 'Secure the reward',
+    desc: 'Deploy a Trustless Work escrow and fund the bounty pool with Stellar USDC.',
+    detail: 'Fund escrow',
+    icon: WalletCards,
   },
   {
     step: '03',
-    title: 'AUTO_RELEASE',
-    desc: 'Contributor merges a PR. Webhook fires, and the payout route is executed automatically.',
-    metric: 'MERGE',
+    title: 'Label and assign',
+    desc: 'Add a reward tier to an issue, assign a contributor, and register their payout wallet.',
+    detail: 'Create bounty',
+    icon: Tags,
+  },
+  {
+    step: '04',
+    title: 'Merge and release',
+    desc: 'A linked merged pull request becomes the proof that unlocks the milestone payout.',
+    detail: 'Release USDC',
+    icon: GitPullRequest,
   },
 ];
 
@@ -64,49 +77,155 @@ export default async function HomePage() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="relative min-h-[calc(100vh-24px)] flex flex-col selection:bg-blue-600 selection:text-white">
+    <div className="landing-page-shell relative flex flex-col selection:bg-blue-600 selection:text-white">
       <Navbar user={user} />
 
-      <main className="flex-1 flex flex-col w-full px-6 md:px-12 pt-4 pb-32">
+      <main className="relative flex w-full flex-1 flex-col overflow-hidden px-3 pb-0 pt-4 sm:px-5 md:px-6 lg:px-7">
         <HeroSection user={user} />
 
-        <div className="w-full border-t-[4px] border-slate-950 mb-32 border-dashed"></div>
+        <section className="relative mb-20 pt-4 md:mb-28 md:pt-8" aria-labelledby="workflow-title">
+          <GitMerge
+            className="landing-watermark -right-14 top-6 h-52 w-52 rotate-12 text-blue-600 md:h-72 md:w-72"
+            strokeWidth={1.2}
+            aria-hidden="true"
+          />
 
-        {/* Feature Grid */}
-        <section className="mb-32">
-          <div className="flex justify-between items-end mb-16 border-b-[4px] border-slate-950 pb-4">
-            <h2 className="title-brutal text-4xl md:text-6xl text-slate-950">WORKFLOW_</h2>
-            <div className="label-brutal text-slate-500">ARCHITECTURE</div>
+          <div className="relative z-10 mb-9 grid gap-5 md:mb-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(300px,0.55fr)] lg:items-end lg:justify-between">
+            <div>
+              <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
+                A clear path from issue to payout
+              </p>
+              <h2
+                id="workflow-title"
+                className="mt-4 max-w-4xl text-4xl font-black uppercase italic leading-[0.92] tracking-[-0.045em] text-slate-950 sm:text-5xl md:text-7xl"
+              >
+                Less payout admin.
+                <br />
+                More work shipped.
+              </h2>
+            </div>
+            <p className="max-w-xl text-base font-semibold leading-7 text-slate-600 lg:justify-self-end">
+              Trustless OSS follows the contribution lifecycle maintainers already know. The reward
+              state stays visible while GitHub remains the place where work happens.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {workflowItems.map((item) => (
-              <div key={item.step} className="bg-white brutal-border p-8 brutal-shadow relative">
-                <div className="absolute top-0 right-0 bg-blue-600 text-white font-mono font-bold px-3 py-1 border-b-4 border-l-4 border-slate-950">
-                  {item.step}
+          <div className="relative z-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {workflowItems.map(({ step, title, desc, detail, icon: Icon }) => (
+              <article
+                key={step}
+                className="group relative flex min-h-0 flex-col overflow-hidden border-4 border-slate-950 bg-white p-5 transition-transform duration-200 hover:-translate-y-1 md:min-h-72 md:p-6"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <span className="flex h-12 w-12 items-center justify-center border-2 border-slate-950 bg-blue-600 text-white shadow-[4px_4px_0_#020617]">
+                    <Icon className="h-6 w-6" strokeWidth={2.5} aria-hidden="true" />
+                  </span>
+                  <span className="font-mono text-5xl font-black tracking-[-0.08em] text-slate-200 transition-colors group-hover:text-blue-100">
+                    {step}
+                  </span>
                 </div>
-                <div className="text-5xl font-black text-slate-200 mb-6 font-mono tracking-tighter">
-                  {item.metric}
+                <h3 className="mt-7 text-2xl font-black leading-tight text-slate-950 md:mt-10">
+                  {title}
+                </h3>
+                <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">{desc}</p>
+                <div className="mt-6 flex items-center justify-between pt-2 font-mono text-[0.68rem] font-black uppercase tracking-[0.14em] text-blue-600 md:mt-auto md:pt-4">
+                  <span>{detail}</span>
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </div>
-                <h3 className="title-brutal text-2xl text-slate-950 mb-4">{item.title}</h3>
-                <p className="text-slate-700 font-medium font-mono text-xs">{item.desc}</p>
-              </div>
+              </article>
             ))}
           </div>
         </section>
 
-        <section className="mb-32">
-          <div className="mb-16 flex items-end justify-between border-b-[4px] border-slate-950 pb-4">
+        <section
+          className="relative mb-20 overflow-hidden border-4 border-slate-950 bg-slate-950 px-5 py-7 text-white shadow-[8px_8px_0_#2563eb] sm:px-7 sm:py-9 md:mb-28 md:px-10"
+          aria-labelledby="issue-platforms-title"
+        >
+          <Image
+            src="/usd-coin-usdc-logo.svg"
+            alt=""
+            width={240}
+            height={240}
+            className="landing-watermark -right-12 -top-16 h-56 w-56 rotate-12 opacity-[0.09]"
+            aria-hidden="true"
+          />
+          <div className="relative z-10 grid gap-7 lg:grid-cols-[minmax(0,0.75fr)_minmax(420px,1fr)] lg:items-center">
             <div>
-              <h2 className="title-brutal text-4xl text-slate-950 md:text-6xl">CCTP_PAYOUTS</h2>
-              <p className="mt-4 max-w-2xl font-mono text-sm font-bold uppercase tracking-[0.16em] text-slate-500">
-                Fund on Stellar USDC, let contributors receive USDC on their preferred chain.
+              <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-300">
+                Repository-native rewards
+              </p>
+              <h2
+                id="issue-platforms-title"
+                className="mt-3 text-3xl font-black uppercase italic leading-none tracking-[-0.04em] sm:text-4xl"
+              >
+                Start with an issue.
+                <br />
+                Finish with a payout.
+              </h2>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <article className="flex items-center gap-4 border-2 border-white/25 bg-white/10 p-4 backdrop-blur-sm">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-white text-slate-950">
+                  <SiGithub className="h-7 w-7" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-base font-black">GitHub Issues</h3>
+                  <p className="mt-1 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-emerald-300">
+                    Available now
+                  </p>
+                </div>
+              </article>
+
+              <article className="flex items-center gap-4 border-2 border-white/25 bg-white/10 p-4 backdrop-blur-sm">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-white text-[#FC6D26]">
+                  <SiGitlab className="h-8 w-8" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-base font-black">GitLab Issues</h3>
+                  <p className="mt-1 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-orange-300">
+                    Planned next
+                  </p>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <div className="relative mb-20 md:mb-28">
+          <EscrowEventLog />
+        </div>
+
+        <section className="relative mb-0 hidden md:block" aria-labelledby="payout-routes-title">
+          <Image
+            src="/usd-coin-usdc-logo.svg"
+            alt=""
+            width={220}
+            height={220}
+            className="landing-watermark -left-14 top-0 h-48 w-48 -rotate-12 text-blue-600 md:h-56 md:w-56"
+            aria-hidden="true"
+          />
+          <div className="relative z-10 mb-0 pt-4 md:mb-12 md:pt-8">
+            <div className="max-w-5xl">
+              <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
+                Cross-chain payout routes
+              </p>
+              <h2
+                id="payout-routes-title"
+                className="mt-4 text-4xl font-black uppercase italic leading-[0.92] tracking-[-0.045em] text-slate-950 sm:text-5xl md:text-7xl"
+              >
+                Fund once on Stellar.
+                <br />
+                Pay where contributors are.
+              </h2>
+              <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-slate-600">
+                Keep the bounty pool in Stellar USDC while contributors select a supported
+                destination through the CCTP payout flow.
               </p>
             </div>
-            <div className="label-brutal text-slate-500">CROSS_CHAIN_ROUTE</div>
           </div>
 
-          <div className="cctp-flow-map brutal-border relative overflow-hidden bg-white">
+          <div className="cctp-flow-map relative z-10 overflow-hidden">
             <svg
               className="cctp-flow-svg"
               viewBox="0 0 1000 560"
@@ -130,31 +249,47 @@ export default async function HomePage() {
 
               <g className="cctp-smoke-trails cctp-smoke-trails-outbound" aria-hidden="true">
                 {destinationChains.map((chain, index) => (
-                  <use
-                    key={`${chain.name}-smoke`}
-                    href={`#cctp-to-${index}`}
-                    style={{ animationDelay: `${2.1 + index * 0.08}s` }}
-                  />
+                  <use key={`${chain.name}-smoke`} href={`#cctp-to-${index}`} />
                 ))}
                 {destinationChains.map((chain, index) => (
                   <use
                     key={`${chain.name}-core-smoke`}
                     className="cctp-smoke-core"
                     href={`#cctp-to-${index}`}
-                    style={{ animationDelay: `${2.16 + index * 0.08}s` }}
                   />
                 ))}
               </g>
 
+              <g className="cctp-energy-rings" aria-hidden="true">
+                <circle
+                  className="cctp-energy-ring cctp-energy-ring-one"
+                  cx="500"
+                  cy="280"
+                  r="44"
+                />
+                <circle
+                  className="cctp-energy-ring cctp-energy-ring-two"
+                  cx="500"
+                  cy="280"
+                  r="44"
+                />
+              </g>
+
               <image
-                className="cctp-flow-coin"
+                className="cctp-flow-coin cctp-flow-coin-inbound"
                 href="/usd-coin-usdc-logo.svg"
-                width="38"
-                height="38"
-                x="-19"
-                y="-19"
+                width="44"
+                height="44"
+                x="-22"
+                y="-22"
               >
-                <animateMotion dur="2.8s" repeatCount="indefinite" rotate="auto">
+                <animateMotion
+                  dur="5.4s"
+                  keyPoints="0;0;1;1"
+                  keyTimes="0;0.08;0.56;1"
+                  repeatCount="indefinite"
+                  rotate="auto"
+                >
                   <mpath href="#stellar-to-cctp" />
                 </animateMotion>
               </image>
@@ -170,8 +305,12 @@ export default async function HomePage() {
                   y="-15"
                 >
                   <animateMotion
-                    dur="2.8s"
-                    begin={`${2.18 + index * 0.1}s`}
+                    dur="5.4s"
+                    keyPoints="0;0;1;1"
+                    keyTimes={`0;${(0.6 + index * 0.018).toFixed(3)};${(
+                      0.86 +
+                      index * 0.012
+                    ).toFixed(3)};1`}
                     repeatCount="indefinite"
                     rotate="auto"
                   >
@@ -182,6 +321,7 @@ export default async function HomePage() {
             </svg>
 
             <div className="cctp-logo-node cctp-source-logo" aria-label="Stellar USDC source">
+              <span className="cctp-source-launch" aria-hidden="true" />
               <Image
                 src="/stellar-xlm-logo.svg"
                 alt="Stellar logo"
@@ -189,18 +329,11 @@ export default async function HomePage() {
                 height={44}
                 className="h-11 w-11 object-contain"
               />
-              <Image
-                src="/usd-coin-usdc-logo.svg"
-                alt="USDC logo"
-                width={42}
-                height={42}
-                className="cctp-mini-usdc h-10 w-10"
-              />
             </div>
 
             <div className="cctp-logo-node cctp-bridge-logo" aria-label="CCTP bridge">
               <span className="cctp-impact-flash" aria-hidden="true" />
-              <span>CCTP</span>
+              <span className="cctp-bridge-core">CCTP</span>
               <span className="cctp-impact-burst" aria-hidden="true">
                 {Array.from({ length: 10 }).map((_, index) => (
                   <span key={index} className={`cctp-impact-shard cctp-impact-shard-${index}`} />
@@ -214,6 +347,7 @@ export default async function HomePage() {
                 className={`cctp-logo-node cctp-destination-logo cctp-destination-logo-${index}`}
                 aria-label={chain.name}
               >
+                <span className="cctp-destination-pulse" aria-hidden="true" />
                 <Image
                   src={chain.logo}
                   alt={chain.logoAlt}
@@ -223,6 +357,58 @@ export default async function HomePage() {
                 />
               </div>
             ))}
+          </div>
+        </section>
+
+        <section
+          className="supported-partners-band relative mb-0 overflow-hidden px-5 py-6 sm:px-8 md:py-7"
+          aria-labelledby="partners-title"
+        >
+          <span className="supported-partners-orb supported-partners-orb-one" aria-hidden="true" />
+          <span className="supported-partners-orb supported-partners-orb-two" aria-hidden="true" />
+          <div className="relative z-10 flex flex-col items-center text-center">
+            <p
+              id="partners-title"
+              className="font-mono text-xs font-black uppercase tracking-[0.24em] text-blue-950"
+            >
+              Supported by
+            </p>
+
+            <div
+              className="mt-5 flex flex-wrap items-center justify-center gap-8 sm:gap-12"
+              aria-label="Supported partner logos"
+            >
+              <a
+                href="https://www.trustlesswork.com/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Trustless Work"
+                className="partner-logo-link partner-logo-original group"
+              >
+                <Image
+                  src="/partners/trustless-work.svg"
+                  alt="Trustless Work"
+                  width={217}
+                  height={217}
+                  className="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-105 sm:h-20 sm:w-20"
+                />
+              </a>
+              <a
+                href="https://www.grantfox.xyz/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GrantFox"
+                className="partner-logo-link group"
+              >
+                <Image
+                  src="/partners/grantfox.svg"
+                  alt="GrantFox"
+                  width={173}
+                  height={208}
+                  className="h-16 w-16 object-contain brightness-0 transition-transform duration-300 group-hover:scale-105 sm:h-20 sm:w-20"
+                />
+              </a>
+            </div>
           </div>
         </section>
       </main>

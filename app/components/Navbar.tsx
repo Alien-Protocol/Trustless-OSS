@@ -9,12 +9,12 @@ interface NavbarProps {
 
 export default function Navbar({ user, breadcrumbs }: NavbarProps) {
   return (
-    <nav className="sticky top-0 z-50 w-full bg-slate-50 brutal-border-b">
-      <div className="px-6 h-18 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2">
-            <AnimatedLogo size="nav" showOrbiters={true} className="shrink-0" />
-            <span className="title-brutal text-2xl tracking-tighter">
+    <nav className="home-navbar sticky top-0 z-50 w-full brutal-border-b">
+      <div className="h-18 flex items-center justify-between gap-3 px-3 sm:px-6">
+        <div className="flex min-w-0 items-center gap-6">
+          <Link href="/" className="flex min-w-0 items-center gap-2">
+            <AnimatedLogo size="nav" animated showOrbiters className="shrink-0" />
+            <span className="title-brutal whitespace-nowrap text-lg tracking-tighter sm:text-2xl">
               TRUSTLESS <span className="text-blue-600">OSS</span>
             </span>
           </Link>
@@ -43,7 +43,7 @@ export default function Navbar({ user, breadcrumbs }: NavbarProps) {
           )}
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex shrink-0 items-center gap-6">
           {user ? (
             <div className="flex items-center gap-6">
               <Link
@@ -53,12 +53,12 @@ export default function Navbar({ user, breadcrumbs }: NavbarProps) {
                 [ Dashboard ]
               </Link>
               <div className="w-1 h-8 bg-slate-950 hidden sm:block" />
-              <div className="flex items-center gap-3 bg-white brutal-border px-2 py-1 brutal-shadow">
+              <div className="flex items-center gap-3 bg-white brutal-border px-2 py-1">
                 {user.user_metadata?.avatar_url ? (
                   <img
                     src={user.user_metadata.avatar_url}
                     alt="Profile"
-                    className="w-8 h-8 border-2 border-slate-950 object-cover grayscale hover:grayscale-0 transition-all"
+                    className="w-8 h-8 border-2 border-slate-950 object-cover"
                   />
                 ) : (
                   <div className="w-8 h-8 bg-slate-950 text-white font-bold flex items-center justify-center text-xs">
@@ -84,7 +84,10 @@ export default function Navbar({ user, breadcrumbs }: NavbarProps) {
               </div>
             </div>
           ) : (
-            <Link href="/login" className="brutal-button px-6 py-2 text-sm">
+            <Link
+              href="/login"
+              className="brutal-button px-3 py-2 text-[0.65rem] sm:px-6 sm:text-sm"
+            >
               Init_Session
             </Link>
           )}
