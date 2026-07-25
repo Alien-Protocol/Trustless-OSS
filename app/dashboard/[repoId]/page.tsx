@@ -127,7 +127,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
 
       {/* Repo header */}
       {repo && (
-        <div className="bg-white brutal-border p-8 md:p-12 mb-16 brutal-shadow relative">
+        <div className="dashboard-surface relative mb-16 border-4 border-slate-950 p-8 shadow-[8px_8px_0_#2563eb] md:p-12">
           {/* Portal target for config buttons */}
           <div
             id="repo-config-actions"
@@ -239,7 +239,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
       </div>
 
       {issues.length === 0 ? (
-        <div className="bg-white brutal-border p-16 text-center brutal-shadow">
+        <div className="dashboard-surface border-4 border-slate-950 p-16 text-center shadow-[8px_8px_0_#2563eb]">
           <div className="text-4xl mb-4 grayscale">🏷️</div>
           <p className="font-mono font-bold text-slate-500 mb-4 uppercase text-sm">
             No tracked issues in current repository.
@@ -259,7 +259,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
           </p>
         </div>
       ) : (
-        <div className="bg-white brutal-border brutal-shadow overflow-x-auto">
+        <div className="dashboard-surface overflow-x-auto border-4 border-slate-950 shadow-[8px_8px_0_#2563eb]">
           <table className="w-full text-sm font-mono">
             <thead>
               <tr className="bg-slate-950 text-white border-b-4 border-slate-950 uppercase tracking-widest text-xs font-bold">

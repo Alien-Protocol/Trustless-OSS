@@ -57,7 +57,7 @@ export default function RepositoryEscrowCard({
       <article
         aria-busy="true"
         aria-label="Loading repository escrow"
-        className="aspect-[6/5] animate-pulse border-4 border-slate-950 bg-white p-4 shadow-[8px_8px_0_0_#2563eb] sm:p-5"
+        className="dashboard-surface aspect-[6/5] animate-pulse border-4 border-slate-950 p-4 shadow-[8px_8px_0_0_#2563eb] sm:p-5"
       >
         <div className="mb-5 flex items-start justify-between">
           <div className="h-10 w-10 bg-slate-200" />
@@ -90,7 +90,7 @@ export default function RepositoryEscrowCard({
       : repo.escrow_balance;
 
   return (
-    <article className="aspect-[6/5] flex flex-col border-4 border-slate-950 bg-white p-4 shadow-[8px_8px_0_0_#2563eb] transition-all duration-150 hover:-translate-y-1 hover:shadow-[10px_12px_0_0_#2563eb] sm:p-5">
+    <article className="dashboard-surface aspect-[6/5] flex flex-col border-4 border-slate-950 p-4 shadow-[8px_8px_0_0_#2563eb] transition-all duration-150 hover:-translate-y-1 hover:shadow-[10px_12px_0_0_#2563eb] sm:p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <div

@@ -2,7 +2,7 @@ import LoadingLogo from '../components/LoadingLogo';
 
 export default function DashboardLoading() {
   return (
-    <div className="fixed inset-0 z-[200] bg-slate-50 overflow-hidden">
+    <div className="dashboard-page-shell fixed inset-0 z-[200] overflow-hidden">
       <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
         <LoadingLogo message="SYNCING_DASHBOARD..." size="lg" />
       </div>

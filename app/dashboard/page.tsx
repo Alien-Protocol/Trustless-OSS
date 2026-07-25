@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { GitBranch, Plus, RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import InstallationSuccessHandler from './InstallationSuccessHandler';
 import RepositoryEscrowCard from '@/app/components/RepositoryEscrowCard';
@@ -122,23 +123,30 @@ export default async function DashboardPage(props: DashboardProps) {
     <div className="w-full">
       <InstallationSuccessHandler />
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b-[4px] border-slate-950 pb-4">
-        <div>
-          <h1 className="title-brutal text-4xl text-slate-950">DASHBOARD_</h1>
-          <p className="text-slate-500 font-mono font-bold uppercase tracking-widest text-sm mt-2">
-            Repository Escrow Management
+      <div className="relative mb-10 flex flex-col justify-between gap-7 md:mb-14 md:flex-row md:items-end">
+        <div className="max-w-5xl">
+          <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
+            Maintainer dashboard
+          </p>
+          <h1 className="mt-4 text-4xl font-black uppercase italic leading-[0.92] tracking-[-0.045em] text-slate-950 sm:text-5xl md:text-7xl">
+            Your repositories
+          </h1>
+          <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-slate-600">
+            Connect repositories, secure USDC rewards, and track every contributor payout from one
+            place.
           </p>
         </div>
         <Link
           href="/dashboard/connect-repo"
-          className="brutal-button px-6 py-3 mt-4 md:mt-0 text-sm"
+          className="brutal-button min-h-14 w-full gap-2 px-6 py-4 text-sm sm:w-auto"
         >
-          + ADD_REPO
+          <Plus className="h-5 w-5" strokeWidth={3} aria-hidden="true" />
+          Add repository
         </Link>
       </div>
 
       {reposError && (
-        <div className="mb-8 p-6 bg-red-100 brutal-border flex flex-col gap-2 brutal-shadow">
+        <div className="mb-8 flex flex-col gap-2 border-4 border-slate-950 bg-red-50/90 p-6 shadow-[7px_7px_0_#ef4444]">
           <div className="label-brutal bg-red-500 text-white w-fit px-2 py-1 border-2 border-slate-950">
             ERR_FETCH
           </div>
@@ -152,22 +160,27 @@ export default async function DashboardPage(props: DashboardProps) {
       )}
 
       {repos.length === 0 ? (
-        <div className="bg-white brutal-border p-16 text-center brutal-shadow flex flex-col items-center">
-          <div className="text-6xl mb-6 grayscale">📦</div>
-          <h2 className="title-brutal text-2xl text-slate-950 mb-2">NO_MODULES_FOUND</h2>
-          <p className="text-slate-500 font-mono font-bold uppercase text-sm mb-8">
-            Connect a GitHub repo to initialize.
+        <div className="dashboard-surface flex flex-col items-center border-4 border-slate-950 p-10 text-center shadow-[8px_8px_0_#2563eb] sm:p-16">
+          <span className="mb-6 flex h-16 w-16 items-center justify-center border-2 border-slate-950 bg-blue-600 text-white shadow-[5px_5px_0_#020617]">
+            <GitBranch className="h-8 w-8" strokeWidth={2.5} aria-hidden="true" />
+          </span>
+          <h2 className="text-3xl font-black uppercase italic tracking-[-0.04em] text-slate-950">
+            No repositories yet
+          </h2>
+          <p className="mb-8 mt-3 max-w-md text-sm font-semibold leading-6 text-slate-600">
+            Connect a GitHub repository to create rewards and manage contributor payouts.
           </p>
           <div className="flex flex-col items-center gap-4">
             {isSyncing && (
-              <p className="text-xs font-mono font-bold uppercase tracking-widest text-blue-600 animate-pulse mt-4">
-                &gt; Polling for updates...
+              <p className="mt-2 inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-blue-600">
+                <RefreshCw className="h-4 w-4 animate-spin" aria-hidden="true" />
+                Checking for repositories...
               </p>
             )}
           </div>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3">
           {repos.map((repo) => (
             <div key={repo.id} className="relative">
               {isNew(repo.created_at) && (

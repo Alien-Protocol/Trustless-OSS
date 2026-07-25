@@ -33,7 +33,7 @@ export default function ConnectRepoPage() {
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-lg bg-white brutal-border p-8 md:p-12 brutal-shadow relative text-center">
+        <div className="dashboard-surface relative w-full max-w-lg border-4 border-slate-950 p-8 text-center shadow-[8px_8px_0_#2563eb] md:p-12">
           {/* Interactive Close Element */}
           {!installing && (
             <button

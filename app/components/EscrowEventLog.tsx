@@ -79,7 +79,7 @@ export default function EscrowEventLog({
           <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
             Live reward updates
           </p>
-          <h2 className="mt-4 max-w-4xl text-4xl font-black uppercase italic leading-[0.92] tracking-[-0.045em] text-slate-950 sm:text-5xl md:text-6xl">
+          <h2 className="mt-4 max-w-4xl text-3xl font-black uppercase italic leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-4xl md:text-5xl">
             See every reward update.
           </h2>
         </div>

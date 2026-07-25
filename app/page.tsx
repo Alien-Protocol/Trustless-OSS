@@ -97,7 +97,7 @@ export default async function HomePage() {
               </p>
               <h2
                 id="workflow-title"
-                className="mt-4 max-w-4xl text-4xl font-black uppercase italic leading-[0.92] tracking-[-0.045em] text-slate-950 sm:text-5xl md:text-7xl"
+                className="mt-4 max-w-4xl text-3xl font-black uppercase italic leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-4xl md:text-5xl"
               >
                 Less payout admin.
                 <br />
@@ -156,7 +156,7 @@ export default async function HomePage() {
               </p>
               <h2
                 id="issue-platforms-title"
-                className="mt-3 text-3xl font-black uppercase italic leading-none tracking-[-0.04em] sm:text-4xl"
+                className="mt-3 text-2xl font-black uppercase italic leading-none tracking-[-0.035em] sm:text-3xl"
               >
                 Start with an issue.
                 <br />
@@ -212,7 +212,7 @@ export default async function HomePage() {
               </p>
               <h2
                 id="payout-routes-title"
-                className="mt-4 text-4xl font-black uppercase italic leading-[0.92] tracking-[-0.045em] text-slate-950 sm:text-5xl md:text-7xl"
+                className="mt-4 text-3xl font-black uppercase italic leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-4xl md:text-5xl"
               >
                 Fund once on Stellar.
                 <br />

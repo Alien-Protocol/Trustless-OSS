@@ -86,7 +86,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
           <h1
             id="landing-hero-title"
-            className="animate-hero-in hero-stagger-2 max-w-5xl text-[clamp(2.85rem,13vw,8.6rem)] font-black uppercase italic leading-[0.84] tracking-[-0.055em] text-slate-950 sm:text-[clamp(3.4rem,7.7vw,8.6rem)]"
+            className="animate-hero-in hero-stagger-2 max-w-5xl text-[clamp(1.95rem,9vw,6.6rem)] font-black uppercase italic leading-[0.9] tracking-[-0.045em] text-slate-950 sm:text-[clamp(3.15rem,6.4vw,6.6rem)]"
           >
             Fund the work
             <br />
