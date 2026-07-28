@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { X } from 'lucide-react';
-import LoadingLogo from '../../components/LoadingLogo';
+import { ArrowLeft, GitBranch, RefreshCw } from 'lucide-react';
+import { SiGithub } from 'react-icons/si';
 
 export default function ConnectRepoPage() {
   const router = useRouter();
@@ -21,6 +21,8 @@ export default function ConnectRepoPage() {
   }, [router]);
 
   const handleInstall = () => {
+    if (installing) return;
+
     setInstalling(true);
     const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || 'Trustless-OSS';
     window.open(
@@ -30,90 +32,73 @@ export default function ConnectRepoPage() {
     );
   };
 
+  const handleBack = () => {
+    router.back();
+  };
+
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="dashboard-surface relative w-full max-w-lg border-4 border-slate-950 p-8 text-center shadow-[8px_8px_0_#2563eb] md:p-12">
-          {/* Interactive Close Element */}
-          {!installing && (
-            <button
-              onClick={() => router.back()}
-              className="absolute top-0 right-0 w-8 h-8 bg-blue-600 border-b-4 border-l-4 border-slate-950 flex items-center justify-center text-white hover:bg-slate-950 transition-colors cursor-pointer group z-20"
-              aria-label="Go back"
-            >
-              <X
-                size={20}
-                strokeWidth={3}
-                className="group-hover:rotate-90 transition-transform duration-300"
-              />
-            </button>
-          )}
-
-          <div className="label-brutal mb-6 bg-slate-200 text-slate-950 inline-flex px-3 py-1 border-2 border-slate-950">
-            MODULE_INSTALL // REPO_SYNC
-          </div>
-
-          <div className="w-20 h-20 bg-slate-950 flex items-center justify-center text-white text-4xl font-black brutal-border brutal-shadow-blue mx-auto mb-8 relative border-4 border-slate-950">
-            {installing ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-blue-600">
-                <LoadingLogo size="sm" variant="circle" />
-              </div>
-            ) : (
-              '+'
-            )}
-          </div>
-
-          <h1 className="title-brutal text-3xl text-slate-950 mb-4">
-            {installing ? 'INSTALLATION_IN_PROGRESS' : 'INSTALL_GITHUB_APP'}
-          </h1>
-
-          <div className="terminal-block text-left mb-8 brutal-shadow">
-            {installing ? (
-              <>
-                <span className="text-blue-400">status:</span>{' '}
-                <span className="text-white">AWAITING_GITHUB_CALLBACK...</span>
-                <br />
-                <span className="text-slate-500">
-                  // Please complete the installation in the popup window
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="text-blue-400">sudo</span>{' '}
-                <span className="text-yellow-200">apt-get install</span>{' '}
-                <span className="text-white">trustless-bot</span>
-                <br />
-                <span className="text-slate-500">// Requires repository access permissions</span>
-              </>
-            )}
-          </div>
-
+    <div className="flex w-full flex-1 flex-col">
+      <div className="flex flex-1 items-center justify-center px-3 py-8 sm:px-5 md:px-6 md:py-12">
+        <div className="dashboard-surface relative w-full max-w-lg border-4 border-slate-950 shadow-[8px_8px_0_#2563eb]">
           <button
-            onClick={handleInstall}
-            disabled={installing}
-            className="brutal-button w-full py-4 text-lg flex items-center justify-center gap-3 disabled:opacity-50"
+            type="button"
+            onClick={handleBack}
+            className="absolute left-0 top-0 z-20 flex min-h-11 min-w-11 items-center justify-center border-b-4 border-r-4 border-slate-950 bg-white text-slate-950 transition-colors hover:bg-blue-600 hover:text-white"
+            aria-label="Go back"
           >
-            {installing ? (
-              <>
-                <LoadingLogo size="tiny" variant="circle" />
-                <span>WAITING_FOR_APP...</span>
-              </>
-            ) : (
-              'EXECUTE_INSTALLATION'
-            )}
+            <ArrowLeft size={20} strokeWidth={3} aria-hidden="true" />
           </button>
 
-          <div className="mt-8 pt-6 border-t-4 border-slate-950 border-dashed text-center">
-            {installing ? (
-              <div className="flex flex-col items-center gap-2">
-                <LoadingLogo size="sm" message="VERIFYING_PAYLOAD..." />
-                <p className="text-[10px] text-blue-600 font-mono font-bold uppercase tracking-widest animate-pulse mt-4">
-                  Do not close this window
-                </p>
-              </div>
-            ) : (
-              <p className="text-[10px] text-slate-500 font-mono font-bold uppercase tracking-widest animate-pulse">
-                Awaiting user authorization...
+          <div className="px-5 pb-8 pt-14 text-center sm:px-8 sm:pb-10 sm:pt-16 md:px-10">
+            <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
+              Connect repository
+            </p>
+
+            <span className="mx-auto mt-6 flex h-16 w-16 items-center justify-center border-2 border-slate-950 bg-blue-600 text-white shadow-[5px_5px_0_#020617]">
+              {installing ? (
+                <RefreshCw className="h-7 w-7 animate-spin" strokeWidth={2.5} aria-hidden="true" />
+              ) : (
+                <GitBranch className="h-7 w-7" strokeWidth={2.5} aria-hidden="true" />
+              )}
+            </span>
+
+            <h1 className="mt-6 text-3xl font-black uppercase italic leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-4xl">
+              {installing ? 'Waiting for installation' : 'Install the GitHub App'}
+            </h1>
+
+            <p className="mx-auto mt-4 max-w-md text-sm font-semibold leading-6 text-slate-600 sm:text-base sm:leading-7">
+              {installing
+                ? 'Finish installing the app in the GitHub popup. This page will update when the connection is complete.'
+                : 'Connect a repository by installing the Trustless OSS GitHub App and choosing which repos to grant access.'}
+            </p>
+
+            <button
+              type="button"
+              onClick={handleInstall}
+              disabled={installing}
+              aria-busy={installing}
+              className="brutal-button mt-8 min-h-14 w-full gap-3 px-6 py-4 text-sm disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
+            >
+              {installing ? (
+                <>
+                  <RefreshCw className="h-5 w-5 animate-spin" strokeWidth={3} aria-hidden="true" />
+                  <span>Waiting for GitHub...</span>
+                </>
+              ) : (
+                <>
+                  <SiGithub className="h-5 w-5" aria-hidden="true" />
+                  <span>Install GitHub App</span>
+                </>
+              )}
+            </button>
+
+            {installing && (
+              <p
+                className="mt-5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600"
+                role="status"
+                aria-live="polite"
+              >
+                Keep this tab open
               </p>
             )}
           </div>
