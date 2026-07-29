@@ -18,7 +18,7 @@ const workflowItems = [
     step: '02',
     title: 'Secure the reward',
     desc: 'Deploy a Trustless Work escrow and fund the bounty pool with Stellar USDC.',
-    detail: 'Fund escrow',
+    detail: 'Fund repository',
     icon: WalletCards,
   },
   {

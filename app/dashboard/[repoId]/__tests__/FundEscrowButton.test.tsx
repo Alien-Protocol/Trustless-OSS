@@ -8,7 +8,9 @@ vi.mock('../../../lib/walletKit', () => ({
 }));
 
 vi.mock('next/image', () => ({
-  default: ({ alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => <img alt={alt ?? ''} {...props} />,
+  default: ({ alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img alt={alt ?? ''} {...props} />
+  ),
 }));
 
 describe('FundEscrowButton', () => {
@@ -27,7 +29,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_ESCROW' }));
+    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
 
     expect(screen.queryByText(/ERR_INVALID_AMOUNT/i)).not.toBeInTheDocument();
 
@@ -56,7 +58,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_ESCROW' }));
+    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
 
     const amountInput = screen.getByLabelText(/deposit amount/i);
     fireEvent.change(amountInput, { target: { value: '25' } });
@@ -76,7 +78,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_ESCROW' }));
+    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
 
     expect(screen.getByRole('button', { name: /75% ESCROW/i })).toBeInTheDocument();
   });
@@ -93,7 +95,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_ESCROW' }));
+    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
 
     fireEvent.change(screen.getByLabelText(/deposit amount/i), { target: { value: '25' } });
     fireEvent.click(screen.getByRole('button', { name: /REVIEW_DEPOSIT/i }));
@@ -108,7 +110,8 @@ describe('FundEscrowButton', () => {
       signTransaction: vi.fn().mockResolvedValue({ signedTxXdr: 'signed-xdr' }),
     } as never);
 
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({ unsignedTransaction: 'unsigned-xdr' }),
@@ -129,7 +132,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_ESCROW' }));
+    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
     fireEvent.change(screen.getByLabelText(/deposit amount/i), { target: { value: '25' } });
     fireEvent.click(screen.getByRole('button', { name: /REVIEW_DEPOSIT/i }));
 

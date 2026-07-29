@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
+import { AlertTriangle, ArrowRight, Check, ExternalLink, ShieldCheck, X } from 'lucide-react';
 import { getWalletKit } from '../../lib/walletKit';
 import Portal from '../../components/Portal';
 import LoadingLogo from '../../components/LoadingLogo';
@@ -212,6 +213,48 @@ export default function FundEscrowButton({
     void handleFund();
   }
 
+  const currentStep =
+    phase === 'amount'
+      ? 0
+      : phase === 'wallet'
+        ? 1
+        : phase === 'sign' || phase === 'processing'
+          ? 2
+          : phase === 'success'
+            ? 3
+            : 1;
+
+  const phaseMessage =
+    phase === 'wallet'
+      ? {
+          label: 'CONNECTING_WALLET',
+          detail: 'Choose a wallet and approve the connection request.',
+        }
+      : phase === 'sign'
+        ? {
+            label: 'PREPARING_SIGNATURE',
+            detail: 'Review and sign the generated escrow transaction in your wallet.',
+          }
+        : phase === 'processing'
+          ? {
+              label: 'SUBMITTING_TRANSACTION',
+              detail: 'Your signed transaction is being submitted to Stellar.',
+            }
+          : phase === 'success'
+            ? {
+                label: 'CONFIRMED',
+                detail: 'The repository escrow has been funded successfully.',
+              }
+            : phase === 'error'
+              ? {
+                  label: 'TRANSACTION_FAILED',
+                  detail: 'No funds were moved. Close this window and try again.',
+                }
+              : {
+                  label: 'READY_TO_REVIEW',
+                  detail: 'Enter a deposit amount, then continue to your wallet.',
+                };
+
   return (
     <>
       <style jsx global>{`
@@ -236,14 +279,14 @@ export default function FundEscrowButton({
             <span>PROCESSING...</span>
           </>
         ) : (
-          'FUND_ESCROW'
+          'FUND_REPOSITORY'
         )}
       </button>
 
       {showModal && (
         <Portal>
           <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/90 p-3 backdrop-blur-sm sm:p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 p-3 backdrop-blur-sm sm:p-6"
             onClick={() => {
               if (!loading) {
                 resetModal();
@@ -252,327 +295,284 @@ export default function FundEscrowButton({
           >
             <div
               ref={dialogRef}
-              className="funding-console-shell w-full max-w-3xl overflow-hidden border-4 border-slate-950 bg-[var(--color-bg)] shadow-[12px_12px_0_#2563eb]"
+              className="landing-page-shell w-full max-w-xl border-4 border-slate-950"
               onClick={(event) => event.stopPropagation()}
               role="dialog"
               aria-modal="true"
-              aria-labelledby="fund-escrow-title"
+              aria-labelledby="fund-repository-title"
+              aria-describedby="fund-repository-description"
             >
-              <div className="border-b-4 border-slate-950 bg-slate-950 px-5 py-4 text-white sm:px-8 sm:py-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="label-brutal mb-3 text-[0.65rem] uppercase tracking-[0.24em] text-blue-200">
-                      ESCROW // FUND_REPOSITORY
+              <header className="px-4 pb-2 pt-4 sm:px-5 sm:pt-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.2em] text-blue-600">
+                      Escrow funding
                     </p>
-                    <h3 id="fund-escrow-title" className="title-brutal text-2xl sm:text-3xl">
-                      FUND_ESCROW
+                    <h3
+                      id="fund-repository-title"
+                      className="mt-1 truncate text-2xl font-black uppercase italic leading-none tracking-tight text-slate-950 sm:text-3xl"
+                    >
+                      Fund repository
                     </h3>
-                    <p className="mt-2 font-mono text-sm font-bold uppercase tracking-[0.16em] text-slate-300">
-                      {repoName || 'TRUSTLESS_OSS / REPOSITORY'}
+                    <p id="fund-repository-description" className="sr-only">
+                      Add USDC to the escrow balance used to secure contributor rewards.
+                    </p>
+                    <p className="mt-2 flex min-w-0 items-center gap-2 text-xs font-bold text-slate-600 sm:text-sm">
+                      <Image src="/usd-coin-usdc-logo.svg" alt="" width={16} height={16} />
+                      <span className="truncate">{repoName || 'Trustless OSS / Repository'}</span>
+                      <span className="shrink-0 font-mono text-[0.58rem] uppercase tracking-wider text-slate-400">
+                        · Stellar
+                      </span>
                     </p>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 self-start rounded-full border-2 border-white/40 bg-white/10 px-3 py-2 text-[0.63rem] font-black uppercase tracking-[0.18em] text-blue-100">
-                    <Image src="/usd-coin-usdc-logo.svg" alt="USDC" width={18} height={18} />
-                    <span>USDC READY</span>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={resetModal}
+                    disabled={loading}
+                    aria-label="Close fund repository dialog"
+                    className="group flex h-8 w-8 shrink-0 items-center justify-center border-2 border-slate-950 bg-white text-slate-950 transition-colors hover:bg-blue-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <X
+                      className="h-4 w-4 transition-transform group-hover:rotate-90"
+                      strokeWidth={3}
+                      aria-hidden="true"
+                    />
+                  </button>
                 </div>
-              </div>
+              </header>
 
-              <div className="grid gap-4 bg-[linear-gradient(120deg,#f8fbff_0%,#eef6ff_100%)] p-4 sm:p-6 lg:grid-cols-[1.05fr_0.82fr] lg:gap-6">
-                <div className="space-y-4">
-                  <div className="rounded-none border-4 border-slate-950 bg-white p-4 shadow-[6px_6px_0_#2563eb] sm:p-5">
-                    <div className="mb-4 flex items-center justify-between gap-3">
-                      <div>
-                        <p className="label-brutal text-[0.62rem] uppercase tracking-[0.22em] text-slate-500">
-                          CURRENT_STATE
-                        </p>
-                        <p className="mt-1 text-lg font-black uppercase text-slate-950">
-                          {repoName || 'REPOSITORY'}
-                        </p>
-                      </div>
-                      <div className="rounded-full border-2 border-slate-950 bg-blue-50 px-3 py-1 font-mono text-[0.63rem] font-black uppercase tracking-[0.14em] text-blue-700">
-                        {currentBalanceValue.toFixed(2)} USDC
-                      </div>
-                    </div>
+              <ol
+                aria-label="Funding progress"
+                className="flex items-start px-4 py-2 text-slate-950 sm:px-5"
+              >
+                {['Amount', 'Wallet', 'Sign', 'Done'].map((label, index) => {
+                  const isComplete = index < currentStep || phase === 'success';
+                  const isCurrent = index === currentStep && phase !== 'success';
 
-                    <div className="rounded-none border-2 border-slate-950 bg-slate-50 p-3">
-                      <div className="mb-3 flex items-center justify-between gap-3">
-                        <span className="label-brutal text-[0.62rem] uppercase tracking-[0.24em] text-slate-500">
-                          TX_STEPS
-                        </span>
-                        <span className="font-mono text-[0.62rem] font-black uppercase tracking-[0.22em] text-blue-600">
-                          0{phase === 'amount' ? '1' : phase === 'wallet' ? '2' : phase === 'sign' ? '3' : '4'} // {phase.toUpperCase()}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {['AMOUNT', 'WALLET', 'SIGN', 'CONFIRMED'].map((label, index) => {
-                          const isActive =
-                            (phase === 'amount' && index === 0) ||
-                            (phase === 'wallet' && index <= 1) ||
-                            (phase === 'sign' && index <= 2) ||
-                            (phase === 'processing' && index <= 2) ||
-                            (phase === 'success' && index === 3) ||
-                            (phase === 'error' && index <= 1);
-                          const isCurrent =
-                            (phase === 'amount' && index === 0) ||
-                            (phase === 'wallet' && index === 1) ||
-                            (phase === 'sign' && index === 2) ||
-                            (phase === 'processing' && index === 2) ||
-                            (phase === 'success' && index === 3) ||
-                            (phase === 'error' && index === 1);
-
-                          return (
-                            <span
-                              key={label}
-                              className={`inline-flex items-center gap-2 border-2 px-3 py-2 font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] ${
-                                isActive
-                                  ? 'border-slate-950 bg-slate-950 text-white'
-                                  : 'border-slate-200 bg-slate-100 text-slate-500'
-                              } ${isCurrent ? 'ring-2 ring-blue-600' : ''}`}
-                            >
-                              <span className="text-[0.55rem]">0{index + 1}</span>
-                              {label}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-none border-4 border-slate-950 bg-white p-4 shadow-[6px_6px_0_#2563eb] sm:p-5">
-                    <div className="mb-4 flex items-center justify-between gap-3">
-                      <div>
-                        <p className="label-brutal text-[0.62rem] uppercase tracking-[0.2em] text-slate-500">
-                          DEPOSIT_AMOUNT
-                        </p>
-                        <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">
-                          Enter a value in USDC to secure the repository escrow.
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 rounded-full border-2 border-slate-950 bg-blue-50 px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.18em] text-blue-700">
-                        <Image src="/usd-coin-usdc-logo.svg" alt="USDC" width={18} height={18} />
-                        <span>USDC</span>
-                      </div>
-                    </div>
-
-                    <label htmlFor="fund-amount" className="sr-only">
-                      Deposit amount
-                    </label>
-                    <div className="relative">
-                      <input
-                        id="fund-amount"
-                        type="number"
-                        inputMode="decimal"
-                        value={amount}
-                        onChange={(event) => {
-                          setAmount(event.target.value);
-                          setAmountTouched(true);
-                        }}
-                        className={`w-full border-4 bg-slate-50 px-4 py-4 pr-24 font-mono text-3xl font-black text-slate-950 outline-none transition-all sm:py-5 ${
-                          showValidationError ? 'border-red-500' : 'border-slate-950 focus:border-blue-600'
+                  return (
+                    <li
+                      key={label}
+                      className={`fund-progress-step relative min-w-0 flex-1 text-center ${
+                        isComplete
+                          ? 'fund-progress-step-complete'
+                          : isCurrent
+                            ? 'fund-progress-step-current'
+                            : ''
+                      }`}
+                    >
+                      <span
+                        className={`fund-progress-dot relative z-10 mx-auto flex h-4 w-4 items-center justify-center rounded-full font-mono text-[0.5rem] font-black ${
+                          isComplete
+                            ? 'bg-slate-950 text-white'
+                            : isCurrent
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-blue-100 text-slate-500'
                         }`}
-                        placeholder="0.00"
-                        aria-invalid={showValidationError}
-                        aria-describedby="deposit-validation"
-                      />
-                      <div className="pointer-events-none absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-3">
-                        <div className="h-8 w-1 bg-slate-950" />
-                        <span className="text-lg font-black uppercase tracking-[0.16em] text-blue-600">
-                          USDC
-                        </span>
-                      </div>
-                    </div>
+                      >
+                        {isComplete ? <Check className="h-2.5 w-2.5" strokeWidth={4} /> : index + 1}
+                      </span>
+                      <span
+                        className={`mt-1 block truncate font-mono text-[0.52rem] font-black uppercase tracking-[0.08em] sm:text-[0.58rem] sm:tracking-[0.12em] ${
+                          isCurrent || isComplete ? 'text-slate-950' : 'text-slate-400'
+                        }`}
+                      >
+                        {label}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
 
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {quickAmounts.map((value) => (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => {
-                            setAmount(String(value));
-                            setAmountTouched(true);
-                          }}
-                          className="rounded-none border-2 border-slate-950 bg-slate-100 px-3 py-1.5 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-slate-700 transition-colors hover:bg-blue-50"
-                        >
-                          {value}
-                        </button>
-                      ))}
+              <div className="space-y-3 px-3 pb-3 pt-1 sm:px-5 sm:pb-5">
+                <section className="home-bounty-preview bg-white/90 px-4 py-3 sm:px-5 sm:py-4">
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-blue-600">
+                      Deposit amount
+                    </p>
+                    <p className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.08em] text-slate-500 sm:text-[0.62rem]">
+                      USDC · Stellar
+                    </p>
+                  </div>
+
+                  <label htmlFor="fund-amount" className="sr-only">
+                    Deposit amount
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 sm:h-12 sm:w-12">
+                      <Image
+                        src="/usd-coin-usdc-logo.svg"
+                        alt=""
+                        width={38}
+                        height={38}
+                        className="h-8 w-8 sm:h-10 sm:w-10"
+                      />
+                    </span>
+                    <input
+                      id="fund-amount"
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.01"
+                      value={amount}
+                      disabled={loading || phase === 'success' || phase === 'error'}
+                      onChange={(event) => {
+                        setAmount(event.target.value);
+                        setAmountTouched(true);
+                      }}
+                      className="min-w-0 flex-1 bg-transparent p-0 font-mono text-4xl font-black tracking-tight text-slate-950 outline-none placeholder:text-slate-300 disabled:cursor-not-allowed disabled:opacity-60 sm:text-5xl"
+                      placeholder="0.00"
+                      aria-invalid={showValidationError}
+                      aria-describedby="deposit-validation"
+                    />
+                    <span className="pointer-events-none shrink-0 font-mono text-xs font-black uppercase tracking-[0.1em] text-blue-600 sm:text-sm">
+                      USDC
+                    </span>
+                  </div>
+
+                  <div className="mt-2 flex flex-wrap items-center gap-x-1 gap-y-1">
+                    {quickAmounts.map((value) => (
                       <button
+                        key={value}
                         type="button"
+                        disabled={loading || phase === 'success' || phase === 'error'}
                         onClick={() => {
-                          setAmount(String(escrowPreviewAmount));
+                          setAmount(String(value));
                           setAmountTouched(true);
                         }}
-                        className="rounded-none border-2 border-slate-950 bg-slate-100 px-3 py-1.5 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-slate-700 transition-colors hover:bg-blue-50"
+                        className="rounded-full bg-blue-50 px-2.5 py-1.5 font-mono text-[0.58rem] font-black uppercase tracking-[0.08em] text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 sm:text-[0.62rem]"
                       >
-                        75% ESCROW
+                        +{value} USDC
                       </button>
-                    </div>
-
-                    <div id="deposit-validation" className="mt-3 min-h-6">
-                      {showValidationError ? (
-                        <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.2em] text-red-600">
-                          ERR_INVALID_AMOUNT: &gt; 0 REQUIRED
-                        </p>
-                      ) : (
-                        <p className="font-mono text-[0.65rem] font-bold uppercase tracking-[0.18em] text-slate-500">
-                          VALIDATION: ACTIVE AFTER FIRST TOUCH
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="rounded-none border-4 border-slate-950 bg-white p-4 shadow-[6px_6px_0_#2563eb] sm:p-5">
-                    <div className="mb-4 flex items-center justify-between gap-3">
-                      <div>
-                        <p className="label-brutal text-[0.62rem] uppercase tracking-[0.2em] text-slate-500">
-                          ESCROW_SUMMARY
-                        </p>
-                        <p className="mt-1 text-sm font-black uppercase text-slate-950">
-                          Deposit preview
-                        </p>
-                      </div>
-                      <div className="rounded-full border-2 border-slate-950 bg-blue-50 px-3 py-1 font-mono text-[0.6rem] font-black uppercase tracking-[0.16em] text-blue-700">
-                        {phase.toUpperCase()}
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 border-2 border-slate-950 bg-slate-50 p-3 font-mono text-xs font-bold uppercase tracking-[0.16em] text-slate-600">
-                      <div className="flex items-center justify-between gap-3">
-                        <span>Repository</span>
-                        <span className="max-w-[180px] truncate text-right text-slate-950">
-                          {repoName || 'REPOSITORY'}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between gap-3">
-                        <span>Current balance</span>
-                        <span className="text-slate-950">{currentBalanceValue.toFixed(2)} USDC</span>
-                      </div>
-                      <div className="flex items-center justify-between gap-3">
-                        <span>Entered deposit</span>
-                        <span className="text-slate-950">{isAmountValid ? parsedAmount.toFixed(2) : '0.00'} USDC</span>
-                      </div>
-                      <div className="flex items-center justify-between gap-3 border-t-2 border-slate-950 pt-3 text-blue-700">
-                        <span>Resulting balance</span>
-                        <span>{nextBalance.toFixed(2)} USDC</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-none border-4 border-slate-950 bg-white p-4 shadow-[6px_6px_0_#2563eb] sm:p-5">
-                    <div className="mb-4 flex items-center gap-3">
-                      <div className={`flex h-10 w-10 items-center justify-center border-2 border-slate-950 ${
-                        phase === 'success'
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : phase === 'error'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-blue-50 text-blue-700'
-                      }`}>
-                        {phase === 'success' ? (
-                          <span className="font-black text-base">✓</span>
-                        ) : phase === 'error' ? (
-                          <span className="font-black text-base">!</span>
-                        ) : loading ? (
-                          <LoadingLogo size="tiny" variant="circle" />
-                        ) : (
-                          <span className="font-black text-base">↳</span>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.2em] text-slate-500">
-                          {phase === 'wallet'
-                            ? 'CONNECTING_WALLET'
-                            : phase === 'sign'
-                              ? 'PREPARING_SIGNATURE'
-                              : phase === 'processing'
-                                ? 'SUBMITTING_TRANSACTION'
-                                : phase === 'success'
-                                  ? 'CONFIRMED'
-                                  : phase === 'error'
-                                    ? 'TRANSACTION_FAILED'
-                                    : 'READY_TO_REVIEW'}
-                        </p>
-                        <p className="mt-1 text-sm font-black uppercase text-slate-950">
-                          {phase === 'wallet'
-                            ? 'Link the wallet and confirm the deposit intent.'
-                            : phase === 'sign'
-                              ? 'The unsigned transaction is ready for signature.'
-                              : phase === 'processing'
-                                ? 'The signed transaction is being submitted to the network.'
-                                : phase === 'success'
-                                  ? 'The escrow funding request was accepted.'
-                                  : phase === 'error'
-                                    ? 'The funding flow stopped before completion.'
-                                    : 'Review the amount and proceed with the wallet flow.'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {error ? (
-                      <div className="rounded-none border-2 border-red-600 bg-red-50 p-3 font-mono text-[0.65rem] font-black uppercase tracking-[0.18em] text-red-700">
-                        {error}
-                      </div>
-                    ) : null}
-
-                    {phase === 'success' && transactionHash ? (
-                      <div className="mt-3 rounded-none border-2 border-slate-950 bg-slate-50 p-3">
-                        <p className="font-mono text-[0.63rem] font-black uppercase tracking-[0.18em] text-slate-500">
-                          TX_HASH
-                        </p>
-                        <a
-                          href={`https://stellar.expert/explorer/public/tx/${transactionHash}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="mt-2 block break-all font-mono text-[0.7rem] font-bold uppercase tracking-[0.16em] text-blue-700 underline decoration-2 underline-offset-2"
-                        >
-                          {transactionHash}
-                        </a>
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <div className="flex flex-col gap-3 sm:flex-row">
+                    ))}
                     <button
                       type="button"
+                      disabled={loading || phase === 'success' || phase === 'error'}
                       onClick={() => {
-                        if (!loading) {
-                          resetModal();
-                        }
+                        setAmount(String(escrowPreviewAmount));
+                        setAmountTouched(true);
                       }}
-                      className="flex-1 rounded-none border-4 border-slate-950 bg-white px-4 py-3 font-mono text-[0.72rem] font-black uppercase tracking-[0.2em] text-slate-950 shadow-[4px_4px_0_#2563eb] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                      className="rounded-full bg-blue-50 px-2.5 py-1.5 font-mono text-[0.58rem] font-black uppercase tracking-[0.08em] text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 sm:text-[0.62rem]"
                     >
-                      ABORT
-                    </button>
-                    <button
-                      type="button"
-                      onClick={phase === 'success' ? handleCloseAndRefresh : handlePrimaryAction}
-                      disabled={loading || phase === 'error'}
-                      className="flex-[1.3] rounded-none border-4 border-slate-950 bg-slate-950 px-4 py-3 font-mono text-[0.72rem] font-black uppercase tracking-[0.2em] text-white shadow-[4px_4px_0_#2563eb] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {loading ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <LoadingLogo size="tiny" variant="circle" />
-                          <span>PROCESSING...</span>
-                        </span>
-                      ) : phase === 'amount' ? (
-                        'REVIEW_DEPOSIT'
-                      ) : phase === 'wallet' ? (
-                        'CONNECT_WALLET'
-                      ) : phase === 'sign' ? (
-                        'SIGN_TRANSACTION'
-                      ) : phase === 'processing' ? (
-                        'PROCESSING'
-                      ) : phase === 'success' ? (
-                        'CLOSE_AND_REFRESH'
-                      ) : (
-                        'RETRY_TRANSACTION'
-                      )}
+                      75% ESCROW
                     </button>
                   </div>
-                </div>
+
+                  <div id="deposit-validation" className="mt-1" aria-live="polite">
+                    {showValidationError ? (
+                      <p className="inline-block bg-red-50 px-2 py-1 font-mono text-[0.62rem] font-black uppercase tracking-[0.1em] text-red-600">
+                        ERR_INVALID_AMOUNT: Enter more than 0 USDC.
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div
+                    aria-label={`Balance changes from ${currentBalanceValue.toFixed(2)} to ${nextBalance.toFixed(2)} USDC`}
+                    className="mt-2 flex items-center justify-between gap-3 font-mono text-[0.58rem] font-black uppercase tracking-[0.08em] text-slate-500 sm:text-[0.62rem]"
+                  >
+                    <span>Current {currentBalanceValue.toFixed(2)}</span>
+                    <ArrowRight
+                      className="h-3.5 w-3.5 text-blue-600"
+                      strokeWidth={3}
+                      aria-hidden="true"
+                    />
+                    <span className="text-blue-700">New balance {nextBalance.toFixed(2)}</span>
+                  </div>
+                </section>
+
+                <section
+                  aria-live="polite"
+                  className={`flex items-center gap-2.5 px-3 py-2.5 ${
+                    phase === 'success'
+                      ? 'bg-emerald-100'
+                      : phase === 'error'
+                        ? 'bg-red-50'
+                        : 'bg-slate-100'
+                  }`}
+                >
+                  <span
+                    className={`shrink-0 ${
+                      phase === 'success'
+                        ? 'text-emerald-700'
+                        : phase === 'error'
+                          ? 'text-red-600'
+                          : 'text-blue-600'
+                    }`}
+                  >
+                    {loading ? (
+                      <LoadingLogo size="tiny" variant="circle" />
+                    ) : phase === 'success' ? (
+                      <Check className="h-5 w-5" strokeWidth={3} aria-hidden="true" />
+                    ) : phase === 'error' ? (
+                      <AlertTriangle className="h-5 w-5" strokeWidth={3} aria-hidden="true" />
+                    ) : (
+                      <ShieldCheck className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+                    )}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-slate-950">
+                      {phaseMessage.label}
+                    </p>
+                    <p className="text-xs font-semibold leading-4 text-slate-600 sm:text-sm sm:leading-5">
+                      {phaseMessage.detail}
+                    </p>
+                    {error ? <p className="mt-2 text-sm font-bold text-red-700">{error}</p> : null}
+                    {phase === 'success' && transactionHash ? (
+                      <a
+                        href={`https://stellar.expert/explorer/public/tx/${transactionHash}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2 inline-flex max-w-full items-center gap-1.5 font-mono text-[0.65rem] font-black uppercase tracking-[0.12em] text-blue-700 underline decoration-2 underline-offset-2"
+                      >
+                        <span className="truncate">View transaction</span>
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                      </a>
+                    ) : null}
+                  </div>
+                </section>
               </div>
+
+              <footer className="grid grid-cols-[0.8fr_1.2fr] gap-2 px-3 pb-3 sm:flex sm:justify-end sm:px-5 sm:pb-5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!loading) {
+                      resetModal();
+                    }
+                  }}
+                  disabled={loading}
+                  className="min-h-11 px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.12em] text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-28"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={phase === 'success' ? handleCloseAndRefresh : handlePrimaryAction}
+                  disabled={loading || phase === 'error'}
+                  className="flex min-h-11 items-center justify-center gap-2 border-2 border-slate-950 bg-slate-950 px-3 py-2 font-mono text-[0.6rem] font-black uppercase tracking-[0.1em] text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-48 sm:px-5 sm:text-[0.68rem]"
+                >
+                  {loading ? (
+                    <>
+                      <LoadingLogo size="tiny" variant="circle" />
+                      <span>PROCESSING...</span>
+                    </>
+                  ) : phase === 'amount' ? (
+                    <>
+                      <span>REVIEW_DEPOSIT</span>
+                      <ArrowRight className="h-4 w-4" strokeWidth={3} aria-hidden="true" />
+                    </>
+                  ) : phase === 'wallet' ? (
+                    'CONNECT_WALLET'
+                  ) : phase === 'sign' ? (
+                    'SIGN_TRANSACTION'
+                  ) : phase === 'processing' ? (
+                    'PROCESSING'
+                  ) : phase === 'success' ? (
+                    'CLOSE_AND_REFRESH'
+                  ) : (
+                    'RETRY_TRANSACTION'
+                  )}
+                </button>
+              </footer>
             </div>
           </div>
         </Portal>

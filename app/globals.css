@@ -150,16 +150,6 @@ html {
 .diff-high   { background: #fecaca; color: #020617; }
 .diff-custom { background: #c7d2fe; color: #020617; }
 
-/* Funding console shell */
-.funding-console-shell {
-  background-image:
-    linear-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
-    radial-gradient(circle at 12% 18%, rgba(37, 99, 235, 0.12), transparent 22%),
-    radial-gradient(circle at 88% 24%, rgba(96, 165, 250, 0.1), transparent 26%);
-  background-size: 28px 28px, 28px 28px, auto, auto;
-}
-
 /* Technical Animations */
 @keyframes scanline {
   0% { transform: translateY(-100%); }
@@ -908,6 +898,44 @@ img.landing-watermark {
   background-size: 20px 20px;
 }
 
+.fund-progress-step::after {
+  content: "";
+  position: absolute;
+  top: 0.4375rem;
+  left: calc(50% + 0.75rem);
+  z-index: 0;
+  height: 2px;
+  width: calc(100% - 1.5rem);
+  background: rgba(148, 163, 184, 0.42);
+}
+
+.fund-progress-step:last-child::after {
+  display: none;
+}
+
+.fund-progress-step-complete::after {
+  background: #2563eb;
+}
+
+.fund-progress-step-current::after {
+  background: linear-gradient(90deg, #2563eb 0%, rgba(37, 99, 235, 0.18) 50%, #2563eb 100%);
+  background-size: 200% 100%;
+  animation: fund-progress-flow 1.4s linear infinite;
+}
+
+.fund-progress-step-current .fund-progress-dot {
+  animation: fund-progress-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes fund-progress-flow {
+  to { background-position: -200% 0; }
+}
+
+@keyframes fund-progress-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.28); }
+  50% { box-shadow: 0 0 0 5px rgba(37, 99, 235, 0); }
+}
+
 .home-hero-backdrop {
   position: absolute;
   inset: 0;
@@ -1051,6 +1079,11 @@ img.landing-watermark {
   .cctp-destination-pulse,
   .animate-blink,
   .bg-dot-drift {
+    animation: none;
+  }
+
+  .fund-progress-step-current::after,
+  .fund-progress-step-current .fund-progress-dot {
     animation: none;
   }
 
