@@ -28,6 +28,7 @@ export default function FundEscrowButton({
   const [phase, setPhase] = useState<ModalPhase>('amount');
   const [transactionHash, setTransactionHash] = useState('');
   const dialogRef = useRef<HTMLDivElement>(null);
+  const refreshTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
   const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(
     /\/$/,
@@ -39,9 +40,17 @@ export default function FundEscrowButton({
   const currentBalanceValue = currentBalance ?? 0;
   const nextBalance = currentBalanceValue + (isAmountValid ? parsedAmount : 0);
   const quickAmounts = [25, 50, 100];
-  const maxQuickAmount = Math.max(1, Math.round(currentBalanceValue * 0.75));
+  const escrowPreviewAmount = Math.max(1, Math.round(currentBalanceValue * 0.75));
+
+  function clearPendingRefresh() {
+    if (refreshTimeoutRef.current) {
+      window.clearTimeout(refreshTimeoutRef.current);
+      refreshTimeoutRef.current = null;
+    }
+  }
 
   function resetModal() {
+    clearPendingRefresh();
     setShowModal(false);
     setAmount('');
     setAmountTouched(false);
@@ -53,6 +62,7 @@ export default function FundEscrowButton({
   }
 
   function handleOpen() {
+    clearPendingRefresh();
     setShowModal(true);
     setAmount('');
     setAmountTouched(false);
@@ -61,6 +71,12 @@ export default function FundEscrowButton({
     setTransactionHash('');
     setError('');
     setLoading(false);
+  }
+
+  function handleCloseAndRefresh() {
+    clearPendingRefresh();
+    setShowModal(false);
+    window.location.reload();
   }
 
   useEffect(() => {
@@ -99,7 +115,10 @@ export default function FundEscrowButton({
     firstFocusable?.focus();
 
     document.addEventListener('keydown', handleKeydown);
-    return () => document.removeEventListener('keydown', handleKeydown);
+    return () => {
+      document.removeEventListener('keydown', handleKeydown);
+      clearPendingRefresh();
+    };
   }, [showModal, loading]);
 
   async function handleFund() {
@@ -173,9 +192,6 @@ export default function FundEscrowButton({
         result?.transactionHash || result?.hash || result?.txHash || result?.txid || '';
       setTransactionHash(nextHash);
       setPhase('success');
-      window.setTimeout(() => {
-        window.location.reload();
-      }, 1200);
     } catch (err: unknown) {
       setPhase('error');
       setError(err instanceof Error ? err.message : 'Failed to fund');
@@ -384,12 +400,12 @@ export default function FundEscrowButton({
                       <button
                         type="button"
                         onClick={() => {
-                          setAmount(String(maxQuickAmount));
+                          setAmount(String(escrowPreviewAmount));
                           setAmountTouched(true);
                         }}
                         className="rounded-none border-2 border-slate-950 bg-slate-100 px-3 py-1.5 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-slate-700 transition-colors hover:bg-blue-50"
                       >
-                        MAX
+                        75% ESCROW
                       </button>
                     </div>
 
@@ -531,8 +547,8 @@ export default function FundEscrowButton({
                     </button>
                     <button
                       type="button"
-                      onClick={handlePrimaryAction}
-                      disabled={loading}
+                      onClick={phase === 'success' ? handleCloseAndRefresh : handlePrimaryAction}
+                      disabled={loading || phase === 'error'}
                       className="flex-[1.3] rounded-none border-4 border-slate-950 bg-slate-950 px-4 py-3 font-mono text-[0.72rem] font-black uppercase tracking-[0.2em] text-white shadow-[4px_4px_0_#2563eb] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {loading ? (
@@ -549,7 +565,7 @@ export default function FundEscrowButton({
                       ) : phase === 'processing' ? (
                         'PROCESSING'
                       ) : phase === 'success' ? (
-                        'CONFIRMED'
+                        'CLOSE_AND_REFRESH'
                       ) : (
                         'RETRY_TRANSACTION'
                       )}
