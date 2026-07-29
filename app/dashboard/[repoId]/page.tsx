@@ -178,7 +178,12 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                       {isRepoMaintainer && (
                         <>
                           <div className="w-full sm:w-auto">
-                            <FundEscrowButton repoId={repoId} token={session?.access_token ?? ''} />
+                            <FundEscrowButton
+                              repoId={repoId}
+                              token={session?.access_token ?? ''}
+                              repoName={repo.full_name}
+                              currentBalance={repo.escrow_balance}
+                            />
                           </div>
                           <div className="w-full sm:w-auto">
                             {repo.escrow_balance > 0 ? (

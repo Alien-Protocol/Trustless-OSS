@@ -150,6 +150,16 @@ html {
 .diff-high   { background: #fecaca; color: #020617; }
 .diff-custom { background: #c7d2fe; color: #020617; }
 
+/* Funding console shell */
+.funding-console-shell {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 12% 18%, rgba(37, 99, 235, 0.12), transparent 22%),
+    radial-gradient(circle at 88% 24%, rgba(96, 165, 250, 0.1), transparent 26%);
+  background-size: 28px 28px, 28px 28px, auto, auto;
+}
+
 /* Technical Animations */
 @keyframes scanline {
   0% { transform: translateY(-100%); }
