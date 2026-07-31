@@ -1,8 +1,7 @@
 <div align="center">
-<img width="4500" height="1100" alt="TOSS-Banner" src="https://github.com/user-attachments/assets/fe3f846b-c68f-41dc-871f-04f82f2b37ef" />
+<img width="280" alt="Trustless OSS logo" src="./public/toss-logo.png" />
 
   <br />
-
 
   <p>
     <strong>Automated, on-chain bounties for open-source contributors.</strong>

@@ -1,6 +1,6 @@
 'use client';
 
-import AnimatedLogo from './AnimatedLogo';
+import Logo from './Logo';
 
 export default function LoadingLogo({
   size = 'md',
@@ -30,7 +30,7 @@ export default function LoadingLogo({
 
   return (
     <div className="flex flex-col items-center justify-center gap-6 animate-in fade-in duration-500">
-      <AnimatedLogo size={size} showOrbiters={!isTiny} />
+      <Logo size={size} />
 
       {!isTiny && (
         <div className="flex flex-col items-center gap-2">

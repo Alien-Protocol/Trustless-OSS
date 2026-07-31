@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { User } from '@supabase/supabase-js';
-import AnimatedLogo from './AnimatedLogo';
+import Logo from './Logo';
 
 interface NavbarProps {
   user?: User | null;
@@ -13,7 +13,7 @@ export default function Navbar({ user, breadcrumbs }: NavbarProps) {
       <div className="h-18 flex items-center justify-between gap-3 px-3 sm:px-6">
         <div className="flex min-w-0 items-center gap-6">
           <Link href="/" className="flex min-w-0 items-center gap-2">
-            <AnimatedLogo size="nav" animated showOrbiters className="shrink-0" />
+            <Logo size="nav" />
             <span className="title-brutal whitespace-nowrap text-lg tracking-tighter sm:text-2xl">
               TRUSTLESS <span className="text-blue-600">OSS</span>
             </span>

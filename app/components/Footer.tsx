@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
 import { FaGithub, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
-import AnimatedLogo from './AnimatedLogo';
+import Logo from './Logo';
 
 const footerActions = [
   {
@@ -39,7 +39,7 @@ export default function Footer() {
       <div className="relative z-10 grid w-full grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 sm:grid-cols-[1fr_auto_1fr]">
         <div className="flex min-w-0 flex-col gap-1.5">
           <div className="flex min-w-0 items-center gap-3">
-            <AnimatedLogo size="sm" animated showOrbiters />
+            <Logo size="sm" />
             <div className="title-brutal text-xl tracking-tighter text-slate-950 sm:text-2xl">
               TRUSTLESS <span className="text-blue-600">OSS</span>
             </div>
