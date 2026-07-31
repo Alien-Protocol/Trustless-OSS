@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="100%" alt="Trustless OSS banner" src="https://github.com/user-attachments/assets/d41757e4-5123-41c1-a8b0-09b53176f6d2" />
+<img width="4500" height="1100" alt="TOSS-Banner" src="https://github.com/user-attachments/assets/fe3f846b-c68f-41dc-871f-04f82f2b37ef" />
 
   <br />
 
@@ -17,9 +17,9 @@
     <a href="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/ci-frontend.yml">
       <img alt="Frontend CI" src="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/ci-frontend.yml/badge.svg" />
     </a>
-    <a href="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/pr-checks.yml">
+    <!-- <a href="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/pr-checks.yml">
       <img alt="PR Validation" src="https://github.com/ryzen-xp/Trustless-OSS/actions/workflows/pr-checks.yml/badge.svg" />
-    </a>
+    </a> -->
     <a href="LICENSE">
       <img alt="License" src="https://img.shields.io/badge/license-see%20LICENSE-7c3aed" />
     </a>
