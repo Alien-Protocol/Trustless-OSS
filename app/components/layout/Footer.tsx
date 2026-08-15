@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
 import { FaGithub, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
 import Logo from './Logo';
+import FooterHealth from './FooterHealth';
 
 const footerActions = [
   {
@@ -81,13 +82,7 @@ export default function Footer() {
         </nav>
 
         <div className="col-start-2 row-start-1 flex shrink-0 flex-col items-end gap-1.5 justify-self-end sm:col-start-3">
-          <div className="inline-flex items-center gap-2 font-mono text-[0.58rem] font-black uppercase tracking-[0.08em] text-emerald-700 sm:text-[0.64rem] sm:tracking-[0.1em]">
-            <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
-            </span>
-            <span>Operational</span>
-          </div>
+          <FooterHealth />
           <span className="whitespace-nowrap font-mono text-[0.62rem] font-bold uppercase tracking-[0.05em] text-slate-600 sm:text-[0.68rem]">
             Made with <span className="text-red-500">♥</span> by{' '}
             <a

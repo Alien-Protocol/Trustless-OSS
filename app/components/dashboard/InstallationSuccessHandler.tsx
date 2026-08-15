@@ -14,6 +14,10 @@ function sleep(ms: number) {
 }
 
 function formatSyncError(status: number, details: string): string {
+  if (details.includes('JSON web token could not be decoded')) {
+    return `GitHub rejected the App JWT from ${BACKEND}. That API must run Toss-Backend develop (commit f236044) with the Trustless-OSS-Dev App ID and private key.`;
+  }
+
   if (details.includes('/app/installations/') && details.includes('404')) {
     return 'The API could not create a token for this GitHub App installation. The backend App ID and private key must belong to the same GitHub App as NEXT_PUBLIC_GITHUB_APP_SLUG.';
   }
