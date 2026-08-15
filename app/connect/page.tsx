@@ -5,12 +5,12 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Suspense } from 'react';
-import { getWalletKit } from '../lib/walletKit';
+import { getWalletKit, withTimeout, WALLET_OPERATION_TIMEOUT_MS } from '@/lib/wallet-kit';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { handleError, notifySuccess } from '@/lib/notifications';
 
-import LoadingLogo from '../components/LoadingLogo';
+import LoadingLogo from '../components/layout/LoadingLogo';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
@@ -102,7 +102,11 @@ function ConnectForm() {
 
       const kit = await getWalletKit();
 
-      const { address } = await kit.authModal();
+      const { address } = await withTimeout(
+        kit.authModal(),
+        WALLET_OPERATION_TIMEOUT_MS,
+        'Wallet authorization timed out. Please close the wallet modal and try again.'
+      );
       if (!address) throw new Error('No public key returned');
 
       const res = await fetch(`${BACKEND}/api/milestones/push`, {

@@ -3,9 +3,9 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, ArrowRight, Check, ExternalLink, ShieldCheck, X } from 'lucide-react';
-import { getWalletKit } from '../../lib/walletKit';
-import Portal from '../../components/Portal';
-import LoadingLogo from '../../components/LoadingLogo';
+import { getWalletKit, withTimeout, WALLET_OPERATION_TIMEOUT_MS } from '@/lib/wallet-kit';
+import Portal from '@/app/components/layout/Portal';
+import LoadingLogo from '@/app/components/layout/LoadingLogo';
 
 type ModalPhase = 'amount' | 'wallet' | 'sign' | 'processing' | 'success' | 'error';
 
@@ -142,7 +142,11 @@ export default function FundEscrowButton({
       const kit = await getWalletKit();
       setPhase('wallet');
 
-      const { address } = await kit.authModal();
+      const { address } = await withTimeout(
+        kit.authModal(),
+        WALLET_OPERATION_TIMEOUT_MS,
+        'Wallet authorization timed out. Please close the wallet modal and try again.'
+      );
       if (!address) throw new Error('No public key returned');
 
       setPhase('sign');
@@ -172,7 +176,11 @@ export default function FundEscrowButton({
       const { unsignedTransaction } = await res1.json();
 
       setPhase('processing');
-      const { signedTxXdr } = await kit.signTransaction(unsignedTransaction);
+      const { signedTxXdr } = await withTimeout(
+        kit.signTransaction(unsignedTransaction),
+        WALLET_OPERATION_TIMEOUT_MS,
+        'Transaction signing timed out. Please close the wallet modal and try again.'
+      );
 
       const res2 = await fetch(`${BACKEND}/api/escrow/submit-fund`, {
         method: 'POST',

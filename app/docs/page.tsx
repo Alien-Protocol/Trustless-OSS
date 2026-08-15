@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import Navbar from '../components/Navbar';
+import Navbar from '../components/layout/Navbar';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 

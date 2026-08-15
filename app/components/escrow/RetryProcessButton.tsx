@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { notifySuccess, handleError } from '@/lib/notifications';
-import LoadingLogo from '../../components/LoadingLogo';
+import LoadingLogo from '@/app/components/layout/LoadingLogo';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 

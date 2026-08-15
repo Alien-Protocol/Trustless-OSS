@@ -2,7 +2,7 @@ import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { vi } from 'vitest';
 import EscrowEventLog from '../EscrowEventLog';
-import type { EscrowEvent, EventStreamSource } from '@/app/lib/eventStream';
+import type { EscrowEvent, EventStreamSource } from '@/lib/event-stream';
 
 function manualSource() {
   let handler: ((events: EscrowEvent[]) => void) | null = null;

@@ -10,7 +10,7 @@ import {
   type EscrowEvent,
   type EscrowEventType,
   type EventStreamSource,
-} from '@/app/lib/eventStream';
+} from '@/lib/event-stream';
 
 /** Hard cap on retained events so a long-lived tab doesn't grow unbounded. */
 const MAX_RETAINED_EVENTS = 500;

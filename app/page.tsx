@@ -2,9 +2,9 @@ import Image from 'next/image';
 import { SiGithub, SiGitlab } from 'react-icons/si';
 import { ArrowRight, GitBranch, GitMerge, GitPullRequest, Tags, WalletCards } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import Navbar from './components/Navbar';
-import HeroSection from './components/HeroSection';
-import EscrowEventLog from './components/EscrowEventLog';
+import Navbar from './components/layout/Navbar';
+import HeroSection from './components/home/HeroSection';
+import EscrowEventLog from './components/escrow/EscrowEventLog';
 
 const workflowItems = [
   {

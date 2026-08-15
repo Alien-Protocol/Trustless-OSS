@@ -1,10 +1,12 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import FundEscrowButton from '../FundEscrowButton';
-import * as walletKit from '../../../lib/walletKit';
+import * as walletKit from '@/lib/wallet-kit';
 
-vi.mock('../../../lib/walletKit', () => ({
+vi.mock('@/lib/wallet-kit', () => ({
   getWalletKit: vi.fn(),
+  withTimeout: async (promise: Promise<unknown>) => promise,
+  WALLET_OPERATION_TIMEOUT_MS: 120000,
 }));
 
 vi.mock('next/image', () => ({

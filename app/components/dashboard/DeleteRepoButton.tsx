@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { handleError, notifySuccess } from '@/lib/notifications';
-import Portal from '../../components/Portal';
-import LoadingLogo from '../../components/LoadingLogo';
+import Portal from '@/app/components/layout/Portal';
+import LoadingLogo from '@/app/components/layout/LoadingLogo';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 

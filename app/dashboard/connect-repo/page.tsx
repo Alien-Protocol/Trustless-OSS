@@ -4,6 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, GitBranch, RefreshCw } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
+import {
+  GITHUB_INSTALL_FAILED,
+  GITHUB_INSTALL_SUCCESS,
+  isGitHubInstallFailedMessage,
+} from '@/lib/github-install';
+import { handleError } from '@/lib/notifications';
 
 export default function ConnectRepoPage() {
   const router = useRouter();
@@ -11,8 +17,21 @@ export default function ConnectRepoPage() {
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.data === 'github-installation-success') {
+      if (event.origin && event.origin !== window.location.origin) return;
+
+      if (event.data === GITHUB_INSTALL_SUCCESS) {
         router.push('/dashboard');
+        return;
+      }
+
+      if (event.data === GITHUB_INSTALL_FAILED || isGitHubInstallFailedMessage(event.data)) {
+        setInstalling(false);
+        handleError(
+          isGitHubInstallFailedMessage(event.data)
+            ? event.data.message
+            : 'GitHub installed the app, but the API could not sync it.',
+          'Connect repository'
+        );
       }
     };
 

@@ -1,4 +1,4 @@
-import LoadingLogo from '../../components/LoadingLogo';
+import LoadingLogo from '../../components/layout/LoadingLogo';
 
 export default function RepoDetailLoading() {
   return (

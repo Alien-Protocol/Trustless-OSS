@@ -5,8 +5,10 @@ import DeployEscrowButton from '../DeployEscrowButton';
 
 const authModal = vi.fn(() => new Promise<never>(() => undefined));
 
-vi.mock('@/app/lib/walletKit', () => ({
+vi.mock('@/lib/wallet-kit', () => ({
   getWalletKit: vi.fn(async () => ({ authModal })),
+  withTimeout: async (promise: Promise<unknown>) => promise,
+  WALLET_OPERATION_TIMEOUT_MS: 120000,
 }));
 
 afterEach(() => {

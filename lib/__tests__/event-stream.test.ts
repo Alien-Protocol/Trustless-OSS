@@ -8,7 +8,7 @@ import {
   withThrottle,
   type EscrowEvent,
   type EventStreamSource,
-} from '../eventStream';
+} from '../event-stream';
 
 function manualSource() {
   let handler: ((events: EscrowEvent[]) => void) | null = null;

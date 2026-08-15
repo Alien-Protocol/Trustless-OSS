@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import DeployEscrowButton from '@/app/components/DeployEscrowButton';
-import FundEscrowButton from './FundEscrowButton';
-import RewardSettingsForm from './RewardSettingsForm';
-import RetryProcessButton from './ReleaseBountyButton';
-import RefundFundButton from './RefundFundButton';
-import DeleteRepoButton from './DeleteRepoButton';
+import DeployEscrowButton from '@/app/components/escrow/DeployEscrowButton';
+import FundEscrowButton from '@/app/components/escrow/FundEscrowButton';
+import RewardSettingsForm from '@/app/components/escrow/RewardSettingsForm';
+import RetryProcessButton from '@/app/components/escrow/RetryProcessButton';
+import RefundFundButton from '@/app/components/escrow/RefundFundButton';
+import DeleteRepoButton from '@/app/components/dashboard/DeleteRepoButton';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 

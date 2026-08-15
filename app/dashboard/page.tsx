@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { GitBranch, Plus, RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import InstallationSuccessHandler from './InstallationSuccessHandler';
-import RepositoryEscrowCard from '@/app/components/RepositoryEscrowCard';
+import InstallationSuccessHandler from '@/app/components/dashboard/InstallationSuccessHandler';
+import RepositoryEscrowCard from '@/app/components/escrow/RepositoryEscrowCard';
 import type { Repo } from '@/app/types';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');

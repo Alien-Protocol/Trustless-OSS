@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { handleError, notifySuccess } from '@/lib/notifications';
 import { useRouter } from 'next/navigation';
-import Portal from '../../components/Portal';
-import LoadingLogo from '../../components/LoadingLogo';
+import Portal from '@/app/components/layout/Portal';
+import LoadingLogo from '@/app/components/layout/LoadingLogo';
 
 export default function RefundFundButton({
   repoId,

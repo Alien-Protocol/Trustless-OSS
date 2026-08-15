@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import Footer from './components/Footer';
-import { Toaster } from './components/Toaster';
+import Footer from './components/layout/Footer';
+import { Toaster } from './components/layout/Toaster';
 
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
 const jbMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
-  title: 'Trustless OSS — Automated Bounties for Open Source',
+  title: 'Trustless OSS',
   description:
     'Trustless, milestone-based rewards for OSS contributors. GitHub PR merged → funds automatically released via Trustless Work escrow.',
 };

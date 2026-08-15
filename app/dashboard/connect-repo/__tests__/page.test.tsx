@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ConnectRepoPage from '../page';
 
@@ -11,6 +11,11 @@ vi.mock('next/navigation', () => ({
     push,
     back,
   }),
+}));
+
+vi.mock('@/lib/notifications', () => ({
+  handleError: vi.fn(),
+  notifySuccess: vi.fn(),
 }));
 
 afterEach(() => {
@@ -74,13 +79,30 @@ describe('ConnectRepoPage', () => {
     expect(back).toHaveBeenCalledOnce();
   });
 
-  it('redirects to the dashboard when installation succeeds', () => {
+  it('redirects to the dashboard when installation succeeds', async () => {
     render(<ConnectRepoPage />);
 
-    window.dispatchEvent(
-      new MessageEvent('message', { data: 'github-installation-success' })
+    window.postMessage('github-installation-success', window.location.origin);
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith('/dashboard');
+    });
+  });
+
+  it('unlocks the install button when GitHub sync fails', async () => {
+    render(<ConnectRepoPage />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Install GitHub App/i }));
+    expect(screen.getByRole('button', { name: /Waiting for GitHub.../i })).toBeDisabled();
+
+    window.postMessage(
+      { type: 'github-installation-failed', message: 'sync failed' },
+      window.location.origin
     );
 
-    expect(push).toHaveBeenCalledWith('/dashboard');
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Install GitHub App/i })).toBeEnabled();
+    });
+    expect(push).not.toHaveBeenCalled();
   });
 });
