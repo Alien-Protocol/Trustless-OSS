@@ -10,10 +10,14 @@ export default function RefundFundButton({
   repoId,
   token,
   currentBalance,
+  repoName,
+  activeIssueCount,
 }: {
   repoId: string;
   token: string;
   currentBalance: number;
+  repoName: string;
+  activeIssueCount: number;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -95,9 +99,12 @@ export default function RefundFundButton({
               <div className="p-8">
                 <div className="mb-8">
                   <div className="label-brutal bg-slate-950 text-white px-3 py-1 w-fit mb-4">
-                    ACTION // SWEEP_LIQUIDITY
+                    ESCROW // CLOSE_AND_REFUND
                   </div>
                   <h3 className="title-brutal text-3xl text-slate-950 mb-1">REFUND_ALL_FUNDS</h3>
+                  <p className="mt-3 font-mono text-xs font-bold uppercase text-slate-500 break-all">
+                    {repoName}
+                  </p>
                   {error && (
                     <div className="bg-red-50 border-l-8 border-red-600 p-4 mt-6 animate-in slide-in-from-top-2">
                       <p className="text-red-600 font-black text-xs uppercase mb-1">
@@ -108,21 +115,33 @@ export default function RefundFundButton({
                       </p>
                     </div>
                   )}
-                  <div className="mt-6 p-4 bg-slate-100 border-2 border-slate-950 font-mono">
-                    <p className="text-slate-500 text-[10px] font-bold uppercase mb-2">
-                      Refundable Balance
-                    </p>
-                    <p className="text-3xl font-black text-slate-950">
-                      {currentBalance.toFixed(2)} <span className="text-sm">USDC</span>
-                    </p>
+                  <div className="mt-6 grid grid-cols-2 gap-3 font-mono text-[10px] font-bold uppercase">
+                    <div className="col-span-2 p-4 bg-slate-100 border-2 border-slate-950">
+                      <p className="text-slate-500 mb-2">Refund Amount</p>
+                      <p className="text-3xl font-black text-slate-950">
+                        {currentBalance.toFixed(2)} <span className="text-sm">USDC</span>
+                      </p>
+                    </div>
+                    <div className="p-3 bg-slate-100 border-2 border-slate-950">
+                      <p className="text-slate-500 mb-1">Active Issues</p>
+                      <p className="text-xl font-black text-slate-950">{activeIssueCount}</p>
+                    </div>
+                    <div className="p-3 bg-slate-100 border-2 border-slate-950">
+                      <p className="text-slate-500 mb-1">Reversible</p>
+                      <p className="text-xl font-black text-red-600">NO</p>
+                    </div>
+                    <div className="col-span-2 p-3 bg-slate-100 border-2 border-slate-950">
+                      <p className="text-slate-500 mb-1">Destination</p>
+                      <p className="font-black text-slate-950">CONNECTED MAINTAINER WALLET</p>
+                    </div>
                   </div>
                 </div>
 
                 <div className="space-y-6">
                   <div className="p-4 bg-red-50 border-2 border-red-600 text-red-600 text-[10px] font-bold uppercase leading-relaxed">
-                    Warning: This will pull all available USDC from the escrow contract back to your
-                    wallet. All active issues will be permanently cancelled. This action is fully
-                    automated and irreversible.
+                    WARNING: This will pull all available USDC from escrow back to your connected
+                    wallet and permanently cancel {activeIssueCount} active issue
+                    {activeIssueCount === 1 ? '' : 's'}. This action is irreversible.
                   </div>
 
                   <div className="flex gap-4 mt-8 pt-8 border-t-4 border-slate-950 border-dashed">
