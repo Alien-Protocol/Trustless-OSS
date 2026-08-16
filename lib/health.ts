@@ -1,7 +1,4 @@
-const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(
-  /\/$/,
-  ''
-);
+const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
 export const STATUS_PAGE_URL = 'https://stats.uptimerobot.com/eEV8dUAe3D';
 
@@ -35,8 +32,7 @@ export function parseHealthPayload(
   httpOk: boolean,
   latencyMs: number
 ): HealthSnapshot {
-  const body =
-    payload && typeof payload === 'object' ? (payload as BackendHealthPayload) : null;
+  const body = payload && typeof payload === 'object' ? (payload as BackendHealthPayload) : null;
   const service = typeof body?.service === 'string' ? body.service : null;
   const message =
     typeof body?.message === 'string'

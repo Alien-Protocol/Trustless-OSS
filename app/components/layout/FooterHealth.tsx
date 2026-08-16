@@ -40,7 +40,6 @@ export default function FooterHealth() {
 
   useEffect(() => {
     let cancelled = false;
-    let pollId: number | undefined;
 
     const ping = async () => {
       if (document.visibilityState === 'hidden') return;
@@ -61,10 +60,10 @@ export default function FooterHealth() {
     };
 
     void ping();
-    pollId = window.setInterval(() => {
+
+    const pollId = window.setInterval(() => {
       void ping();
     }, POLL_MS);
-
     const onVisible = () => {
       if (document.visibilityState === 'visible') void ping();
     };

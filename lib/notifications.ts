@@ -4,15 +4,15 @@ import { toast } from 'sonner';
  * A structured way to handle and display errors using sonner.
  * This ensures consistency across the application.
  */
-export const handleError = (error: any, context?: string) => {
+export const handleError = (error: unknown, context?: string) => {
   console.error(`[Error]${context ? ` in ${context}:` : ''}`, error);
 
   const message =
     error instanceof Error
       ? error.message
       : typeof error === 'string'
-        ? error
-        : 'An unexpected error occurred';
+      ? error
+      : 'An unexpected error occurred';
 
   toast.error(context || 'Error', {
     description: message,
