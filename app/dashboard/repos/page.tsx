@@ -69,10 +69,13 @@ async function getRepos(token: string): Promise<{ repos: DashboardRepo[]; error:
 }
 
 interface ReposProps {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  // Match Next's PageProps: searchParams is a Promise or undefined
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function ReposPage({ searchParams }: ReposProps) {
+  // Await the Next-provided promise (may be undefined in tests)
+  const paramsObj = searchParams ? await searchParams : undefined;
   const supabase = await createClient();
   const {
     data: { user },
@@ -91,7 +94,7 @@ export default async function ReposPage({ searchParams }: ReposProps) {
     return now - created < 5 * 60 * 1000;
   };
 
-  const isSyncing = searchParams?.syncing === 'true';
+  const isSyncing = paramsObj?.syncing === 'true';
 
   return (
     <div className="w-full">

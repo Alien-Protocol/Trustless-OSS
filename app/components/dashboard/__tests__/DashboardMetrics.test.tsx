@@ -21,7 +21,6 @@ describe('DashboardMetrics', () => {
       }),
     });
 
-    // @ts-expect-error mock global
     global.fetch = mock;
 
     render(<DashboardMetrics />);
@@ -36,7 +35,6 @@ describe('DashboardMetrics', () => {
 
   it('shows error and retry on failure', async () => {
     const mock = vi.fn().mockResolvedValueOnce({ ok: false, status: 500 });
-    // @ts-expect-error mock global
     global.fetch = mock;
 
     render(<DashboardMetrics />);

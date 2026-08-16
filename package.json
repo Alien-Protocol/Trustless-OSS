@@ -31,7 +31,13 @@
     "react-dom": "19.2.4",
     "react-icons": "^5.7.0",
     "recharts": "^3.10.1",
-    "sonner": "^2.0.7"
+    "sonner": "^2.0.7",
+    "undici": "^7.29.0"
+  },
+  "dependenciesMeta": {
+    "undici": {
+      "optional": false
+    }
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -41,20 +47,24 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@typescript-eslint/eslint-plugin": "^8.65.0",
-    "@typescript-eslint/parser": "^8.65.0",
+    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/parser": "^8.67.0",
     "@vitejs/plugin-react": "^6.0.3",
-    "@vitest/coverage-v8": "^4.1.9",
-    "eslint": "^10.8.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "brace-expansion": "^5.0.9",
+    "eslint": "^10.8.1",
     "globals": "^16.4.0",
     "happy-dom": "^20.10.6",
     "husky": "^9.0.0",
-    "jsdom": "^29.1.1",
+    "ip-address": "^10.3.1",
+    "jsdom": "^30.0.1",
     "lint-staged": "^15.0.0",
+    "nanoid": "^3.3.18",
     "prettier": "^3.0.0",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^4.1.9"
+    "undici": "^7.29.0",
+    "vitest": "^4.1.10"
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
@@ -64,5 +74,11 @@
     "**/*.{json,md}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "undici": "^7.29.0",
+    "ip-address": "^10.3.1",
+    "brace-expansion": "^5.0.9",
+    "nanoid": "^3.3.18"
   }
 }

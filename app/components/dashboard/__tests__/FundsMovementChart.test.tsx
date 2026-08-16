@@ -33,7 +33,6 @@ describe('FundsMovementChart', () => {
     ];
 
     const mock = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => chartData });
-    // @ts-expect-error mock global
     global.fetch = mock;
 
     render(<FundsMovementChart />);
@@ -45,7 +44,6 @@ describe('FundsMovementChart', () => {
 
   it('shows error when data fails to load', async () => {
     const mock = vi.fn().mockResolvedValueOnce({ ok: false, status: 500 });
-    // @ts-expect-error mock global
     global.fetch = mock;
 
     render(<FundsMovementChart />);
