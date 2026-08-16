@@ -13,7 +13,9 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const cookieStore = await cookies();
-  const next = safeNextPath(searchParams.get('next') ?? cookieStore.get('auth_next')?.value ?? null);
+  const next = safeNextPath(
+    searchParams.get('next') ?? cookieStore.get('auth_next')?.value ?? null
+  );
 
   if (code) {
     const supabase = await createClient();
