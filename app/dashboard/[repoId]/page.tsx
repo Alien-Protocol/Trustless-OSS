@@ -191,6 +191,12 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                                 repoId={repoId}
                                 token={session?.access_token ?? ''}
                                 currentBalance={repo.escrow_balance}
+                                repoName={repo.full_name}
+                                activeIssueCount={
+                                  issues.filter(
+                                    (issue: { status?: string }) => issue.status === 'active'
+                                  ).length
+                                }
                               />
                             ) : (
                               <DeleteRepoButton
