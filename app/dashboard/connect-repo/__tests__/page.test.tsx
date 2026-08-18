@@ -59,7 +59,7 @@ describe('ConnectRepoPage', () => {
     expect(open).toHaveBeenCalledWith(
       'https://github.com/apps/Trustless-OSS/installations/new',
       'github_install',
-      'width=600,height=800'
+      'width=600,height=800,scrollbars=yes'
     );
 
     expect(screen.getByRole('heading', { name: 'Waiting for installation' })).toBeInTheDocument();
@@ -79,13 +79,25 @@ describe('ConnectRepoPage', () => {
     expect(back).toHaveBeenCalledOnce();
   });
 
-  it('redirects to the dashboard when installation succeeds', async () => {
+  it('redirects to repositories when installation succeeds', async () => {
     render(<ConnectRepoPage />);
 
     window.postMessage('github-installation-success', window.location.origin);
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith('/dashboard');
+      expect(push).toHaveBeenCalledWith('/dashboard/repos');
+    });
+  });
+
+  it('redirects to repositories when installation succeeds over BroadcastChannel', async () => {
+    render(<ConnectRepoPage />);
+
+    const channel = new BroadcastChannel('trustless-oss-github-install');
+    channel.postMessage('github-installation-success');
+    channel.close();
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith('/dashboard/repos');
     });
   });
 

@@ -30,9 +30,14 @@ export async function updateSession(request: NextRequest) {
   const isProtected = request.nextUrl.pathname.startsWith('/dashboard');
 
   if (isProtected && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
+    const loginUrl = request.nextUrl.clone();
+    const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+    loginUrl.pathname = '/login';
+    loginUrl.search = '';
+    if (nextPath && nextPath !== '/dashboard') {
+      loginUrl.searchParams.set('next', nextPath);
+    }
+    return NextResponse.redirect(loginUrl);
   }
 
   return supabaseResponse;

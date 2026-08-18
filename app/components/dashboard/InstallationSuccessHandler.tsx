@@ -1,13 +1,22 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { handleError, notifySuccess } from '@/lib/notifications';
-import { GITHUB_INSTALL_FAILED, GITHUB_INSTALL_SUCCESS } from '@/lib/github-install';
+import {
+  GITHUB_INSTALL_FAILED,
+  GITHUB_INSTALL_SUCCESS,
+  notifyGitHubInstallParent,
+} from '@/lib/github-install';
+import Button from '@/app/components/ui/Button';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 const MAX_SYNC_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 1500;
+const CLOSE_RETRY_MS = 400;
+
+type OverlayStatus = 'hidden' | 'syncing' | 'success' | 'error';
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -25,11 +34,6 @@ function formatSyncError(status: number, details: string): string {
   return `Installation sync failed (${status}): ${details}`;
 }
 
-function notifyOpener(message: string | { type: string; message: string }) {
-  if (!window.opener) return;
-  window.opener.postMessage(message, window.location.origin);
-}
-
 function clearInstallationQuery() {
   const url = new URL(window.location.href);
   url.searchParams.delete('installation_id');
@@ -37,7 +41,14 @@ function clearInstallationQuery() {
   window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
 }
 
+function closeInstallWindow() {
+  window.close();
+}
+
 export default function InstallationSuccessHandler() {
+  const [status, setStatus] = useState<OverlayStatus>('hidden');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const installationId = params.get('installation_id');
@@ -46,9 +57,16 @@ export default function InstallationSuccessHandler() {
 
     const numericInstallationId = Number(installationId);
     if (!Number.isInteger(numericInstallationId) || numericInstallationId <= 0) {
-      handleError('GitHub did not return a valid installation id.', 'Connect repository');
+      const message = 'GitHub did not return a valid installation id.';
+      setStatus('error');
+      setErrorMessage(message);
+      handleError(message, 'Connect repository');
+      notifyGitHubInstallParent({ type: GITHUB_INSTALL_FAILED, message });
       return;
     }
+
+    setStatus('syncing');
+    let cancelled = false;
 
     const syncInstallation = async () => {
       const supabase = createClient();
@@ -75,15 +93,13 @@ export default function InstallationSuccessHandler() {
         });
 
         if (response.ok) {
-          notifySuccess('Repository connected', 'GitHub App installation synced.');
-          notifyOpener(GITHUB_INSTALL_SUCCESS);
-          clearInstallationQuery();
+          if (cancelled) return;
 
-          if (window.opener) {
-            setTimeout(() => window.close(), 800);
-          } else {
-            window.location.replace('/dashboard');
-          }
+          notifySuccess('Repository connected', 'GitHub App installation synced.');
+          notifyGitHubInstallParent(GITHUB_INSTALL_SUCCESS);
+          clearInstallationQuery();
+          setStatus('success');
+          window.setTimeout(closeInstallWindow, CLOSE_RETRY_MS);
           return;
         }
 
@@ -97,12 +113,50 @@ export default function InstallationSuccessHandler() {
     };
 
     void syncInstallation().catch((error: unknown) => {
+      if (cancelled) return;
       const message = error instanceof Error ? error.message : 'Installation sync failed.';
+      setStatus('error');
+      setErrorMessage(message);
       handleError(message, 'Connect repository');
-      notifyOpener({ type: GITHUB_INSTALL_FAILED, message });
+      notifyGitHubInstallParent({ type: GITHUB_INSTALL_FAILED, message });
       clearInstallationQuery();
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  return null;
+  if (status === 'hidden') return null;
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+      <div className="dashboard-surface w-full max-w-md px-6 py-8 text-center sm:px-8">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white">
+          <RefreshCw
+            className={`h-6 w-6 ${status === 'syncing' ? 'animate-spin' : ''}`}
+            strokeWidth={2.5}
+            aria-hidden="true"
+          />
+        </span>
+        <h2 className="font-display mt-5 text-2xl font-extrabold tracking-tight text-slate-950">
+          {status === 'syncing' && 'Finishing GitHub installation'}
+          {status === 'success' && 'GitHub App connected'}
+          {status === 'error' && 'Could not finish installation'}
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          {status === 'syncing' &&
+            'Syncing repositories from GitHub. This window should close automatically.'}
+          {status === 'success' &&
+            'You can close this window and continue in the original Trustless OSS tab.'}
+          {status === 'error' && (errorMessage ?? 'GitHub installed the app, but sync failed.')}
+        </p>
+        {status !== 'syncing' && (
+          <Button type="button" className="mt-6 w-full" onClick={closeInstallWindow}>
+            Close this window
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 }

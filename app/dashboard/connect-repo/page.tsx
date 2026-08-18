@@ -6,8 +6,10 @@ import { ArrowLeft, GitBranch, RefreshCw } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import {
   GITHUB_INSTALL_FAILED,
-  GITHUB_INSTALL_SUCCESS,
+  GITHUB_INSTALL_WINDOW_NAME,
   isGitHubInstallFailedMessage,
+  isGitHubInstallSuccessMessage,
+  subscribeGitHubInstallResult,
 } from '@/lib/github-install';
 import { handleError } from '@/lib/notifications';
 
@@ -16,27 +18,22 @@ export default function ConnectRepoPage() {
   const [installing, setInstalling] = useState(false);
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin && event.origin !== window.location.origin) return;
-
-      if (event.data === GITHUB_INSTALL_SUCCESS) {
-        router.push('/dashboard');
+    return subscribeGitHubInstallResult((data) => {
+      if (isGitHubInstallSuccessMessage(data)) {
+        router.push('/dashboard/repos');
         return;
       }
 
-      if (event.data === GITHUB_INSTALL_FAILED || isGitHubInstallFailedMessage(event.data)) {
+      if (data === GITHUB_INSTALL_FAILED || isGitHubInstallFailedMessage(data)) {
         setInstalling(false);
         handleError(
-          isGitHubInstallFailedMessage(event.data)
-            ? event.data.message
+          isGitHubInstallFailedMessage(data)
+            ? data.message
             : 'GitHub installed the app, but the API could not sync it.',
           'Connect repository'
         );
       }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    });
   }, [router]);
 
   const handleInstall = () => {
@@ -46,8 +43,8 @@ export default function ConnectRepoPage() {
     const slug = process.env.NEXT_PUBLIC_GITHUB_APP_SLUG || 'Trustless-OSS';
     window.open(
       `https://github.com/apps/${slug}/installations/new`,
-      'github_install',
-      'width=600,height=800'
+      GITHUB_INSTALL_WINDOW_NAME,
+      'width=600,height=800,scrollbars=yes'
     );
   };
 
