@@ -6,6 +6,7 @@ import { AlertTriangle, ArrowRight, Check, ExternalLink, ShieldCheck, X } from '
 import { getWalletKit, withTimeout, WALLET_OPERATION_TIMEOUT_MS } from '@/lib/wallet-kit';
 import Portal from '@/app/components/layout/Portal';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
+import Button from '@/app/components/ui/Button';
 
 type ModalPhase = 'amount' | 'wallet' | 'sign' | 'processing' | 'success' | 'error';
 
@@ -276,20 +277,16 @@ export default function FundEscrowButton({
         }
       `}</style>
 
-      <button
-        onClick={() => handleOpen()}
-        disabled={loading}
-        className="brutal-button flex min-w-[160px] w-full items-center justify-center gap-3 px-5 py-3 text-sm sm:w-auto"
-      >
+      <Button onClick={() => handleOpen()} disabled={loading} className="w-full sm:w-auto">
         {loading ? (
           <>
             <LoadingLogo size="tiny" variant="circle" />
-            <span>PROCESSING...</span>
+            Processing
           </>
         ) : (
-          'FUND_REPOSITORY'
+          'Fund repository'
         )}
-      </button>
+      </Button>
 
       {showModal && (
         <Portal>
@@ -303,32 +300,32 @@ export default function FundEscrowButton({
           >
             <div
               ref={dialogRef}
-              className="landing-page-shell w-full max-w-xl border-4 border-slate-950"
+              className="surface-card w-full max-w-xl overflow-hidden bg-white/90"
               onClick={(event) => event.stopPropagation()}
               role="dialog"
               aria-modal="true"
               aria-labelledby="fund-repository-title"
               aria-describedby="fund-repository-description"
             >
-              <header className="px-4 pb-2 pt-4 sm:px-5 sm:pt-5">
+              <header className="px-5 pb-2 pt-5 sm:px-6 sm:pt-6">
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0 flex-1">
-                    <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.2em] text-blue-600">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
                       Escrow funding
                     </p>
                     <h3
                       id="fund-repository-title"
-                      className="mt-1 truncate text-2xl font-black uppercase italic leading-none tracking-tight text-slate-950 sm:text-3xl"
+                      className="mt-1 truncate text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl"
                     >
                       Fund repository
                     </h3>
                     <p id="fund-repository-description" className="sr-only">
                       Add USDC to the escrow balance used to secure contributor rewards.
                     </p>
-                    <p className="mt-2 flex min-w-0 items-center gap-2 text-xs font-bold text-slate-600 sm:text-sm">
+                    <p className="mt-2 flex min-w-0 items-center gap-2 text-sm font-medium text-slate-500">
                       <Image src="/usd-coin-usdc-logo.svg" alt="" width={16} height={16} />
                       <span className="truncate">{repoName || 'Trustless OSS / Repository'}</span>
-                      <span className="shrink-0 font-mono text-[0.58rem] uppercase tracking-wider text-slate-400">
+                      <span className="shrink-0 text-xs uppercase tracking-wider text-slate-400">
                         · Stellar
                       </span>
                     </p>
@@ -338,11 +335,11 @@ export default function FundEscrowButton({
                     onClick={resetModal}
                     disabled={loading}
                     aria-label="Close fund repository dialog"
-                    className="group flex h-8 w-8 shrink-0 items-center justify-center border-2 border-slate-950 bg-white text-slate-950 transition-colors hover:bg-blue-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="group flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-blue-300 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <X
                       className="h-4 w-4 transition-transform group-hover:rotate-90"
-                      strokeWidth={3}
+                      strokeWidth={2.5}
                       aria-hidden="true"
                     />
                   </button>
@@ -351,7 +348,7 @@ export default function FundEscrowButton({
 
               <ol
                 aria-label="Funding progress"
-                className="flex items-start px-4 py-2 text-slate-950 sm:px-5"
+                className="flex items-start px-5 py-3 text-slate-950 sm:px-6"
               >
                 {['Amount', 'Wallet', 'Sign', 'Done'].map((label, index) => {
                   const isComplete = index < currentStep || phase === 'success';
@@ -391,13 +388,13 @@ export default function FundEscrowButton({
                 })}
               </ol>
 
-              <div className="space-y-3 px-3 pb-3 pt-1 sm:px-5 sm:pb-5">
-                <section className="home-bounty-preview bg-white/90 px-4 py-3 sm:px-5 sm:py-4">
+              <div className="space-y-3 px-5 pb-5 pt-1 sm:px-6">
+                <section className="rounded-2xl bg-slate-50/80 px-4 py-4 sm:px-5">
                   <div className="mb-2 flex items-center justify-between gap-3">
-                    <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-blue-600">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">
                       Deposit amount
                     </p>
-                    <p className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.08em] text-slate-500 sm:text-[0.62rem]">
+                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-slate-400">
                       USDC · Stellar
                     </p>
                   </div>
@@ -427,7 +424,7 @@ export default function FundEscrowButton({
                         setAmount(event.target.value);
                         setAmountTouched(true);
                       }}
-                      className="min-w-0 flex-1 bg-transparent p-0 font-mono text-4xl font-black tracking-tight text-slate-950 outline-none placeholder:text-slate-300 disabled:cursor-not-allowed disabled:opacity-60 sm:text-5xl"
+                      className="min-w-0 flex-1 bg-transparent p-0 font-mono text-4xl font-bold tracking-tight text-slate-950 outline-none placeholder:text-slate-300 disabled:cursor-not-allowed disabled:opacity-60 sm:text-5xl"
                       placeholder="0.00"
                       aria-invalid={showValidationError}
                       aria-describedby="deposit-validation"
@@ -467,7 +464,7 @@ export default function FundEscrowButton({
 
                   <div id="deposit-validation" className="mt-1" aria-live="polite">
                     {showValidationError ? (
-                      <p className="inline-block bg-red-50 px-2 py-1 font-mono text-[0.62rem] font-black uppercase tracking-[0.1em] text-red-600">
+                      <p className="inline-block rounded-lg bg-red-50 px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-red-600">
                         ERR_INVALID_AMOUNT: Enter more than 0 USDC.
                       </p>
                     ) : null}
@@ -489,12 +486,12 @@ export default function FundEscrowButton({
 
                 <section
                   aria-live="polite"
-                  className={`flex items-center gap-2.5 px-3 py-2.5 ${
+                  className={`flex items-center gap-2.5 rounded-2xl px-4 py-3 ${
                     phase === 'success'
-                      ? 'bg-emerald-100'
+                      ? 'bg-emerald-50'
                       : phase === 'error'
                         ? 'bg-red-50'
-                        : 'bg-slate-100'
+                        : 'bg-slate-50'
                   }`}
                 >
                   <span
@@ -517,10 +514,10 @@ export default function FundEscrowButton({
                     )}
                   </span>
                   <div className="min-w-0">
-                    <p className="font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-slate-950">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-950">
                       {phaseMessage.label}
                     </p>
-                    <p className="text-xs font-semibold leading-4 text-slate-600 sm:text-sm sm:leading-5">
+                    <p className="text-sm leading-5 text-slate-600">
                       {phaseMessage.detail}
                     </p>
                     {error ? <p className="mt-2 text-sm font-bold text-red-700">{error}</p> : null}
@@ -539,24 +536,23 @@ export default function FundEscrowButton({
                 </section>
               </div>
 
-              <footer className="grid grid-cols-[0.8fr_1.2fr] gap-2 px-3 pb-3 sm:flex sm:justify-end sm:px-5 sm:pb-5">
-                <button
-                  type="button"
+              <footer className="flex flex-col-reverse gap-2 px-5 pb-5 sm:flex-row sm:justify-end sm:px-6 sm:pb-6">
+                <Button
+                  variant="ghost"
                   onClick={() => {
                     if (!loading) {
                       resetModal();
                     }
                   }}
                   disabled={loading}
-                  className="min-h-11 px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.12em] text-slate-600 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-28"
+                  className="sm:min-w-28"
                 >
                   Cancel
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
                   onClick={phase === 'success' ? handleCloseAndRefresh : handlePrimaryAction}
                   disabled={loading || phase === 'error'}
-                  className="flex min-h-11 items-center justify-center gap-2 border-2 border-slate-950 bg-slate-950 px-3 py-2 font-mono text-[0.6rem] font-black uppercase tracking-[0.1em] text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-48 sm:px-5 sm:text-[0.68rem]"
+                  className="sm:min-w-48"
                 >
                   {loading ? (
                     <>
@@ -566,7 +562,7 @@ export default function FundEscrowButton({
                   ) : phase === 'amount' ? (
                     <>
                       <span>REVIEW_DEPOSIT</span>
-                      <ArrowRight className="h-4 w-4" strokeWidth={3} aria-hidden="true" />
+                      <ArrowRight className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
                     </>
                   ) : phase === 'wallet' ? (
                     'CONNECT_WALLET'
@@ -579,7 +575,7 @@ export default function FundEscrowButton({
                   ) : (
                     'RETRY_TRANSACTION'
                   )}
-                </button>
+                </Button>
               </footer>
             </div>
           </div>

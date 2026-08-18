@@ -9,8 +9,8 @@ interface LogoProps {
 
 const sizeConfig: Record<LogoSize, string> = {
   tiny: 'h-4 w-4',
-  nav: 'h-10 w-10',
-  sm: 'h-11 w-11',
+  nav: 'h-14 w-14',
+  sm: 'h-12 w-12',
   md: 'h-20 w-20',
   lg: 'h-28 w-28',
 };
@@ -27,7 +27,7 @@ export default function Logo({ size = 'md', className = '' }: LogoProps) {
         width={1254}
         height={1254}
         unoptimized
-        className="h-full w-full scale-[1.35] object-contain"
+        className="h-full w-full scale-[1.2] object-contain"
       />
     </span>
   );

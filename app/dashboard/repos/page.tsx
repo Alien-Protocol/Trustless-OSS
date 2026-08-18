@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { GitBranch, Plus, RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import RepositoryEscrowCard from '@/app/components/escrow/RepositoryEscrowCard';
+import Button from '@/app/components/ui/Button';
 import type { Repo } from '@/app/types';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
@@ -100,33 +100,23 @@ export default async function ReposPage({ searchParams }: ReposProps) {
     <div className="w-full">
       <div className="relative mb-10 flex flex-col justify-between gap-7 md:mb-14 md:flex-row md:items-end">
         <div className="max-w-5xl">
-          <h1 className="mt-4 text-4xl font-black uppercase italic leading-[0.92] tracking-[-0.045em] text-slate-950 sm:text-5xl md:text-7xl">
+          <h1 className="font-display mt-2 text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl md:text-6xl">
             Repositories
           </h1>
         </div>
 
         <div className="flex w-full gap-3 sm:w-auto">
-          <Link
-            href="/dashboard/connect-repo"
-            className="brutal-button min-h-14 w-full gap-2 px-6 py-4 text-sm sm:w-auto"
-          >
-            <Plus className="h-5 w-5" strokeWidth={3} aria-hidden="true" />
+          <Button href="/dashboard/connect-repo" size="lg" className="w-full sm:w-auto">
+            <Plus className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
             Add repository
-          </Link>
+          </Button>
         </div>
       </div>
 
       {reposError && (
-        <div className="mb-8 flex flex-col gap-2 border-4 border-slate-950 bg-red-50/90 p-6 shadow-[7px_7px_0_#ef4444]">
-          <div className="label-brutal bg-red-500 text-white w-fit px-2 py-1 border-2 border-slate-950">
-            ERR_FETCH
-          </div>
-          <p className="font-bold text-slate-950 uppercase tracking-widest text-sm">
-            Failed to load repositories
-          </p>
-          <p className="text-xs text-slate-600 font-mono bg-white p-2 border-2 border-slate-950">
-            {reposError}
-          </p>
+        <div className="mb-8 rounded-2xl bg-red-50 p-6 ring-1 ring-red-200">
+          <p className="text-sm font-bold text-red-700">Failed to load repositories</p>
+          <p className="mt-2 text-xs text-slate-600">{reposError}</p>
         </div>
       )}
 
@@ -142,9 +132,9 @@ export default async function ReposPage({ searchParams }: ReposProps) {
               enable rewards and manage contributor payouts.
             </p>
             <div className="mt-4">
-              <Link href="/dashboard" className="px-4 py-2 border-2 border-slate-950 text-sm">
+              <Button href="/dashboard" variant="outline" className="px-4 py-2 text-sm">
                 Back to dashboard
-              </Link>
+              </Button>
             </div>
             {isSyncing && (
               <p className="mt-4 text-xs font-mono text-blue-600 inline-flex items-center gap-2 justify-center">
@@ -159,8 +149,8 @@ export default async function ReposPage({ searchParams }: ReposProps) {
           {repos.map((repo) => (
             <div key={repo.id} className="relative">
               {isNew(repo.created_at) && (
-                <div className="absolute -top-4 -right-4 z-10 bg-blue-600 text-white px-3 py-1 font-bold font-mono text-xs uppercase border-2 border-slate-950">
-                  NEW
+                <div className="absolute -top-3 -right-3 z-10 rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white">
+                  New
                 </div>
               )}
               <RepositoryEscrowCard

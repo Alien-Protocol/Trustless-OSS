@@ -1,99 +1,88 @@
 import Link from 'next/link';
-import { BookOpen } from 'lucide-react';
 import { FaGithub, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
 import Logo from './Logo';
 import FooterHealth from './FooterHealth';
 
-const footerActions = [
-  {
-    label: 'Docs',
-    href: '/docs',
-    external: false,
-    icon: BookOpen,
-  },
-  {
-    label: 'X (Twitter)',
-    href: 'https://x.com/ryzen__xp',
-    external: true,
-    icon: FaXTwitter,
-  },
-  {
-    label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/ryzen_xp/',
-    external: true,
-    icon: FaLinkedinIn,
-  },
-  {
-    label: 'GitHub',
-    href: 'https://github.com/ryzen-xp/Trustless-OSS',
-    external: true,
-    icon: FaGithub,
-  },
+const productLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'Dashboard', href: '/dashboard' },
+];
+
+const socialLinks = [
+  { label: 'X', href: 'https://x.com/ryzen__xp', icon: FaXTwitter },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ryzen_xp/', icon: FaLinkedinIn },
+  { label: 'GitHub', href: 'https://github.com/ryzen-xp/Trustless-OSS', icon: FaGithub },
 ];
 
 export default function Footer() {
   return (
     <footer
       id="site-footer"
-      className="site-footer relative z-10 overflow-hidden border-t-[4px] border-slate-950 px-4 py-4 text-slate-950 sm:px-6 md:px-8"
+      className="site-footer relative z-10 mt-auto px-4 py-10 sm:px-6 lg:px-8"
     >
-      <div className="relative z-10 grid w-full grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 sm:grid-cols-[1fr_auto_1fr]">
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <div className="flex min-w-0 items-center gap-3">
+      <div className="mx-auto grid w-full max-w-[96rem] gap-10 md:grid-cols-[1.4fr_0.7fr_0.7fr]">
+        <div>
+          <Link href="/" className="inline-flex items-center gap-3">
             <Logo size="sm" />
-            <div className="title-brutal text-xl tracking-tighter text-slate-950 sm:text-2xl">
-              TRUSTLESS <span className="text-blue-600">OSS</span>
-            </div>
+            <span className="text-2xl font-bold tracking-tight">
+              Trustless <span className="text-blue-600">OSS</span>
+            </span>
+          </Link>
+          <p className="mt-4 max-w-md text-sm leading-6 text-slate-600">
+            Escrow-backed GitHub bounties. Fund the work, merge the proof, and release USDC without
+            payout admin.
+          </p>
+          <div className="mt-5">
+            <FooterHealth />
           </div>
-          <span className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.07em] text-slate-600 sm:text-[0.68rem]">
-            © {new Date().getFullYear()} Trustless OSS
-          </span>
         </div>
 
-        <nav
-          className="col-span-2 flex items-center justify-center gap-5 sm:col-span-1 sm:col-start-2 sm:row-start-1"
-          aria-label="Footer links"
-        >
-          {footerActions.map(({ label, href, external, icon: Icon }) =>
-            external ? (
+        <div>
+          <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">Product</p>
+          <nav className="mt-4 flex flex-col gap-2" aria-label="Footer product links">
+            {productLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-slate-600 transition hover:text-blue-600"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div>
+          <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">
+            Community
+          </p>
+          <nav className="mt-4 flex items-center gap-3" aria-label="Footer social links">
+            {socialLinks.map(({ label, href, icon: Icon }) => (
               <a
                 key={label}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                title={label}
-                className="text-slate-700 transition-colors hover:text-blue-600"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70 text-slate-700 ring-1 ring-slate-200 transition hover:text-blue-600"
               >
-                <Icon className="h-[1.35rem] w-[1.35rem]" aria-hidden="true" />
+                <Icon className="h-4 w-4" aria-hidden="true" />
               </a>
-            ) : (
-              <Link
-                key={label}
-                href={href}
-                aria-label={label}
-                title={label}
-                className="text-slate-700 transition-colors hover:text-blue-600"
-              >
-                <Icon className="h-[1.35rem] w-[1.35rem]" aria-hidden="true" />
-              </Link>
-            )
-          )}
-        </nav>
-
-        <div className="col-start-2 row-start-1 flex shrink-0 flex-col items-end gap-1.5 justify-self-end sm:col-start-3">
-          <FooterHealth />
-          <span className="whitespace-nowrap font-mono text-[0.62rem] font-bold uppercase tracking-[0.05em] text-slate-600 sm:text-[0.68rem]">
-            Made with <span className="text-red-500">♥</span> by{' '}
+            ))}
+          </nav>
+          <p className="mt-6 text-xs text-slate-500">
+            © {new Date().getFullYear()} Trustless OSS · Made with{' '}
+            <span className="text-red-500">♥</span> by{' '}
             <a
               href="https://github.com/ryzen-xp"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-700 transition-colors hover:text-blue-600"
+              className="font-medium text-slate-700 hover:text-blue-600"
             >
               Ryzen-XP
             </a>
-          </span>
+          </p>
         </div>
       </div>
     </footer>

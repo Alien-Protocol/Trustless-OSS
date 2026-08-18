@@ -11,6 +11,7 @@ import { X } from 'lucide-react';
 import { handleError, notifySuccess } from '@/lib/notifications';
 
 import LoadingLogo from '../components/layout/LoadingLogo';
+import Navbar from '../components/layout/Navbar';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
@@ -399,28 +400,25 @@ function ConnectForm() {
 export default function ConnectPage() {
   const router = useRouter();
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white brutal-border p-8 md:p-12 brutal-shadow relative">
-        <button
-          onClick={() => router.back()}
-          className="absolute top-0 right-0 w-8 h-8 bg-blue-600 border-b-4 border-l-4 border-slate-950 flex items-center justify-center text-white hover:bg-slate-950 transition-colors cursor-pointer group z-20"
-          aria-label="Go back"
-        >
-          <X
-            size={20}
-            strokeWidth={3}
-            className="group-hover:rotate-90 transition-transform duration-300"
-          />
-        </button>
-        <Suspense
-          fallback={
-            <div className="font-mono font-bold text-sm uppercase text-slate-500 animate-pulse">
-              LOADING_MODULE...
-            </div>
-          }
-        >
-          <ConnectForm />
-        </Suspense>
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      <div className="flex flex-1 items-center justify-center px-4 py-10">
+        <div className="surface-card relative w-full max-w-md p-8 md:p-10">
+          <button
+            onClick={() => router.back()}
+            className="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 transition hover:bg-slate-950 hover:text-white"
+            aria-label="Go back"
+          >
+            <X size={18} strokeWidth={2.25} />
+          </button>
+          <Suspense
+            fallback={
+              <div className="text-sm font-semibold text-slate-500">Loading payout setup...</div>
+            }
+          >
+            <ConnectForm />
+          </Suspense>
+        </div>
       </div>
     </div>
   );

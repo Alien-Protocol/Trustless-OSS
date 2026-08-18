@@ -18,18 +18,12 @@ const repo: Repo = {
   escrow_balance: 12500.5,
   xlm_balance: 36000,
   is_private: false,
-  contributors: [
-    { id: 'ada', github_username: 'ada', avatar_url: 'https://avatars.githubusercontent.com/u/1' },
-    { id: 'lin', github_username: 'lin' },
-    { id: 'sam', github_username: 'sam' },
-    { id: 'mira', github_username: 'mira' },
-  ],
 };
 
 afterEach(cleanup);
 
 describe('RepositoryEscrowCard', () => {
-  it('renders secured repository metadata, formatted balances, and visible contributor avatars', () => {
+  it('renders secured repository metadata and formatted balances', () => {
     render(<RepositoryEscrowCard repo={repo} xlmUsdPrice={0.1} />);
 
     expect(screen.getByText('nftxlend')).toBeInTheDocument();
@@ -39,22 +33,18 @@ describe('RepositoryEscrowCard', () => {
     expect(screen.getByText('12,500.5')).toBeInTheDocument();
     expect(screen.getByText('36,000')).toBeInTheDocument();
     expect(screen.getByText('$16,100.50')).toBeInTheDocument();
-    expect(screen.getByAltText('ada avatar')).toHaveAttribute(
-      'src',
-      'https://avatars.githubusercontent.com/u/1'
-    );
-    expect(screen.getByTitle('lin')).toHaveTextContent('L');
-    expect(screen.getByText('+1')).toBeInTheDocument();
+    expect(screen.queryByText('Contributors Whitelisted')).not.toBeInTheDocument();
+    expect(screen.queryByText('No whitelist setup')).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Manage Escrow' })).toHaveAttribute(
       'href',
       '/dashboard/repo_123'
     );
     expect(
-      screen.getByRole('link', { name: 'Open trustless-oss/nftxlend on GitHub' })
-    ).toHaveAttribute('href', 'https://github.com/trustless-oss/nftxlend');
+      screen.queryByRole('link', { name: 'Open trustless-oss/nftxlend on GitHub' })
+    ).not.toBeInTheDocument();
   });
 
-  it('renders the unconfigured private state and handles an empty whitelist', () => {
+  it('renders the unconfigured private state', () => {
     render(
       <RepositoryEscrowCard
         repo={{
@@ -64,15 +54,13 @@ describe('RepositoryEscrowCard', () => {
           stellar_balance: 0,
           xlm_balance: undefined,
           is_private: true,
-          contributor_whitelist: [],
-          contributors: undefined,
         }}
       />
     );
 
     expect(screen.getByText('Private')).toBeInTheDocument();
     expect(screen.getByText('Unconfigured')).toBeInTheDocument();
-    expect(screen.getByText('No whitelist setup')).toBeInTheDocument();
+    expect(screen.queryByText('No whitelist setup')).not.toBeInTheDocument();
     expect(screen.getAllByText('0')).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'QUICK INITIALIZE' })).toBeDisabled();
     expect(
@@ -99,9 +87,6 @@ describe('RepositoryEscrowCard', () => {
           escrow_balance: Number.NaN,
           xlm_balance: undefined,
           stellar_balance: undefined,
-          whitelisted_contributors: [{ username: 'jules' }, { login: 'bot-user' }, {}],
-          contributor_whitelist: [{ github_username: 'ignored-by-priority' }],
-          contributors: undefined,
         }}
       />
     );
@@ -109,10 +94,6 @@ describe('RepositoryEscrowCard', () => {
     expect(screen.getByText('maintainer / git:main')).toBeInTheDocument();
     expect(screen.getByText('?')).toBeInTheDocument();
     expect(screen.getAllByText('0')).toHaveLength(2);
-    expect(screen.getByLabelText('3 whitelisted contributors')).toBeInTheDocument();
-    expect(screen.getByTitle('jules')).toHaveTextContent('J');
-    expect(screen.getByTitle('bot-user')).toHaveTextContent('B');
-    expect(screen.getByTitle('Contributor 3')).toHaveTextContent('C');
   });
 
   it('renders a non-interactive loading skeleton', () => {

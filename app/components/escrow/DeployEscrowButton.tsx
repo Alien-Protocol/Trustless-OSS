@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Settings } from 'lucide-react';
 import { getWalletKit, withTimeout, WALLET_OPERATION_TIMEOUT_MS } from '@/lib/wallet-kit';
+import Button from '@/app/components/ui/Button';
 
 interface DeployEscrowButtonProps {
   repoId: string;
@@ -87,11 +88,7 @@ export default function DeployEscrowButton({
 
   return (
     <div className="flex w-full flex-col items-stretch">
-      <button
-        onClick={handleDeploy}
-        disabled={loading || !token}
-        className={`brutal-button min-h-11 w-full px-4 py-3 text-xs sm:text-sm ${className}`}
-      >
+      <Button onClick={handleDeploy} disabled={loading || !token} className={`w-full ${className}`}>
         <Settings
           size={17}
           strokeWidth={2.5}
@@ -99,7 +96,7 @@ export default function DeployEscrowButton({
           className={loading ? 'animate-spin' : ''}
         />
         <span aria-live="polite">{loading ? loadingLabel : label}</span>
-      </button>
+      </Button>
       {error && <div className="mt-2 text-left text-xs text-red-600">{error}</div>}
     </div>
   );

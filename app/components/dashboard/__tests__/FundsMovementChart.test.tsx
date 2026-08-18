@@ -37,7 +37,7 @@ describe('FundsMovementChart', () => {
 
     render(<FundsMovementChart />);
 
-    await waitFor(() => expect(screen.getByText('Funds Movement Analytics')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Funds movement')).toBeInTheDocument());
     expect(screen.getByTestId('legend')).toBeInTheDocument();
     expect(screen.getAllByTestId('line').length).toBeGreaterThanOrEqual(1);
   });
@@ -50,6 +50,6 @@ describe('FundsMovementChart', () => {
     await waitFor(() =>
       expect(screen.getByText('Live chart unavailable — showing sample data.')).toBeInTheDocument()
     );
-    expect(screen.getByText('Funds Movement Analytics')).toBeInTheDocument();
+    expect(screen.getByText('Funds movement')).toBeInTheDocument();
   });
 });

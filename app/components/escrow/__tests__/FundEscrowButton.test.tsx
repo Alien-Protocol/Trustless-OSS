@@ -31,7 +31,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
 
     expect(screen.queryByText(/ERR_INVALID_AMOUNT/i)).not.toBeInTheDocument();
 
@@ -60,7 +60,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
 
     const amountInput = screen.getByLabelText(/deposit amount/i);
     fireEvent.change(amountInput, { target: { value: '25' } });
@@ -80,7 +80,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
 
     expect(screen.getByRole('button', { name: /75% ESCROW/i })).toBeInTheDocument();
   });
@@ -97,7 +97,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
 
     fireEvent.change(screen.getByLabelText(/deposit amount/i), { target: { value: '25' } });
     fireEvent.click(screen.getByRole('button', { name: /REVIEW_DEPOSIT/i }));
@@ -134,7 +134,7 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'FUND_REPOSITORY' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
     fireEvent.change(screen.getByLabelText(/deposit amount/i), { target: { value: '25' } });
     fireEvent.click(screen.getByRole('button', { name: /REVIEW_DEPOSIT/i }));
 

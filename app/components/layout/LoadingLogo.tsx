@@ -4,7 +4,7 @@ import Logo from './Logo';
 
 export default function LoadingLogo({
   size = 'md',
-  message = 'LOADING_SYSTEM...',
+  message = 'Loading...',
   variant = 'square',
 }: {
   size?: 'tiny' | 'sm' | 'md' | 'lg';
@@ -12,54 +12,35 @@ export default function LoadingLogo({
   variant?: 'square' | 'circle';
 }) {
   const sizeClasses = {
-    tiny: 'w-4 h-4 text-[10px] border-2',
-    sm: 'w-8 h-8 text-xl',
-    md: 'w-16 h-16 text-3xl',
-    lg: 'w-24 h-24 text-5xl',
+    tiny: 'h-4 w-4 border-2',
+    sm: 'h-8 w-8 border-2',
+    md: 'h-16 w-16 border-2',
+    lg: 'h-24 w-24 border-2',
   };
-
-  const isTiny = size === 'tiny';
 
   if (variant === 'circle') {
     return (
-      <div
-        className={`relative ${sizeClasses[size]} rounded-full border-slate-950 border-t-blue-600 animate-spin`}
+      <span
+        className={`${sizeClasses[size]} inline-block rounded-full border-slate-200 border-t-blue-600 animate-spin`}
+        aria-hidden="true"
       />
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6 animate-in fade-in duration-500">
-      <Logo size={size} />
-
-      {!isTiny && (
-        <div className="flex flex-col items-center gap-2">
-          <span className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-slate-950 animate-pulse">
-            {message}
-          </span>
-          <div className="w-32 h-1 bg-slate-200 border border-slate-950 overflow-hidden">
-            <div className="h-full bg-blue-600 animate-scan-loading" />
-          </div>
+    <div className="flex flex-col items-center justify-center gap-5">
+      <div className="loading-orbit relative">
+        <span className="loading-orbit-ring" aria-hidden="true" />
+        <Logo size={size} />
+      </div>
+      <div className="flex flex-col items-center gap-3">
+        <p className="text-sm font-medium tracking-wide text-slate-500">{message}</p>
+        <div className="flex items-center gap-1.5" aria-hidden="true">
+          <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-bounce [animation-delay:-0.2s]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-bounce [animation-delay:-0.1s]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-cyan-500 animate-bounce" />
         </div>
-      )}
-
-      <style jsx>{`
-        @keyframes scan-loading {
-          0% {
-            transform: translateX(-100%);
-          }
-          50% {
-            transform: translateX(0%);
-          }
-          100% {
-            transform: translateX(100%);
-          }
-        }
-        .animate-scan-loading {
-          width: 60%;
-          animation: scan-loading 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-      `}</style>
+      </div>
     </div>
   );
 }

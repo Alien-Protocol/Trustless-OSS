@@ -66,11 +66,11 @@ export default function DashboardMetrics() {
           Live metrics unavailable — showing sample data.
         </div>
       )}
-      <div className="dashboard-surface p-6 rounded-lg shadow-[6px_6px_0_#000]">
+      <div className="dashboard-surface p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <p className="font-mono text-xs font-black uppercase text-slate-500">
-              Total Value Locked (TVL)
+            <p className="text-xs font-semibold tracking-[0.12em] text-slate-500">
+              Total Value Locked
             </p>
             <div className="mt-3 flex items-baseline gap-3">
               <span className="text-3xl font-black tracking-tight">
@@ -101,14 +101,14 @@ export default function DashboardMetrics() {
             </div>
           </div>
           <div className="flex items-start">
-            <div className="bg-white/80 rounded-full p-2 border-2 border-slate-950">
+            <div className="rounded-full bg-white/80 p-2 ring-1 ring-slate-200">
               <Lock className="h-6 w-6 text-slate-700" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="dashboard-surface p-6 rounded-lg shadow-[6px_6px_0_#000]">
+      <div className="dashboard-surface p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="font-mono text-xs font-black uppercase text-slate-500">
@@ -125,13 +125,13 @@ export default function DashboardMetrics() {
               </div>
             </div>
           </div>
-          <div className="bg-white/80 rounded-full p-2 border-2 border-slate-950">
+          <div className="rounded-full bg-white/80 p-2 ring-1 ring-slate-200">
             <Shield className="h-6 w-6 text-slate-700" />
           </div>
         </div>
       </div>
 
-      <div className="dashboard-surface p-6 rounded-lg shadow-[6px_6px_0_#000]">
+      <div className="dashboard-surface p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="font-mono text-xs font-black uppercase text-slate-500">
@@ -148,7 +148,7 @@ export default function DashboardMetrics() {
               </div>
             </div>
           </div>
-          <div className="bg-white/80 rounded-full p-2 border-2 border-slate-950">
+          <div className="rounded-full bg-white/80 p-2 ring-1 ring-slate-200">
             <Users className="h-6 w-6 text-slate-700" />
           </div>
         </div>

@@ -92,19 +92,19 @@ export default async function HomePage() {
 
           <div className="relative z-10 mb-9 grid gap-5 md:mb-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(300px,0.55fr)] lg:items-end lg:justify-between">
             <div>
-              <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
+              <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
                 A clear path from issue to payout
               </p>
               <h2
                 id="workflow-title"
-                className="mt-4 max-w-4xl text-3xl font-black uppercase italic leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-4xl md:text-5xl"
+                className="font-display mt-4 max-w-4xl text-3xl font-extrabold leading-[0.98] tracking-tight text-slate-950 sm:text-4xl md:text-5xl"
               >
                 Less payout admin.
                 <br />
                 More work shipped.
               </h2>
             </div>
-            <p className="max-w-xl text-base font-semibold leading-7 text-slate-600 lg:justify-self-end">
+            <p className="max-w-xl text-base leading-7 text-slate-600 lg:justify-self-end">
               Trustless OSS follows the contribution lifecycle maintainers already know. The reward
               state stays visible while GitHub remains the place where work happens.
             </p>
@@ -114,21 +114,21 @@ export default async function HomePage() {
             {workflowItems.map(({ step, title, desc, detail, icon: Icon }) => (
               <article
                 key={step}
-                className="group relative flex min-h-0 flex-col overflow-hidden border-4 border-slate-950 bg-white p-5 transition-transform duration-200 hover:-translate-y-1 md:min-h-72 md:p-6"
+                className="surface-card group relative flex min-h-0 flex-col overflow-hidden p-5 transition-transform duration-200 hover:-translate-y-1 md:min-h-72 md:p-6"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <span className="flex h-12 w-12 items-center justify-center border-2 border-slate-950 bg-blue-600 text-white shadow-[4px_4px_0_#020617]">
-                    <Icon className="h-6 w-6" strokeWidth={2.5} aria-hidden="true" />
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white">
+                    <Icon className="h-6 w-6" strokeWidth={2.25} aria-hidden="true" />
                   </span>
-                  <span className="font-mono text-5xl font-black tracking-[-0.08em] text-slate-200 transition-colors group-hover:text-blue-100">
+                  <span className="font-display text-5xl font-extrabold tracking-[-0.08em] text-slate-200 transition-colors group-hover:text-blue-100">
                     {step}
                   </span>
                 </div>
-                <h3 className="mt-7 text-2xl font-black leading-tight text-slate-950 md:mt-10">
+                <h3 className="mt-7 text-2xl font-bold leading-tight text-slate-950 md:mt-10">
                   {title}
                 </h3>
-                <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">{desc}</p>
-                <div className="mt-6 flex items-center justify-between pt-2 font-mono text-[0.68rem] font-black uppercase tracking-[0.14em] text-blue-600 md:mt-auto md:pt-4">
+                <p className="mt-3 text-sm leading-6 text-slate-600">{desc}</p>
+                <div className="mt-6 flex items-center justify-between pt-2 text-[0.72rem] font-semibold tracking-[0.12em] text-blue-600 uppercase md:mt-auto md:pt-4">
                   <span>{detail}</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </div>
@@ -138,7 +138,7 @@ export default async function HomePage() {
         </section>
 
         <section
-          className="relative mb-20 overflow-hidden border-4 border-slate-950 bg-slate-950 px-5 py-7 text-white shadow-[8px_8px_0_#2563eb] sm:px-7 sm:py-9 md:mb-28 md:px-10"
+          className="relative mb-20 overflow-hidden rounded-3xl bg-slate-950 px-5 py-7 text-white sm:px-7 sm:py-9 md:mb-28 md:px-10"
           aria-labelledby="issue-platforms-title"
         >
           <Image
@@ -151,12 +151,12 @@ export default async function HomePage() {
           />
           <div className="relative z-10 grid gap-7 lg:grid-cols-[minmax(0,0.75fr)_minmax(420px,1fr)] lg:items-center">
             <div>
-              <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-300">
+              <p className="text-xs font-semibold tracking-[0.2em] text-blue-300 uppercase">
                 Repository-native rewards
               </p>
               <h2
                 id="issue-platforms-title"
-                className="mt-3 text-2xl font-black uppercase italic leading-none tracking-[-0.035em] sm:text-3xl"
+                className="font-display mt-3 text-2xl font-extrabold leading-none tracking-tight sm:text-3xl"
               >
                 Start with an issue.
                 <br />
@@ -165,8 +165,8 @@ export default async function HomePage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <article className="flex items-center gap-4 border-2 border-white/25 bg-white/10 p-4 backdrop-blur-sm">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-white text-slate-950">
+              <article className="flex items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
                   <SiGithub className="h-7 w-7" aria-hidden="true" />
                 </span>
                 <div>
@@ -177,8 +177,8 @@ export default async function HomePage() {
                 </div>
               </article>
 
-              <article className="flex items-center gap-4 border-2 border-white/25 bg-white/10 p-4 backdrop-blur-sm">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-white text-[#FC6D26]">
+              <article className="flex items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-[#FC6D26]">
                   <SiGitlab className="h-8 w-8" aria-hidden="true" />
                 </span>
                 <div>
@@ -207,28 +207,29 @@ export default async function HomePage() {
           />
           <div className="relative z-10 mb-0 pt-4 md:mb-12 md:pt-8">
             <div className="max-w-5xl">
-              <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
+              <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
                 Cross-chain payout routes
               </p>
               <h2
                 id="payout-routes-title"
-                className="mt-4 text-3xl font-black uppercase italic leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-4xl md:text-5xl"
+                className="font-display mt-4 text-3xl font-extrabold leading-[0.98] tracking-tight text-slate-950 sm:text-4xl md:text-5xl"
               >
                 Fund once on Stellar.
                 <br />
                 Pay where contributors are.
               </h2>
-              <p className="mt-5 max-w-2xl text-base font-semibold leading-7 text-slate-600">
+              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
                 Keep the bounty pool in Stellar USDC while contributors select a supported
                 destination through the CCTP payout flow.
               </p>
             </div>
           </div>
 
-          <div className="cctp-flow-map relative z-10 overflow-hidden">
+          <div className="cctp-flow-map relative z-10">
             <svg
               className="cctp-flow-svg"
               viewBox="0 0 1000 560"
+              preserveAspectRatio="xMidYMid meet"
               role="img"
               aria-label="USDC moves from Stellar through CCTP to supported destination chains"
             >
@@ -241,24 +242,6 @@ export default async function HomePage() {
                 <path id="cctp-to-4" d="M570 280 C660 430 750 440 860 423" />
                 <path id="cctp-to-5" d="M570 280 C620 460 685 505 780 504" />
               </defs>
-
-              <g className="cctp-smoke-trails cctp-smoke-trails-inbound" aria-hidden="true">
-                <use href="#stellar-to-cctp" />
-                <use href="#stellar-to-cctp" className="cctp-smoke-core" />
-              </g>
-
-              <g className="cctp-smoke-trails cctp-smoke-trails-outbound" aria-hidden="true">
-                {destinationChains.map((chain, index) => (
-                  <use key={`${chain.name}-smoke`} href={`#cctp-to-${index}`} />
-                ))}
-                {destinationChains.map((chain, index) => (
-                  <use
-                    key={`${chain.name}-core-smoke`}
-                    className="cctp-smoke-core"
-                    href={`#cctp-to-${index}`}
-                  />
-                ))}
-              </g>
 
               <g className="cctp-energy-rings" aria-hidden="true">
                 <circle
@@ -276,7 +259,6 @@ export default async function HomePage() {
               </g>
 
               <image
-                className="cctp-flow-coin cctp-flow-coin-inbound"
                 href="/usd-coin-usdc-logo.svg"
                 width="44"
                 height="44"
@@ -285,10 +267,11 @@ export default async function HomePage() {
               >
                 <animateMotion
                   dur="5.4s"
+                  calcMode="linear"
                   keyPoints="0;0;1;1"
                   keyTimes="0;0.08;0.56;1"
                   repeatCount="indefinite"
-                  rotate="auto"
+                  rotate="0"
                 >
                   <mpath href="#stellar-to-cctp" />
                 </animateMotion>
@@ -297,7 +280,6 @@ export default async function HomePage() {
               {destinationChains.map((chain, index) => (
                 <image
                   key={`${chain.name}-coin`}
-                  className="cctp-flow-coin cctp-flow-coin-small"
                   href="/usd-coin-usdc-logo.svg"
                   width="30"
                   height="30"
@@ -306,13 +288,14 @@ export default async function HomePage() {
                 >
                   <animateMotion
                     dur="5.4s"
+                    calcMode="linear"
                     keyPoints="0;0;1;1"
                     keyTimes={`0;${(0.6 + index * 0.018).toFixed(3)};${(
                       0.86 +
                       index * 0.012
                     ).toFixed(3)};1`}
                     repeatCount="indefinite"
-                    rotate="auto"
+                    rotate="0"
                   >
                     <mpath href={`#cctp-to-${index}`} />
                   </animateMotion>
@@ -369,45 +352,25 @@ export default async function HomePage() {
           <div className="relative z-10 flex flex-col items-center text-center">
             <p
               id="partners-title"
-              className="font-mono text-xs font-black uppercase tracking-[0.24em] text-blue-950"
+              className="text-xs font-semibold tracking-[0.22em] text-blue-950 uppercase"
             >
               Supported by
             </p>
 
             <div
-              className="mt-5 flex flex-wrap items-center justify-center gap-8 sm:gap-12"
-              aria-label="Supported partner logos"
+              className="mt-5 flex flex-wrap items-center justify-center gap-10 sm:gap-14"
+              aria-label="Supported partners"
             >
-              <a
-                href="https://www.trustlesswork.com/"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Trustless Work"
-                className="partner-logo-link partner-logo-original group"
-              >
+              <figure className="partner-logo-mark">
                 <Image
-                  src="/partners/trustless-work.svg"
-                  alt="Trustless Work"
-                  width={217}
-                  height={217}
-                  className="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-105 sm:h-20 sm:w-20"
+                  src="/partners/trustless-escrow.png"
+                  alt="Trustless Escrow"
+                  width={495}
+                  height={434}
+                  className="h-20 w-20 object-contain sm:h-24 sm:w-24"
                 />
-              </a>
-              <a
-                href="https://www.grantfox.xyz/"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GrantFox"
-                className="partner-logo-link group"
-              >
-                <Image
-                  src="/partners/grantfox.svg"
-                  alt="GrantFox"
-                  width={173}
-                  height={208}
-                  className="h-16 w-16 object-contain brightness-0 transition-transform duration-300 group-hover:scale-105 sm:h-20 sm:w-20"
-                />
-              </a>
+                <figcaption>Trustless Escrow</figcaption>
+              </figure>
             </div>
           </div>
         </section>

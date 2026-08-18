@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { handleError, notifySuccess } from '@/lib/notifications';
 import Portal from '@/app/components/layout/Portal';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
+import Button from '@/app/components/ui/Button';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
@@ -42,23 +43,24 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
 
   return (
     <>
-      <button
+      <Button
+        variant="danger"
         onClick={() => {
           setShowModal(true);
           setError('');
         }}
         disabled={loading}
-        className="brutal-button-outline px-5 py-3 text-sm flex items-center justify-center gap-3 w-full sm:w-auto border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors disabled:opacity-50 min-w-[140px]"
+        className="w-full sm:w-auto"
       >
         {loading ? (
           <>
             <LoadingLogo size="tiny" variant="circle" />
-            <span>DELETING...</span>
+            Deleting
           </>
         ) : (
-          'DELETE_REPO'
+          'Delete repo'
         )}
-      </button>
+      </Button>
 
       {showModal && (
         <Portal>
@@ -102,14 +104,14 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
                   <button
                     onClick={() => setShowModal(false)}
                     disabled={loading}
-                    className="flex-1 py-4 px-6 text-sm font-bold uppercase border-4 border-slate-950 bg-white text-slate-950 shadow-[4px_4px_0_0_#dc2626] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px] disabled:opacity-50"
+                    className="flex-1 py-4 px-6 text-sm font-bold uppercase border-4 border-slate-950 bg-white text-slate-950 shadow-[4px_4px_0_0_#dc2626] active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
                   >
                     ABORT
                   </button>
                   <button
                     onClick={handleDelete}
                     disabled={loading}
-                    className="flex-[1.5] py-4 px-6 text-sm font-bold uppercase border-4 border-slate-950 bg-red-600 text-white shadow-[4px_4px_0_0_#dc2626] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px] disabled:opacity-50 flex items-center justify-center gap-3"
+                    className="flex-[1.5] py-4 px-6 text-sm font-bold uppercase border-4 border-slate-950 bg-red-600 text-white shadow-[4px_4px_0_0_#dc2626] active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 flex items-center justify-center gap-3"
                   >
                     {loading ? (
                       <>

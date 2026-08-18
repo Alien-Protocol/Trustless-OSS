@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { notifySuccess, handleError } from '@/lib/notifications';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
+import Button from '@/app/components/ui/Button';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
@@ -57,19 +58,15 @@ export default function RetryProcessButton({
   if (status === 'completed' || status === 'cancelled') return null;
 
   return (
-    <button
-      onClick={handleRetry}
-      disabled={loading}
-      className="brutal-button px-3 py-1 text-[10px] flex items-center justify-center gap-2 min-w-[100px]"
-    >
+    <Button size="sm" onClick={handleRetry} disabled={loading}>
       {loading ? (
         <>
           <LoadingLogo size="tiny" variant="circle" />
-          <span>RETRYING...</span>
+          Retrying
         </>
       ) : (
-        'EXEC_RETRY'
+        'Retry'
       )}
-    </button>
+    </Button>
   );
 }

@@ -76,10 +76,10 @@ export default function EscrowEventLog({
     <section className="w-full" aria-label="Escrow event logs">
       <div className="mb-8 grid gap-5 md:mb-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(300px,0.55fr)] lg:items-end">
         <div>
-          <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
+          <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
             Live reward updates
           </p>
-          <h2 className="mt-4 max-w-4xl text-3xl font-black uppercase italic leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-4xl md:text-5xl">
+          <h2 className="font-display mt-4 max-w-4xl text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
             See every reward update.
           </h2>
         </div>
@@ -91,7 +91,7 @@ export default function EscrowEventLog({
         </div>
       </div>
 
-      <div className="escrow-event-log-feed overflow-hidden border-4 border-slate-950 bg-[#eef5ff]/90 shadow-[8px_8px_0_#2563eb]">
+      <div className="escrow-event-log-feed overflow-hidden rounded-3xl bg-white/70 ring-1 ring-slate-200/80">
         <div role="log" aria-live="polite">
           {renderedEvents.length === 0 ? (
             <div className="p-10 text-center sm:p-12">
@@ -112,12 +112,12 @@ export default function EscrowEventLog({
                     <img
                       src={event.avatarUrl}
                       alt=""
-                      className="w-9 h-9 rounded-full border-2 border-slate-950 shrink-0"
+                      className="h-9 w-9 shrink-0 rounded-full object-cover"
                     />
                   ) : (
                     <div
                       aria-hidden="true"
-                      className="w-9 h-9 rounded-full border-2 border-slate-950 bg-emerald-300 flex items-center justify-center font-black text-sm text-slate-950 shrink-0"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-300 text-sm font-bold text-slate-950"
                     >
                       {event.actor[0]?.toUpperCase() ?? '?'}
                     </div>

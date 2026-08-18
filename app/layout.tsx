@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Footer from './components/layout/Footer';
 import { Toaster } from './components/layout/Toaster';
 
-const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' });
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-jakarta',
+});
 const jbMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata: Metadata = {
@@ -24,22 +27,17 @@ export const revalidate = 86400;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${jbMono.variable}`}>
-      <body className="min-h-screen bg-slate-50 text-slate-950 font-sans antialiased selection:bg-blue-600 selection:text-white">
-        <div className="min-h-screen border-[12px] border-slate-950 flex flex-col relative">
-          {/* Subtle geometric dot grid overlay */}
-          <div
-            className="absolute inset-0 z-0 opacity-5 pointer-events-none bg-dot-drift"
-            style={{
-              backgroundImage: 'radial-gradient(#2563eb 2px, transparent 2px)',
-              backgroundSize: '30px 30px',
-            }}
-          ></div>
-          <div className="relative z-10 flex-1 flex flex-col">
-            {children}
-            <Footer />
-            <Toaster richColors closeButton position="bottom-right" />
-          </div>
+    <html lang="en" className={`${jakarta.variable} ${jbMono.variable}`}>
+      <body className="min-h-screen bg-[#f3f6ff] font-sans text-slate-950 antialiased selection:bg-blue-600 selection:text-white">
+        <div className="page-aurora" aria-hidden="true">
+          <span className="page-aurora-one" />
+          <span className="page-aurora-two" />
+          <span className="page-aurora-three" />
+        </div>
+        <div className="relative z-10 flex min-h-screen flex-col">
+          {children}
+          <Footer />
+          <Toaster richColors closeButton position="bottom-right" />
         </div>
       </body>
     </html>

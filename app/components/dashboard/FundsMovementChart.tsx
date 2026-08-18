@@ -58,14 +58,14 @@ export default function FundsMovementChart() {
   const showSampleNotice = Boolean(error) || !data || data.length === 0;
 
   return (
-    <div className="dashboard-surface p-6 rounded-lg shadow-[6px_6px_0_#000]">
+    <div className="dashboard-surface p-6">
       {showSampleNotice && (
         <div className="mb-2 text-sm text-yellow-700">
           Live chart unavailable — showing sample data.
         </div>
       )}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-black uppercase tracking-tight">Funds Movement Analytics</h2>
+        <h2 className="font-display text-xl font-extrabold tracking-tight">Funds movement</h2>
         <div className="text-sm text-slate-600">Escrow TVL Locked ($) / Payouts Released ($)</div>
       </div>
       <div className="mb-3 flex gap-3 items-center">

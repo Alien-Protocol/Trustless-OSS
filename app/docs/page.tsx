@@ -1,10 +1,63 @@
 'use client';
 
-import Link from 'next/link';
 import Navbar from '../components/layout/Navbar';
+import Button from '@/app/components/ui/Button';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+
+const maintainerSteps = [
+  {
+    title: 'Connect GitHub',
+    body: 'Log in and authorize the GitHub App on the repositories you want to reward.',
+  },
+  {
+    title: 'Deploy escrow',
+    body: 'Open the repo in the dashboard and deploy a multi-release Stellar escrow, then sign with a Stellar wallet.',
+  },
+  {
+    title: 'Label issues',
+    body: 'Add low, medium, high, or custom to a GitHub issue so the bounty amount is attached.',
+  },
+  {
+    title: 'Custom amounts',
+    body: 'For a custom bounty, comment @trustless-oss-bot 150 and the milestone updates immediately.',
+  },
+  {
+    title: 'Manage liquidity',
+    body: 'Use Refund funds in the dashboard to pull unused USDC from escrow back to your wallet.',
+  },
+];
+
+const contributorSteps = [
+  {
+    title: 'Register a wallet',
+    body: 'When assigned to a labeled issue, follow the bot link and connect a Stellar wallet.',
+  },
+  {
+    title: 'On-chain milestone',
+    body: 'Linking a wallet creates a milestone inside the repo escrow, so the payout is reserved.',
+  },
+  {
+    title: 'Merge to release',
+    body: 'When the maintainer merges your pull request, USDC is released from escrow to your wallet.',
+  },
+  {
+    title: 'Help commands',
+    body: 'Comment @trustless-oss-bot /help to update your payout address or check status.',
+  },
+];
+
+const workflow = [
+  'Maintainer logs in and connects a repo',
+  'Install the GitHub App',
+  'Deploy multi-release escrow',
+  'Label an issue',
+  'Bot asks for a wallet',
+  'Contributor links a Stellar wallet',
+  'Milestone is created on-chain',
+  'PR merge releases USDC',
+];
 
 export default function DocsPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -15,196 +68,68 @@ export default function DocsPage() {
   }, []);
 
   return (
-    <div className="relative min-h-[calc(100vh-24px)] flex flex-col selection:bg-blue-600 selection:text-white">
-      <Navbar user={user} breadcrumbs={[{ label: 'DOCS' }]} />
+    <div className="relative flex min-h-screen flex-col">
+      <Navbar user={user} />
 
-      <main className="flex-1 w-full max-w-5xl mx-auto px-6 py-16">
-        <div className="label-brutal bg-slate-950 text-white inline-flex px-3 py-1 mb-8 brutal-shadow animate-pulse-brutal">
-          SYS.DOCS // END_TO_END_PROTOCOL_SPEC
-        </div>
-
-        <h1 className="title-brutal text-6xl md:text-8xl text-slate-950 mb-12 italic uppercase tracking-tighter">
-          HOW_IT_WORKS
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-12 sm:px-6 md:py-16">
+        <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
+          Protocol guide
+        </p>
+        <h1 className="font-display mt-3 text-4xl font-extrabold tracking-tight text-slate-950 sm:text-6xl">
+          How it works
         </h1>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
+          Trustless OSS turns GitHub issues into escrow-backed bounties. Maintainers fund a pool,
+          contributors ship, and a merged pull request releases USDC.
+        </p>
 
-        {/* Graphical View Section */}
-        <section className="mb-24">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-12 h-2 bg-blue-600"></div>
-            <h2 className="title-brutal text-3xl text-slate-950">VISUAL_WORKFLOW</h2>
-          </div>
+        <section className="mt-12">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight">Visual workflow</h2>
+          <ol className="mt-6 grid gap-3 sm:grid-cols-2">
+            {workflow.map((step, index) => (
+              <li key={step} className="surface-card flex gap-3 p-4">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <p className="text-sm font-semibold leading-6 text-slate-800">{step}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
 
-          <div className="bg-slate-50 brutal-border p-8 md:p-12 brutal-shadow-blue overflow-x-auto">
-            <div className="min-w-[900px] flex flex-col gap-16 relative">
-              {/* Maintainer Start */}
-              <div className="flex items-center gap-8">
-                <div className="flex-shrink-0 w-48 bg-white brutal-border p-4 brutal-shadow">
-                  <span className="label-brutal text-blue-600 mb-2 block">STEP_01</span>
-                  <p className="font-bold text-xs uppercase">Maintainer Logs in & Connects Repo</p>
-                </div>
-                <div className="flex-grow h-1 bg-slate-950 relative">
-                  <div className="absolute right-0 -top-1.5 w-4 h-4 border-r-4 border-t-4 border-slate-950 rotate-45"></div>
-                </div>
-                <div className="flex-shrink-0 w-48 bg-white brutal-border p-4 brutal-shadow">
-                  <span className="label-brutal text-blue-600 mb-2 block">STEP_02</span>
-                  <p className="font-bold text-xs uppercase">Install GitHub App on Repo</p>
-                </div>
-                <div className="flex-grow h-1 bg-slate-950 relative">
-                  <div className="absolute right-0 -top-1.5 w-4 h-4 border-r-4 border-t-4 border-slate-950 rotate-45"></div>
-                </div>
-                <div className="flex-shrink-0 w-48 bg-blue-600 text-white brutal-border p-4 brutal-shadow">
-                  <span className="label-brutal text-white mb-2 block">STEP_03</span>
-                  <p className="font-bold text-xs uppercase">
-                    Deploy Multi-Release Escrow (On-Chain)
-                  </p>
-                </div>
-              </div>
-
-              {/* GitHub Interaction */}
-              <div className="flex items-center gap-8 translate-x-12">
-                <div className="w-1 h-12 bg-slate-950 ml-24"></div>
-              </div>
-
-              <div className="flex items-center gap-8">
-                <div className="flex-shrink-0 w-48 bg-white brutal-border p-4 brutal-shadow">
-                  <span className="label-brutal text-blue-600 mb-2 block">STEP_04</span>
-                  <p className="font-bold text-xs uppercase">Label Issue (Low/Med/High/Custom)</p>
-                </div>
-                <div className="flex-grow h-1 bg-slate-950 relative">
-                  <div className="absolute right-0 -top-1.5 w-4 h-4 border-r-4 border-t-4 border-slate-950 rotate-45"></div>
-                </div>
-                <div className="flex-shrink-0 w-48 bg-slate-950 text-white brutal-border p-4 brutal-shadow">
-                  <span className="label-brutal text-blue-400 mb-2 block">STEP_05</span>
-                  <p className="font-bold text-xs uppercase">Bot Comments & Asks for Wallet</p>
-                </div>
-                <div className="flex-grow h-1 bg-slate-950 relative">
-                  <div className="absolute right-0 -top-1.5 w-4 h-4 border-r-4 border-t-4 border-slate-950 rotate-45"></div>
-                </div>
-                <div className="flex-shrink-0 w-48 bg-white brutal-border p-4 brutal-shadow">
-                  <span className="label-brutal text-blue-600 mb-2 block">STEP_06</span>
-                  <p className="font-bold text-xs uppercase">Contributor Links Stellar Wallet</p>
-                </div>
-              </div>
-
-              {/* Payout */}
-              <div className="flex items-center gap-8 translate-x-12">
-                <div className="w-1 h-12 bg-slate-950 ml-[820px]"></div>
-              </div>
-
-              <div className="flex justify-end gap-8">
-                <div className="flex-shrink-0 w-56 bg-white brutal-border p-4 brutal-shadow">
-                  <span className="label-brutal text-blue-600 mb-2 block">STEP_07</span>
-                  <p className="font-bold text-xs uppercase">Milestone Created On-Chain</p>
-                </div>
-                <div className="w-24 h-1 bg-slate-950 self-center relative">
-                  <div className="absolute right-0 -top-1.5 w-4 h-4 border-r-4 border-t-4 border-slate-950 rotate-45"></div>
-                </div>
-                <div className="flex-shrink-0 w-56 bg-blue-600 text-white brutal-border p-6 brutal-shadow-blue animate-pulse-brutal">
-                  <span className="label-brutal text-white mb-2 block">FINAL_EXECUTION</span>
-                  <p className="text-lg font-black uppercase">PR Merged → Instant Payout</p>
-                </div>
-              </div>
-            </div>
+        <section className="mt-16">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight">Maintainer view</h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {maintainerSteps.map((step) => (
+              <article key={step.title} className="surface-card p-5">
+                <h3 className="font-bold text-slate-950">{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{step.body}</p>
+              </article>
+            ))}
           </div>
         </section>
 
-        {/* Maintainer Deep Dive */}
-        <section className="mb-24">
-          <h2 className="title-brutal text-4xl text-slate-950 mb-8 underline decoration-blue-600 underline-offset-8">
-            MAINTAINER_POV
+        <section className="mt-16">
+          <h2 className="font-display text-2xl font-extrabold tracking-tight">Contributor view</h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            {contributorSteps.map((step) => (
+              <article key={step.title} className="surface-card p-5">
+                <h3 className="font-bold text-slate-950">{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{step.body}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-16 rounded-3xl bg-slate-950 px-6 py-10 text-center text-white sm:px-12">
+          <h2 className="font-display text-3xl font-extrabold tracking-tight">
+            Secure. Transparent. Automated.
           </h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="terminal-block">
-              <span className="text-blue-400">01_SETUP:</span>
-              <br />
-              Log in with GitHub. In your dashboard, click "Connect Repo" to authorize our GitHub
-              App on your chosen repositories.
-            </div>
-            <div className="terminal-block">
-              <span className="text-blue-400">02_INFRASTRUCTURE:</span>
-              <br />
-              Navigate to the repo in our DApp and click{' '}
-              <span className="text-white bg-blue-600 px-1">DEPLOY_ESCROW</span>. This deploys a
-              multi-release smart contract on Stellar. You will need to sign this with a Stellar
-              wallet (e.g., Albedo/Freighter).
-            </div>
-            <div className="terminal-block">
-              <span className="text-blue-400">03_BOUNTY_ASSIGNMENT:</span>
-              <br />
-              Go to your GitHub issue and add one of these labels:
-              <br />• <span className="text-green-400">low</span>
-              <br />• <span className="text-yellow-400">medium</span>
-              <br />• <span className="text-red-400">high</span>
-              <br />• <span className="text-purple-400">custom</span>
-            </div>
-            <div className="terminal-block">
-              <span className="text-blue-400">04_CUSTOM_AMOUNTS:</span>
-              <br />
-              If you use the 'custom' label, simply comment on the issue:
-              <br />
-              <span className="text-yellow-200">@trustless-oss-bot 150</span>
-              <br />
-              The bot will update the milestone in our database immediately.
-            </div>
-            <div className="terminal-block">
-              <span className="text-blue-400">05_LIQUIDITY_MANAGEMENT:</span>
-              <br />
-              Need your funds back? Use the{' '}
-              <span className="text-white bg-red-600 px-1">REFUND_FUNDS</span> button in your
-              dashboard. This generates an on-chain transaction to pull USDC from the escrow back to
-              your wallet.
-            </div>
-          </div>
-        </section>
-
-        {/* Contributor Deep Dive */}
-        <section className="mb-24">
-          <h2 className="title-brutal text-4xl text-slate-950 mb-8 underline decoration-blue-600 underline-offset-8">
-            CONTRIBUTOR_POV
-          </h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="terminal-block">
-              <span className="text-blue-400">01_REGISTRATION:</span>
-              <br />
-              Once assigned to a labeled issue, the bot will post a link. Click it to connect your
-              Stellar wallet.
-            </div>
-            <div className="terminal-block">
-              <span className="text-blue-400">02_ON_CHAIN_SYNC:</span>
-              <br />
-              As soon as your wallet is linked, the DApp creates a milestone **on-chain** inside the
-              repo's escrow. Your payment is now cryptographically secured.
-            </div>
-            <div className="terminal-block">
-              <span className="text-blue-400">03_PAYOUT:</span>
-              <br />
-              Open your PR. When the maintainer merges it, our protocol detects the event and
-              **instantly** releases the USDC funds from the escrow to your wallet.
-            </div>
-            <div className="terminal-block">
-              <span className="text-blue-400">04_HELP_COMMANDS:</span>
-              <br />
-              Need to change your address or see status? Comment:
-              <br />
-              <span className="text-yellow-200">@trustless-oss-bot /help</span>
-              <br />
-              Follow the prompts to update your configuration.
-            </div>
-          </div>
-        </section>
-
-        <div className="bg-slate-950 text-white p-12 brutal-border brutal-shadow text-center">
-          <h2 className="title-brutal text-3xl mb-8 uppercase">SECURE_TRANSPARENT_AUTOMATED</h2>
-          <div className="flex flex-wrap justify-center gap-6">
-            <Link
-              href="/dashboard"
-              className="brutal-button-outline bg-white text-slate-950 px-8 py-4"
-            >
-              GO_TO_DASHBOARD
-            </Link>
-            <Link href="/" className="brutal-button px-8 py-4">
-              RETURN_HOME
-            </Link>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Button href="/dashboard" variant="outline" className="bg-white text-slate-950">
+              Go to dashboard
+            </Button>
+            <Button href="/">Return home</Button>
           </div>
         </div>
       </main>

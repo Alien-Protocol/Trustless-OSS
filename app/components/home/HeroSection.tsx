@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import type { User } from '@supabase/supabase-js';
 import { SiGithub } from 'react-icons/si';
 import {
@@ -11,6 +10,7 @@ import {
   ShieldCheck,
   WalletCards,
 } from 'lucide-react';
+import Button from '@/app/components/ui/Button';
 
 interface HeroSectionProps {
   user?: User | null;
@@ -21,13 +21,13 @@ const networkPills = [
     label: 'USDC',
     iconSrc: '/usd-coin-usdc-logo.svg',
     iconAlt: 'USDC logo',
-    className: 'border-blue-200 bg-blue-50 text-blue-700',
+    className: 'bg-blue-50 text-blue-700',
   },
   {
     label: 'Stellar chain',
     iconSrc: '/stellar-xlm-logo.svg',
     iconAlt: 'Stellar logo',
-    className: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    className: 'bg-emerald-50 text-emerald-700',
   },
 ];
 
@@ -79,14 +79,14 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
       <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1.08fr)_minmax(390px,0.72fr)] lg:gap-16">
         <div className="relative z-10 max-w-5xl">
-          <div className="animate-hero-in hero-stagger-1 mb-6 inline-flex max-w-full items-center gap-2 border-2 border-slate-950 bg-white px-3 py-2 font-mono text-[0.62rem] font-black uppercase tracking-[0.13em] text-slate-700 shadow-[4px_4px_0_#2563eb] sm:mb-7 sm:gap-3 sm:px-4 sm:text-[0.7rem] sm:tracking-[0.18em]">
+          <div className="animate-hero-in hero-stagger-1 mb-6 inline-flex max-w-full items-center gap-2 rounded-full bg-white/75 px-3 py-2 text-[0.72rem] font-semibold tracking-[0.08em] text-slate-700 uppercase ring-1 ring-slate-200/80 sm:mb-7 sm:gap-3 sm:px-4">
             <SiGithub className="h-4 w-4 text-slate-950" aria-hidden="true" />
             GitHub-native contributor payments
           </div>
 
           <h1
             id="landing-hero-title"
-            className="animate-hero-in hero-stagger-2 max-w-5xl text-[clamp(1.95rem,9vw,6.6rem)] font-black uppercase italic leading-[0.9] tracking-[-0.045em] text-slate-950 sm:text-[clamp(3.15rem,6.4vw,6.6rem)]"
+            className="animate-hero-in hero-stagger-2 font-display max-w-5xl text-[clamp(2.1rem,8vw,6.2rem)] font-extrabold leading-[0.92] tracking-[-0.05em] text-slate-950"
           >
             Fund the work
             <br />
@@ -95,7 +95,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
             <span className="text-blue-600">Release the reward</span>
           </h1>
 
-          <p className="animate-hero-in hero-stagger-3 mt-8 max-w-2xl text-lg font-semibold leading-8 text-slate-700 md:text-xl">
+          <p className="animate-hero-in hero-stagger-3 mt-8 max-w-2xl text-lg leading-8 text-slate-600 md:text-xl">
             Turn GitHub issues into escrow-backed bounties. Contributors know the reward before they
             start, and maintainers release USDC through the workflow they already use.
           </p>
@@ -104,7 +104,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
             {networkPills.map(({ label, iconSrc, iconAlt, className }) => (
               <span
                 key={label}
-                className={`inline-flex items-center gap-2 rounded-full border-2 px-3.5 py-2 font-mono text-[0.72rem] font-black uppercase tracking-[0.08em] ${className}`}
+                className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[0.72rem] font-semibold ${className}`}
               >
                 <Image src={iconSrc} alt={iconAlt} width={18} height={18} className="h-4 w-4" />
                 {label}
@@ -112,72 +112,61 @@ export default function HeroSection({ user }: HeroSectionProps) {
             ))}
           </div>
 
-          <div className="animate-hero-in hero-stagger-5 mt-10 flex flex-col gap-4 sm:flex-row">
-            <Link
-              href={primaryAction.href}
-              className="brutal-button hero-cta group min-h-16 w-full gap-3 px-8 py-5 text-sm sm:w-auto sm:text-base"
-            >
-              <span>{primaryAction.label}</span>
-              <ArrowUpRight
-                className="h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
-                strokeWidth={3}
-                aria-hidden="true"
-              />
-            </Link>
-
-            <Link
-              href="/docs"
-              className="brutal-button-outline hero-cta min-h-16 w-full gap-3 px-8 py-5 text-sm sm:w-auto sm:text-base"
-            >
-              <BookOpen className="h-5 w-5" strokeWidth={3} aria-hidden="true" />
-              <span>Read the guide</span>
-            </Link>
+          <div className="animate-hero-in hero-stagger-5 mt-10 flex flex-col gap-3 sm:flex-row">
+            <Button href={primaryAction.href} size="lg" className="w-full sm:w-auto">
+              {primaryAction.label}
+              <ArrowUpRight className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+            </Button>
+            <Button href="/docs" variant="outline" size="lg" className="w-full sm:w-auto">
+              <BookOpen className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+              Read the guide
+            </Button>
           </div>
         </div>
 
         <aside
           aria-label="Example bounty lifecycle"
-          className="home-bounty-preview animate-hero-in hero-stagger-6 relative z-10 border-4 border-slate-950 bg-white p-5 shadow-[12px_12px_0_#2563eb] sm:p-7"
+          className="home-bounty-preview animate-hero-in hero-stagger-6 relative z-10 rounded-3xl p-5 shadow-[0_30px_70px_-38px_rgba(37,99,235,0.55)] ring-1 ring-white/70 sm:p-7"
         >
           <div className="flex flex-col items-start justify-between gap-4 pb-5 sm:flex-row sm:items-center">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center border-2 border-slate-950 bg-slate-950 text-white">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
                 <GitBranch className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
-                <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.2em] text-blue-600">
+                <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-blue-600 uppercase">
                   Example bounty
                 </p>
-                <p className="mt-1 truncate text-sm font-black text-slate-950">
+                <p className="mt-1 truncate text-sm font-bold text-slate-950">
                   trustless-oss / web
                 </p>
               </div>
             </div>
-            <span className="border-2 border-slate-950 bg-emerald-100 px-2.5 py-1 font-mono text-[0.62rem] font-black uppercase tracking-wider text-emerald-900">
+            <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[0.62rem] font-bold tracking-wider text-emerald-800 uppercase">
               Escrow backed
             </span>
           </div>
 
-          <div className="py-7">
+          <div className="py-6">
             <div className="flex items-start justify-between gap-5">
               <div>
-                <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
+                <p className="text-xs font-semibold tracking-[0.14em] text-slate-500 uppercase">
                   Issue #128
                 </p>
-                <h2 className="mt-2 max-w-xs text-2xl font-black leading-tight text-slate-950">
+                <h2 className="mt-2 max-w-xs text-2xl font-extrabold leading-tight text-slate-950">
                   Improve contributor wallet onboarding
                 </h2>
               </div>
               <CircleCheck
                 className="h-7 w-7 shrink-0 text-blue-600"
-                strokeWidth={3}
+                strokeWidth={2.5}
                 aria-hidden="true"
               />
             </div>
 
-            <div className="mt-6 flex items-center justify-between gap-4 border-y-4 border-slate-950 bg-blue-600 px-4 py-5 text-white">
+            <div className="mt-6 flex items-center justify-between gap-4 rounded-2xl bg-blue-600 px-4 py-5 text-white">
               <div className="flex items-center gap-4">
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-4 border-white bg-white shadow-[4px_4px_0_#020617]">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white">
                   <Image
                     src="/usd-coin-usdc-logo.svg"
                     alt="USDC"
@@ -187,37 +176,37 @@ export default function HeroSection({ user }: HeroSectionProps) {
                   />
                 </span>
                 <div>
-                  <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.2em] text-blue-100">
+                  <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-blue-100 uppercase">
                     Secured reward
                   </p>
-                  <p className="mt-1 text-4xl font-black tracking-tight">500 USDC</p>
+                  <p className="mt-1 text-4xl font-extrabold tracking-tight">500 USDC</p>
                 </div>
               </div>
               <div className="hidden text-right sm:block">
-                <p className="font-mono text-[0.65rem] font-black uppercase tracking-[0.2em] text-blue-100">
+                <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-blue-100 uppercase">
                   Settlement asset
                 </p>
-                <p className="mt-1 font-mono text-sm font-black">USD Coin</p>
+                <p className="mt-1 text-sm font-semibold">USD Coin</p>
               </div>
             </div>
           </div>
 
-          <ol className="space-y-3">
+          <ol className="space-y-2.5">
             {bountySteps.map(({ title, detail, icon: Icon, className }, index) => (
               <li
                 key={title}
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 border-2 border-slate-950 bg-slate-50 p-3.5"
+                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl bg-slate-50/80 p-3.5"
               >
-                <span className={`flex h-10 w-10 items-center justify-center ${className}`}>
-                  <Icon className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+                <span
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${className}`}
+                >
+                  <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
                 </span>
                 <div>
-                  <p className="text-sm font-black text-slate-950">{title}</p>
-                  <p className="mt-0.5 font-mono text-[0.65rem] font-bold uppercase tracking-wide text-slate-500">
-                    {detail}
-                  </p>
+                  <p className="text-sm font-bold text-slate-950">{title}</p>
+                  <p className="mt-0.5 text-[0.7rem] text-slate-500">{detail}</p>
                 </div>
-                <span className="font-mono text-xs font-black text-slate-400">0{index + 1}</span>
+                <span className="text-xs font-semibold text-slate-400">0{index + 1}</span>
               </li>
             ))}
           </ol>

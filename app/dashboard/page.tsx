@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import InstallationSuccessHandler from '@/app/components/dashboard/InstallationSuccessHandler';
 import DashboardMetrics from '@/app/components/dashboard/DashboardMetrics';
 import FundsMovementChart from '@/app/components/dashboard/FundsMovementChart';
+import Button from '@/app/components/ui/Button';
 interface DashboardProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
@@ -22,17 +22,14 @@ export default async function DashboardPage(props: DashboardProps) {
 
       <div className="relative mb-10 flex flex-col justify-between gap-7 md:mb-14 md:flex-row md:items-end">
         <div className="max-w-5xl">
-          <h1 className="mt-4 text-4xl font-black uppercase italic leading-[0.92] tracking-[-0.045em] text-slate-950 sm:text-5xl md:text-7xl">
+          <h1 className="font-display mt-2 text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl md:text-6xl">
             Dashboard
           </h1>
         </div>
         <div className="flex w-full gap-3 sm:w-auto">
-          <Link
-            href="/dashboard/repos"
-            className="brutal-button min-h-14 w-full gap-2 px-6 py-4 text-sm sm:w-auto bg-white border-2 border-slate-950 text-slate-900"
-          >
+          <Button href="/dashboard/repos" variant="outline" size="lg" className="w-full sm:w-auto">
             View repositories
-          </Link>
+          </Button>
         </div>
       </div>
 

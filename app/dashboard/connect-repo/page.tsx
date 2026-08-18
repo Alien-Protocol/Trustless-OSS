@@ -58,22 +58,22 @@ export default function ConnectRepoPage() {
   return (
     <div className="flex w-full flex-1 flex-col">
       <div className="flex flex-1 items-center justify-center px-3 py-8 sm:px-5 md:px-6 md:py-12">
-        <div className="dashboard-surface relative w-full max-w-lg border-4 border-slate-950 shadow-[8px_8px_0_#2563eb]">
+        <div className="dashboard-surface relative w-full max-w-lg">
           <button
             type="button"
             onClick={handleBack}
-            className="absolute left-0 top-0 z-20 flex min-h-11 min-w-11 items-center justify-center border-b-4 border-r-4 border-slate-950 bg-white text-slate-950 transition-colors hover:bg-blue-600 hover:text-white"
+            className="absolute left-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-950 ring-1 ring-slate-200 transition hover:bg-slate-950 hover:text-white"
             aria-label="Go back"
           >
             <ArrowLeft size={20} strokeWidth={3} aria-hidden="true" />
           </button>
 
           <div className="px-5 pb-8 pt-14 text-center sm:px-8 sm:pb-10 sm:pt-16 md:px-10">
-            <p className="font-mono text-xs font-black uppercase tracking-[0.22em] text-blue-600">
+            <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
               Connect repository
             </p>
 
-            <span className="mx-auto mt-6 flex h-16 w-16 items-center justify-center border-2 border-slate-950 bg-blue-600 text-white shadow-[5px_5px_0_#020617]">
+            <span className="mx-auto mt-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white">
               {installing ? (
                 <RefreshCw className="h-7 w-7 animate-spin" strokeWidth={2.5} aria-hidden="true" />
               ) : (
@@ -81,11 +81,11 @@ export default function ConnectRepoPage() {
               )}
             </span>
 
-            <h1 className="mt-6 text-3xl font-black uppercase italic leading-[0.94] tracking-[-0.04em] text-slate-950 sm:text-4xl">
+            <h1 className="font-display mt-6 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
               {installing ? 'Waiting for installation' : 'Install the GitHub App'}
             </h1>
 
-            <p className="mx-auto mt-4 max-w-md text-sm font-semibold leading-6 text-slate-600 sm:text-base sm:leading-7">
+            <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-slate-600 sm:text-base">
               {installing
                 ? 'Finish installing the app in the GitHub popup. This page will update when the connection is complete.'
                 : 'Connect a repository by installing the Trustless OSS GitHub App and choosing which repos to grant access.'}
@@ -96,7 +96,7 @@ export default function ConnectRepoPage() {
               onClick={handleInstall}
               disabled={installing}
               aria-busy={installing}
-              className="brutal-button mt-8 min-h-14 w-full gap-3 px-6 py-4 text-sm disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
+              className="ui-button ui-button-solid mt-8 h-12 w-full gap-3 px-6 text-sm disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
             >
               {installing ? (
                 <>

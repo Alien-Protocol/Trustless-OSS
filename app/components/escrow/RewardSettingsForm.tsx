@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
+import { Pencil } from 'lucide-react';
 import { notifySuccess, handleError } from '@/lib/notifications';
-
+import Button from '@/app/components/ui/Button';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
@@ -16,6 +16,12 @@ interface RewardSettingsFormProps {
   initialHigh: number;
 }
 
+const TIERS = [
+  { key: 'low' as const, label: 'Low', accent: 'border-l-emerald-400 bg-emerald-50/80' },
+  { key: 'medium' as const, label: 'Medium', accent: 'border-l-amber-400 bg-amber-50/80' },
+  { key: 'high' as const, label: 'High', accent: 'border-l-rose-400 bg-rose-50/80' },
+];
+
 export default function RewardSettingsForm({
   repoId,
   token,
@@ -23,16 +29,27 @@ export default function RewardSettingsForm({
   initialMedium,
   initialHigh,
 }: RewardSettingsFormProps) {
-  const [low, setLow] = useState(String(initialLow));
-  const [medium, setMedium] = useState(String(initialMedium));
-  const [high, setHigh] = useState(String(initialHigh));
+  const [values, setValues] = useState({
+    low: String(initialLow),
+    medium: String(initialMedium),
+    high: String(initialHigh),
+  });
+  const [saved, setSaved] = useState({
+    low: String(initialLow),
+    medium: String(initialMedium),
+    high: String(initialHigh),
+  });
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  function startEditing() {
+    setEditing(true);
+  }
+
+  function discard() {
+    setValues(saved);
+    setEditing(false);
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -44,13 +61,14 @@ export default function RewardSettingsForm({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          reward_low: parseFloat(low) || 0,
-          reward_medium: parseFloat(medium) || 0,
-          reward_high: parseFloat(high) || 0,
+          reward_low: parseFloat(values.low) || 0,
+          reward_medium: parseFloat(values.medium) || 0,
+          reward_high: parseFloat(values.high) || 0,
         }),
       });
 
       if (res.ok) {
+        setSaved(values);
         setEditing(false);
         notifySuccess('Configuration Updated', 'Reward levels have been saved successfully.');
       } else {
@@ -64,120 +82,108 @@ export default function RewardSettingsForm({
     }
   }
 
-  const actionsPortal =
-    mounted && typeof document !== 'undefined' && document.getElementById('repo-config-actions');
-
   return (
-    <div className="relative w-full">
-      {/* Portal for Actions */}
-      {actionsPortal &&
-        createPortal(
-          <div className="flex items-stretch h-full">
-            {editing && (
-              <button
-                onClick={() => {
-                  setLow(String(initialLow));
-                  setMedium(String(initialMedium));
-                  setHigh(String(initialHigh));
-                  setEditing(false);
-                }}
-                disabled={saving}
-                className="px-4 py-2 font-mono font-black text-[10px] bg-white text-red-600 border-l-4 border-b-4 border-slate-950 hover:bg-red-50 transition-colors uppercase shadow-[4px_4px_0_0_#000]"
-              >
+    <section aria-labelledby="reward-parameters-heading">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h2
+          id="reward-parameters-heading"
+          className="text-xl font-black tracking-tight text-slate-950"
+        >
+          Reward parameters
+        </h2>
+        <div className="flex items-center gap-2">
+          {editing ? (
+            <>
+              <Button variant="ghost" size="sm" onClick={discard} disabled={saving}>
                 Discard
-              </button>
-            )}
-            <button
-              onClick={editing ? handleSave : () => setEditing(true)}
-              disabled={saving}
-              className={`px-6 py-2 font-mono font-black text-sm transition-all duration-200 border-l-4 border-b-4 border-slate-950 z-30 shadow-[4px_4px_0_0_#000] flex items-center justify-center gap-3 ${
-                editing
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-slate-950 text-white hover:bg-slate-800'
-              }`}
-            >
-              {editing ? (
-                saving ? (
+              </Button>
+              <Button size="sm" onClick={handleSave} disabled={saving}>
+                {saving ? (
                   <>
                     <LoadingLogo size="tiny" variant="circle" />
-                    <span>WRITING...</span>
+                    Saving
                   </>
                 ) : (
-                  'SAVE'
-                )
-              ) : saving ? (
-                <>
-                  <LoadingLogo size="tiny" variant="circle" />
-                  <span>WAIT...</span>
-                </>
-              ) : (
-                'CONFIG'
-              )}
-            </button>
-          </div>,
-          actionsPortal
-        )}
+                  'Save'
+                )}
+              </Button>
+            </>
+          ) : (
+            <Button variant="ghost" size="sm" onClick={startEditing}>
+              <Pencil size={14} strokeWidth={2.25} aria-hidden="true" />
+              Edit
+            </Button>
+          )}
+        </div>
+      </div>
 
-      <div className="mt-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-          {[
-            { label: 'LOW', value: low, setter: setLow, color: 'bg-[#A7F3D0]' },
-            { label: 'MEDIUM', value: medium, setter: setMedium, color: 'bg-[#FDE68A]' },
-            { label: 'HIGH', value: high, setter: setHigh, color: 'bg-[#FECACA]' },
-          ].map((tier) => (
-            <div
-              key={tier.label}
-              className={`${tier.color} border-4 border-slate-950 p-4 transition-all ${
-                editing
-                  ? 'shadow-[4px_4px_0_0_#2563eb] -translate-y-1'
-                  : 'shadow-[4px_4px_0_0_#000]'
-              }`}
-            >
-              <div className="flex justify-between items-center mb-2">
-                <span className="label-brutal text-[10px] text-slate-800 tracking-tighter bg-white/50 px-1 border border-slate-950/20">
-                  CLASS // {tier.label}
-                </span>
-              </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {TIERS.map((tier) => {
+          const value = values[tier.key];
+          const cardClass = `w-full rounded-2xl border-l-4 ${tier.accent} px-4 py-3 text-left`;
 
+          const body = (
+            <>
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                {tier.label}
+              </span>
               {editing ? (
-                <div className="relative">
+                <div className="relative mt-2">
+                  <label htmlFor={`reward-${tier.key}`} className="sr-only">
+                    {tier.label} reward in USDC
+                  </label>
                   <input
+                    id={`reward-${tier.key}`}
                     type="number"
                     step="1"
                     min="0"
-                    value={tier.value}
-                    onChange={(e) => tier.setter(e.target.value)}
-                    className="w-full bg-white border-2 border-slate-950 px-3 py-2 font-mono font-black text-xl focus:outline-none focus:ring-4 ring-blue-500/20 transition-all"
+                    value={value}
+                    onChange={(e) =>
+                      setValues((current) => ({ ...current, [tier.key]: e.target.value }))
+                    }
+                    className="w-full bg-transparent py-1 font-mono text-xl font-black outline-none"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-500">
+                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-slate-400">
                     USDC
                   </span>
                 </div>
               ) : (
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-black text-slate-950">{tier.value}</span>
-                  <span className="text-[10px] font-bold text-slate-600 font-mono tracking-widest uppercase">
-                    USDC
-                  </span>
+                <div className="mt-1 flex items-baseline gap-1.5">
+                  <span className="text-xl font-black tracking-tight text-slate-950">{value}</span>
+                  <span className="text-[11px] font-semibold text-slate-400">USDC</span>
                 </div>
               )}
-            </div>
-          ))}
-        </div>
+            </>
+          );
 
-        {editing && (
-          <div className="mt-8 p-5 bg-blue-50 border-4 border-double border-blue-600 flex items-start gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="bg-blue-600 text-white w-6 h-6 flex items-center justify-center font-black text-xs shrink-0">
-              !
-            </div>
-            <p className="text-[11px] font-mono font-bold text-blue-900 leading-relaxed uppercase tracking-tight">
-              Protocol Update Warning: Modified reward parameters will only apply to{' '}
-              <span className="underline decoration-2">newly discovered</span> issues. Existing
-              escrows require manual override via CLI.
-            </p>
-          </div>
-        )}
+          if (editing) {
+            return (
+              <div key={tier.key} className={cardClass}>
+                {body}
+              </div>
+            );
+          }
+
+          return (
+            <button
+              key={tier.key}
+              type="button"
+              onClick={startEditing}
+              aria-label={`Edit ${tier.label} reward`}
+              className={`${cardClass} transition-transform hover:-translate-y-0.5`}
+            >
+              {body}
+            </button>
+          );
+        })}
       </div>
-    </div>
+
+      {editing && (
+        <p className="mt-3 text-sm text-slate-500">
+          New amounts apply to newly discovered issues. Existing bounties keep their original
+          reward.
+        </p>
+      )}
+    </section>
   );
 }

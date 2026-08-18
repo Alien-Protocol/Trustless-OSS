@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { X } from 'lucide-react';
 import { handleError, notifySuccess } from '@/lib/notifications';
 import { useRouter } from 'next/navigation';
 import Portal from '@/app/components/layout/Portal';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
+import Button from '@/app/components/ui/Button';
 
 export default function RefundFundButton({
   repoId,
@@ -56,7 +58,7 @@ export default function RefundFundButton({
         `${refundedAmount} USDC refunded. ${cancelledIssues} active issues cancelled.`
       );
       setShowModal(false);
-      router.refresh(); // Refresh page to update balance
+      router.refresh();
     } catch (err: any) {
       handleError(err, 'Refund Funds');
       let friendlyMsg = err.message;
@@ -70,84 +72,102 @@ export default function RefundFundButton({
 
   return (
     <>
-      <button
+      <Button
+        variant="outline"
         onClick={() => {
           setShowModal(true);
           setError('');
         }}
         disabled={loading || currentBalance <= 0}
-        className="brutal-button-outline px-5 py-3 text-sm flex items-center justify-center gap-3 w-full sm:w-auto disabled:opacity-50 disabled:grayscale min-w-[140px]"
+        className="w-full sm:w-auto"
       >
         {loading ? (
           <>
             <LoadingLogo size="tiny" variant="circle" />
-            <span>PROCESSING...</span>
+            Processing
           </>
         ) : (
-          'REFUND_FUNDS'
+          'Refund funds'
         )}
-      </button>
+      </Button>
 
       {showModal && (
         <Portal>
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm">
-            <div className="bg-white border-4 border-slate-950 w-full max-w-md shadow-[12px_12px_0px_0px_#ef4444] animate-in zoom-in-95 duration-200">
-              <div className="p-8">
-                <div className="mb-8">
-                  <div className="label-brutal bg-slate-950 text-white px-3 py-1 w-fit mb-4">
-                    ACTION // SWEEP_LIQUIDITY
-                  </div>
-                  <h3 className="title-brutal text-3xl text-slate-950 mb-1">REFUND_ALL_FUNDS</h3>
-                  {error && (
-                    <div className="bg-red-50 border-l-8 border-red-600 p-4 mt-6 animate-in slide-in-from-top-2">
-                      <p className="text-red-600 font-black text-xs uppercase mb-1">
-                        ERR_PROTOCOL_REJECTION
-                      </p>
-                      <p className="text-red-950 font-mono text-[10px] font-bold leading-tight uppercase">
-                        {error}
-                      </p>
-                    </div>
-                  )}
-                  <div className="mt-6 p-4 bg-slate-100 border-2 border-slate-950 font-mono">
-                    <p className="text-slate-500 text-[10px] font-bold uppercase mb-2">
-                      Refundable Balance
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-sm"
+            onClick={() => {
+              if (!loading) setShowModal(false);
+            }}
+          >
+            <div
+              className="surface-card w-full max-w-md overflow-hidden bg-white/90"
+              onClick={(event) => event.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="refund-funds-title"
+            >
+              <div className="p-6 sm:p-7">
+                <div className="mb-5 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-red-500">
+                      Withdraw funds
                     </p>
-                    <p className="text-3xl font-black text-slate-950">
-                      {currentBalance.toFixed(2)} <span className="text-sm">USDC</span>
-                    </p>
+                    <h3
+                      id="refund-funds-title"
+                      className="mt-1 text-2xl font-bold tracking-tight text-slate-950"
+                    >
+                      Refund all funds
+                    </h3>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    disabled={loading}
+                    aria-label="Close refund dialog"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-red-200 hover:text-red-600 disabled:opacity-50"
+                  >
+                    <X className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+                  </button>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="p-4 bg-red-50 border-2 border-red-600 text-red-600 text-[10px] font-bold uppercase leading-relaxed">
-                    Warning: This will pull all available USDC from the escrow contract back to your
-                    wallet. All active issues will be permanently cancelled. This action is fully
-                    automated and irreversible.
+                {error && (
+                  <div className="mb-4 rounded-2xl bg-red-50 px-4 py-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-red-600">
+                      Refund failed
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-red-800">{error}</p>
                   </div>
+                )}
 
-                  <div className="flex gap-4 mt-8 pt-8 border-t-4 border-slate-950 border-dashed">
-                    <button
-                      onClick={() => setShowModal(false)}
-                      disabled={loading}
-                      className="flex-1 py-4 px-6 text-sm font-bold uppercase border-4 border-slate-950 bg-white text-slate-950 shadow-[4px_4px_0_0_#ef4444] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px] disabled:opacity-50"
-                    >
-                      ABORT
-                    </button>
-                    <button
-                      onClick={handleRefund}
-                      disabled={loading}
-                      className="flex-[1.5] py-4 px-6 text-sm font-bold uppercase border-4 border-slate-950 bg-red-600 text-white shadow-[4px_4px_0_0_#ef4444] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all active:translate-x-[4px] active:translate-y-[4px] disabled:opacity-50 flex items-center justify-center gap-3"
-                    >
-                      {loading ? (
-                        <>
-                          <LoadingLogo size="tiny" variant="circle" />
-                          <span>PROCESSING...</span>
-                        </>
-                      ) : (
-                        'CONFIRM_REFUND'
-                      )}
-                    </button>
-                  </div>
+                <div className="rounded-2xl bg-slate-50 px-4 py-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                    Refundable balance
+                  </p>
+                  <p className="mt-1 text-3xl font-bold tracking-tight text-slate-950">
+                    {currentBalance.toFixed(2)}{' '}
+                    <span className="text-sm font-semibold text-slate-400">USDC</span>
+                  </p>
+                </div>
+
+                <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
+                  This returns all available USDC from escrow to your wallet and permanently
+                  cancels every active issue. This cannot be undone.
+                </p>
+
+                <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                  <Button variant="ghost" onClick={() => setShowModal(false)} disabled={loading}>
+                    Cancel
+                  </Button>
+                  <Button variant="danger" onClick={handleRefund} disabled={loading}>
+                    {loading ? (
+                      <>
+                        <LoadingLogo size="tiny" variant="circle" />
+                        Processing
+                      </>
+                    ) : (
+                      'Confirm refund'
+                    )}
+                  </Button>
                 </div>
               </div>
             </div>
