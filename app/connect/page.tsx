@@ -12,8 +12,7 @@ import { handleError, notifySuccess } from '@/lib/notifications';
 
 import LoadingLogo from '../components/layout/LoadingLogo';
 import Navbar from '../components/layout/Navbar';
-
-const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
+import { backendUrl } from '@/lib/backend';
 
 function ConnectForm() {
   const searchParams = useSearchParams();
@@ -49,7 +48,7 @@ function ConnectForm() {
           return;
         }
 
-        const res = await fetch(`${BACKEND}/api/contributor/me`, {
+        const res = await fetch(backendUrl('/api/contributor/me'), {
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
 
@@ -110,7 +109,7 @@ function ConnectForm() {
       );
       if (!address) throw new Error('No public key returned');
 
-      const res = await fetch(`${BACKEND}/api/milestones/push`, {
+      const res = await fetch(backendUrl('/api/milestones/push'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,7 +175,7 @@ function ConnectForm() {
         return;
       }
 
-      const res = await fetch(`${BACKEND}/api/milestones/push`, {
+      const res = await fetch(backendUrl('/api/milestones/push'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

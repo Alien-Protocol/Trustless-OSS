@@ -22,7 +22,9 @@ export function isGitHubInstallFailedMessage(data: unknown): data is GitHubInsta
   );
 }
 
-export function isGitHubInstallSuccessMessage(data: unknown): data is typeof GITHUB_INSTALL_SUCCESS {
+export function isGitHubInstallSuccessMessage(
+  data: unknown
+): data is typeof GITHUB_INSTALL_SUCCESS {
   return data === GITHUB_INSTALL_SUCCESS;
 }
 

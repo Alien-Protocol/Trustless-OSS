@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Lock, Shield, Users } from 'lucide-react';
 
 type Metrics = {
@@ -9,63 +9,20 @@ type Metrics = {
   devContributors: { count: number; whitelistedOAuthVerified: boolean };
 };
 
+const SAMPLE: Metrics = {
+  tvl: { amount: 27400, changePercent: 12.4 },
+  activePools: { active: 4, total: 7 },
+  devContributors: { count: 5, whitelistedOAuthVerified: true },
+};
+
 export default function DashboardMetrics() {
-  const [metrics, setMetrics] = useState<Metrics | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchMetrics = async () => {
-      setError(null);
-      try {
-        const res = await fetch('/api/health', { cache: 'no-store' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        const payload: Metrics = {
-          tvl: {
-            amount: Number(data.tvl ?? 0),
-            changePercent: Number(data.tvl_change_percent ?? 0),
-          },
-          activePools: {
-            active: Number(data.active_pools_active ?? 0),
-            total: Number(data.active_pools_total ?? 0),
-          },
-          devContributors: {
-            count: Number(data.dev_contributors ?? 0),
-            whitelistedOAuthVerified: Boolean(data.whitelisted_oauth_verified ?? false),
-          },
-        };
-        if (mounted) setMetrics(payload);
-      } catch (e: unknown) {
-        if (mounted) setError(e instanceof Error ? e.message : 'Unknown error');
-      }
-    };
-
-    void fetchMetrics();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  const SAMPLE: Metrics = {
-    tvl: { amount: 27400, changePercent: 12.4 },
-    activePools: { active: 4, total: 7 },
-    devContributors: { count: 5, whitelistedOAuthVerified: true },
-  };
-
-  // show sample when live metrics are missing; keep loading indicator for accessibility
-  const metricsToRender = metrics ?? SAMPLE;
-  const showSampleNotice = Boolean(error) || !metrics;
+  const metricsToRender = SAMPLE;
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-      {showSampleNotice && (
-        <div className="mb-2 col-span-full text-sm text-yellow-700">
-          Live metrics unavailable — showing sample data.
-        </div>
-      )}
+      <div className="mb-2 col-span-full text-sm text-yellow-700">
+        Live metrics unavailable — showing sample data.
+      </div>
       <div className="dashboard-surface p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">

@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { notifySuccess, handleError } from '@/lib/notifications';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
 import Button from '@/app/components/ui/Button';
-
-const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
+import { backendUrl } from '@/lib/backend';
 
 interface RetryProcessButtonProps {
   issueId: string;
@@ -26,7 +25,7 @@ export default function RetryProcessButton({
   async function handleRetry() {
     setLoading(true);
     try {
-      const res = await fetch(`${BACKEND}/api/issues/${issueId}/retry`, {
+      const res = await fetch(backendUrl(`/api/issues/${issueId}/retry`), {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,

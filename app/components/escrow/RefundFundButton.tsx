@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Portal from '@/app/components/layout/Portal';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
 import Button from '@/app/components/ui/Button';
+import { backendUrl } from '@/lib/backend';
 
 export default function RefundFundButton({
   repoId,
@@ -22,11 +23,6 @@ export default function RefundFundButton({
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
-  const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(
-    /\/$/,
-    ''
-  );
-
   async function handleRefund() {
     if (currentBalance <= 0) {
       setError('NO_FUNDS_AVAILABLE_FOR_REFUND');
@@ -37,7 +33,7 @@ export default function RefundFundButton({
     setError('');
 
     try {
-      const res = await fetch(`${BACKEND}/api/escrow/refund`, {
+      const res = await fetch(backendUrl('/api/escrow/refund'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,8 +146,8 @@ export default function RefundFundButton({
                 </div>
 
                 <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm leading-6 text-red-700">
-                  This returns all available USDC from escrow to your wallet and permanently
-                  cancels every active issue. This cannot be undone.
+                  This returns all available USDC from escrow to your wallet and permanently cancels
+                  every active issue. This cannot be undone.
                 </p>
 
                 <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

@@ -258,13 +258,7 @@ export default async function HomePage() {
                 />
               </g>
 
-              <image
-                href="/usd-coin-usdc-logo.svg"
-                width="44"
-                height="44"
-                x="-22"
-                y="-22"
-              >
+              <image href="/usd-coin-usdc-logo.svg" width="44" height="44" x="-22" y="-22">
                 <animateMotion
                   dur="5.4s"
                   calcMode="linear"

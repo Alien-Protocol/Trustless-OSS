@@ -5,8 +5,7 @@ import { Pencil } from 'lucide-react';
 import { notifySuccess, handleError } from '@/lib/notifications';
 import Button from '@/app/components/ui/Button';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
-
-const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
+import { backendUrl } from '@/lib/backend';
 
 interface RewardSettingsFormProps {
   repoId: string;
@@ -54,7 +53,7 @@ export default function RewardSettingsForm({
   async function handleSave() {
     setSaving(true);
     try {
-      const res = await fetch(`${BACKEND}/api/repos/${repoId}/rewards`, {
+      const res = await fetch(backendUrl(`/api/repos/${repoId}/rewards`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -62,6 +62,7 @@ describe('InstallationSuccessHandler', () => {
 
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
+      json: async () => ({ status: 'ok' }),
       text: async () => '',
     });
 
@@ -81,11 +82,18 @@ describe('InstallationSuccessHandler', () => {
   it('shows a close action when sync fails', async () => {
     vi.useFakeTimers();
     setLocationSearch('?installation_id=153860735&setup_action=install');
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: false,
-      status: 500,
-      text: async () => 'sync exploded',
-    });
+    global.fetch = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ status: 'ok' }),
+        text: async () => '',
+      })
+      .mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: async () => 'sync exploded',
+      });
 
     render(<InstallationSuccessHandler />);
 
@@ -96,5 +104,26 @@ describe('InstallationSuccessHandler', () => {
     expect(screen.getByText('Could not finish installation')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Close this window' })).toBeInTheDocument();
     expect(close).not.toHaveBeenCalled();
+  });
+
+  it('fails fast when the API reports Redis is down', async () => {
+    setLocationSearch('?installation_id=153860735&setup_action=install');
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: async () => ({
+        status: 'unhealthy',
+        checks: {
+          redis: { status: 'error', message: 'Redis unavailable' },
+        },
+      }),
+      text: async () => 'Redis unavailable',
+    });
+
+    render(<InstallationSuccessHandler />);
+
+    expect(await screen.findByText('Could not finish installation')).toBeInTheDocument();
+    expect(screen.getByText(/Redis is unavailable/)).toBeInTheDocument();
+    expect(global.fetch).toHaveBeenCalledTimes(1);
   });
 });

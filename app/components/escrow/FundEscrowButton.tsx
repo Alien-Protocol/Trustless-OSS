@@ -7,6 +7,7 @@ import { getWalletKit, withTimeout, WALLET_OPERATION_TIMEOUT_MS } from '@/lib/wa
 import Portal from '@/app/components/layout/Portal';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
 import Button from '@/app/components/ui/Button';
+import { backendUrl } from '@/lib/backend';
 
 type ModalPhase = 'amount' | 'wallet' | 'sign' | 'processing' | 'success' | 'error';
 
@@ -32,10 +33,6 @@ export default function FundEscrowButton({
   const dialogRef = useRef<HTMLDivElement>(null);
   const refreshTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
-  const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(
-    /\/$/,
-    ''
-  );
   const parsedAmount = Number(amount);
   const isAmountValid = Number.isFinite(parsedAmount) && parsedAmount > 0;
   const showValidationError = submissionAttempted && amountTouched && !isAmountValid;
@@ -152,7 +149,7 @@ export default function FundEscrowButton({
 
       setPhase('sign');
 
-      const res1 = await fetch(`${BACKEND}/api/escrow/fund-unsigned`, {
+      const res1 = await fetch(backendUrl('/api/escrow/fund-unsigned'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +180,7 @@ export default function FundEscrowButton({
         'Transaction signing timed out. Please close the wallet modal and try again.'
       );
 
-      const res2 = await fetch(`${BACKEND}/api/escrow/submit-fund`, {
+      const res2 = await fetch(backendUrl('/api/escrow/submit-fund'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -517,9 +514,7 @@ export default function FundEscrowButton({
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-950">
                       {phaseMessage.label}
                     </p>
-                    <p className="text-sm leading-5 text-slate-600">
-                      {phaseMessage.detail}
-                    </p>
+                    <p className="text-sm leading-5 text-slate-600">{phaseMessage.detail}</p>
                     {error ? <p className="mt-2 text-sm font-bold text-red-700">{error}</p> : null}
                     {phase === 'success' && transactionHash ? (
                       <a

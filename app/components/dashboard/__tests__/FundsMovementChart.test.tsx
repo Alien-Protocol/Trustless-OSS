@@ -6,8 +6,10 @@ import React from 'react';
 // Mock recharts to avoid requiring the library in test environment.
 vi.mock('recharts', () => {
   return {
-    ResponsiveContainer: (props: { children?: React.ReactNode }) => React.createElement('div', null, props.children),
-    LineChart: (props: { children?: React.ReactNode }) => React.createElement('div', null, props.children),
+    ResponsiveContainer: (props: { children?: React.ReactNode }) =>
+      React.createElement('div', null, props.children),
+    LineChart: (props: { children?: React.ReactNode }) =>
+      React.createElement('div', null, props.children),
     Line: () => React.createElement('div', { 'data-testid': 'line' }),
     XAxis: () => React.createElement('div', { 'data-testid': 'xaxis' }),
     YAxis: () => React.createElement('div', { 'data-testid': 'yaxis' }),

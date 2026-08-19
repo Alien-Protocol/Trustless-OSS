@@ -87,7 +87,7 @@ describe('RewardSettingsForm', () => {
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:5000/api/repos/repo_123/rewards',
+        '/api/backend/api/repos/repo_123/rewards',
         expect.objectContaining({
           method: 'PUT',
           headers: expect.objectContaining({

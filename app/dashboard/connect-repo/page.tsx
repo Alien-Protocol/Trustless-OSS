@@ -12,12 +12,20 @@ import {
   subscribeGitHubInstallResult,
 } from '@/lib/github-install';
 import { handleError } from '@/lib/notifications';
+import { fetchBackendHealth } from '@/lib/health';
 
 export default function ConnectRepoPage() {
   const router = useRouter();
   const [installing, setInstalling] = useState(false);
 
   useEffect(() => {
+    void fetchBackendHealth(20_000);
+  }, []);
+
+  useEffect(() => {
+    let lastMessage = '';
+    let lastAt = 0;
+
     return subscribeGitHubInstallResult((data) => {
       if (isGitHubInstallSuccessMessage(data)) {
         router.push('/dashboard/repos');
@@ -25,13 +33,17 @@ export default function ConnectRepoPage() {
       }
 
       if (data === GITHUB_INSTALL_FAILED || isGitHubInstallFailedMessage(data)) {
+        const message = isGitHubInstallFailedMessage(data)
+          ? data.message
+          : 'GitHub installed the app, but the API could not sync it.';
+        const now = Date.now();
+        if (message === lastMessage && now - lastAt < 2000) {
+          return;
+        }
+        lastMessage = message;
+        lastAt = now;
         setInstalling(false);
-        handleError(
-          isGitHubInstallFailedMessage(data)
-            ? data.message
-            : 'GitHub installed the app, but the API could not sync it.',
-          'Connect repository'
-        );
+        handleError(message, 'Connect repository');
       }
     });
   }, [router]);

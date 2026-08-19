@@ -2,9 +2,7 @@ export default function GitHubSetupPage() {
   return (
     <div className="flex w-full flex-1 items-center justify-center px-3 py-16">
       <div className="max-w-md text-center">
-        <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
-          GitHub App
-        </p>
+        <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">GitHub App</p>
         <h1 className="font-display mt-4 text-3xl font-extrabold tracking-tight text-slate-950">
           Completing installation
         </h1>

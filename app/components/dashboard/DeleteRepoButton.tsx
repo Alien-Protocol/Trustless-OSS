@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Trash2, X } from 'lucide-react';
 import { handleError, notifySuccess } from '@/lib/notifications';
 import Portal from '@/app/components/layout/Portal';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
 import Button from '@/app/components/ui/Button';
-
-const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
+import { backendUrl } from '@/lib/backend';
 
 export default function DeleteRepoButton({ repoId, token }: { repoId: string; token: string }) {
   const [showModal, setShowModal] = useState(false);
@@ -15,12 +15,18 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
   const [error, setError] = useState('');
   const router = useRouter();
 
+  function closeModal() {
+    if (loading) return;
+    setShowModal(false);
+    setError('');
+  }
+
   async function handleDelete() {
     setLoading(true);
     setError('');
 
     try {
-      const res = await fetch(`${BACKEND}/api/repos/${repoId}`, {
+      const res = await fetch(backendUrl(`/api/repos/${repoId}`), {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -30,12 +36,12 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
         throw new Error(data.error ?? 'Failed to delete repository');
       }
 
-      notifySuccess('Repository Removed', 'All connections have been permanently deleted.');
+      notifySuccess('Repository removed', 'The GitHub connection and bounty records were deleted.');
       setShowModal(false);
       router.push('/dashboard');
-    } catch (err: any) {
-      handleError(err, 'Delete Repository');
-      setError(err.message ?? 'An unknown error occurred.');
+    } catch (err: unknown) {
+      handleError(err, 'Delete repository');
+      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
     } finally {
       setLoading(false);
     }
@@ -64,64 +70,76 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
 
       {showModal && (
         <Portal>
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-sm">
-            <div className="bg-white border-4 border-slate-950 w-full max-w-md shadow-[12px_12px_0px_0px_#dc2626] animate-in zoom-in-95 duration-200">
-              <div className="p-8">
-                <div className="mb-8">
-                  <div className="label-brutal bg-red-600 text-white px-3 py-1 w-fit mb-4 border-2 border-slate-950">
-                    ACTION // PERMANENT_DELETE
-                  </div>
-                  <h3 className="title-brutal text-3xl text-slate-950 mb-2">DELETE_REPO</h3>
-                  <p className="font-mono text-xs text-slate-500 font-bold uppercase leading-relaxed">
-                    This will permanently remove all repository data, bounty history, and revoke the
-                    GitHub App connection.
-                  </p>
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+            onClick={closeModal}
+          >
+            <div
+              className="surface-card w-full max-w-md overflow-hidden bg-white/90"
+              onClick={(event) => event.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="delete-repo-title"
+              aria-describedby="delete-repo-description"
+            >
+              <div className="p-6 sm:p-8">
+                <div className="flex items-start justify-between gap-4">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600">
+                    <Trash2 className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+                  </span>
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    disabled={loading}
+                    aria-label="Close delete dialog"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-red-200 hover:text-red-600 disabled:opacity-50"
+                  >
+                    <X className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+                  </button>
                 </div>
 
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-red-500">
+                  Remove repository
+                </p>
+                <h3
+                  id="delete-repo-title"
+                  className="font-display mt-1 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl"
+                >
+                  Delete this repository?
+                </h3>
+                <p id="delete-repo-description" className="mt-3 text-sm leading-6 text-slate-600">
+                  This permanently removes the repository from Trustless OSS and cannot be undone.
+                </p>
+
                 {error && (
-                  <div className="bg-red-50 border-l-8 border-red-600 p-4 mb-6 animate-in slide-in-from-top-2">
-                    <p className="text-red-600 font-black text-xs uppercase mb-1">
-                      ERR_DELETE_FAILED
+                  <div className="mt-5 rounded-2xl bg-red-50 px-4 py-3">
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-red-600">
+                      Delete failed
                     </p>
-                    <p className="text-red-950 font-mono text-[10px] font-bold leading-tight uppercase">
-                      {error}
-                    </p>
+                    <p className="mt-1 text-sm font-medium text-red-800">{error}</p>
                   </div>
                 )}
 
-                <div className="p-4 bg-slate-950 font-mono mb-8">
-                  <p className="text-slate-500 text-[10px] font-bold uppercase mb-1">
-                    This action will:
-                  </p>
-                  <ul className="text-slate-300 text-[10px] font-bold uppercase space-y-1">
-                    <li>→ Delete all tracked issues & bounty records</li>
-                    <li>→ Remove GitHub App from this repository</li>
-                    <li>→ Permanently remove from database</li>
-                  </ul>
-                </div>
+                <ul className="mt-5 space-y-2 rounded-2xl bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                  <li>Tracked issues and bounty records will be deleted.</li>
+                  <li>The GitHub App connection for this repository will be revoked.</li>
+                  <li>The repository will be removed from your dashboard.</li>
+                </ul>
 
-                <div className="flex gap-4 pt-6 border-t-4 border-slate-950 border-dashed">
-                  <button
-                    onClick={() => setShowModal(false)}
-                    disabled={loading}
-                    className="flex-1 py-4 px-6 text-sm font-bold uppercase border-4 border-slate-950 bg-white text-slate-950 shadow-[4px_4px_0_0_#dc2626] active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50"
-                  >
-                    ABORT
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    disabled={loading}
-                    className="flex-[1.5] py-4 px-6 text-sm font-bold uppercase border-4 border-slate-950 bg-red-600 text-white shadow-[4px_4px_0_0_#dc2626] active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 flex items-center justify-center gap-3"
-                  >
+                <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                  <Button variant="ghost" onClick={closeModal} disabled={loading}>
+                    Cancel
+                  </Button>
+                  <Button variant="danger" onClick={handleDelete} disabled={loading}>
                     {loading ? (
                       <>
                         <LoadingLogo size="tiny" variant="circle" />
-                        <span>DELETING...</span>
+                        Deleting
                       </>
                     ) : (
-                      'CONFIRM_DELETE'
+                      'Delete repository'
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

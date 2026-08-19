@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ConnectRepoPage from '../page';
+import { handleError } from '@/lib/notifications';
 
 const push = vi.fn();
 const back = vi.fn();
@@ -23,10 +24,19 @@ afterEach(() => {
   push.mockClear();
   back.mockClear();
   open.mockClear();
+  vi.mocked(handleError).mockClear();
+  vi.unstubAllGlobals();
 });
 
 beforeEach(() => {
   vi.stubGlobal('open', open);
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ status: 'ok' }),
+    })
+  );
 });
 
 describe('ConnectRepoPage', () => {
@@ -116,5 +126,19 @@ describe('ConnectRepoPage', () => {
       expect(screen.getByRole('button', { name: /Install GitHub App/i })).toBeEnabled();
     });
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it('reports a failed sync only once when multiple channels fire', async () => {
+    render(<ConnectRepoPage />);
+
+    const payload = { type: 'github-installation-failed', message: 'sync failed' };
+    window.postMessage(payload, window.location.origin);
+    const channel = new BroadcastChannel('trustless-oss-github-install');
+    channel.postMessage(payload);
+    channel.close();
+
+    await waitFor(() => {
+      expect(handleError).toHaveBeenCalledTimes(1);
+    });
   });
 });

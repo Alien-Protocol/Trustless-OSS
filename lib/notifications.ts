@@ -11,8 +11,8 @@ export const handleError = (error: unknown, context?: string) => {
     error instanceof Error
       ? error.message
       : typeof error === 'string'
-      ? error
-      : 'An unexpected error occurred';
+        ? error
+        : 'An unexpected error occurred';
 
   toast.error(context || 'Error', {
     description: message,
