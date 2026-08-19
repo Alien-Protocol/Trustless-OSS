@@ -69,14 +69,104 @@ async function getRepo(repoId: string, token: string): Promise<Repo | null> {
   }
 }
 
-async function getIssues(repoId: string, token: string) {
+export type IssueAssignment = {
+  contributors?: {
+    github_username?: string;
+  } | null;
+  contributor?: {
+    github_username?: string;
+  } | null;
+  github_username?: string;
+  payout_status?: string;
+};
+
+export type IssueItem = {
+  id: string;
+  github_issue_number: number;
+  title: string;
+  difficulty_label: string | null;
+  reward_amount: number;
+  status: string;
+  assignments?: IssueAssignment | IssueAssignment[] | null;
+  assignee?: { github_username?: string; login?: string } | string | null;
+  actor_username?: string | null;
+  github_username?: string | null;
+};
+
+export function getActorUsername(issue: Partial<IssueItem> | null | undefined): string | null {
+  if (!issue) return null;
+
+  const rawAssignments = issue.assignments;
+  const assignment = Array.isArray(rawAssignments) ? rawAssignments[0] : rawAssignments;
+
+  let username: string | undefined | null = null;
+
+  if (assignment && typeof assignment === 'object') {
+    const contrib = assignment.contributors || assignment.contributor;
+    if (contrib && typeof contrib === 'object' && contrib.github_username) {
+      username = contrib.github_username;
+    } else if (assignment.github_username) {
+      username = assignment.github_username;
+    }
+  }
+
+  if (!username) {
+    if (typeof issue.assignee === 'object' && issue.assignee !== null) {
+      username = issue.assignee.github_username || issue.assignee.login;
+    } else if (typeof issue.assignee === 'string' && issue.assignee.trim()) {
+      username = issue.assignee.trim();
+    } else if (issue.actor_username && typeof issue.actor_username === 'string') {
+      username = issue.actor_username;
+    } else if (issue.github_username && typeof issue.github_username === 'string') {
+      username = issue.github_username;
+    }
+  }
+
+  if (typeof username !== 'string') return null;
+  const cleaned = username.trim().replace(/^@/, '');
+  if (!cleaned || cleaned.toLowerCase() === 'null' || cleaned.toLowerCase() === 'undefined') {
+    return null;
+  }
+
+  return cleaned;
+}
+
+export function normalizeIssues(rawIssues: unknown): IssueItem[] {
+  if (!Array.isArray(rawIssues)) return [];
+  return rawIssues.map((issue: any) => {
+    if (!issue || typeof issue !== 'object') return issue;
+
+    const actor = getActorUsername(issue);
+    let assignments = issue.assignments;
+
+    if (Array.isArray(assignments)) {
+      assignments = assignments[0] ?? null;
+    }
+
+    if (actor) {
+      assignments = {
+        ...assignments,
+        contributors: {
+          github_username: actor,
+        },
+      };
+    }
+
+    return {
+      ...issue,
+      assignments,
+    };
+  });
+}
+
+async function getIssues(repoId: string, token: string): Promise<IssueItem[]> {
   try {
     const res = await fetch(`${BACKEND}/api/repos/${repoId}/issues`, {
       headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store',
     });
     const data = await res.json();
-    return data.data ?? data.issues ?? [];
+    return normalizeIssues(data.data ?? data.issues ?? []);
   } catch {
     return [];
   }
@@ -258,66 +348,62 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                 </tr>
               </thead>
               <tbody>
-                {issues.map(
-                  (issue: {
-                    id: string;
-                    github_issue_number: number;
-                    title: string;
-                    difficulty_label: string | null;
-                    reward_amount: number;
-                    status: string;
-                    assignments?: {
-                      contributors?: { github_username: string };
-                      payout_status: string;
-                    };
-                  }) => {
-                    const assignment = issue.assignments;
-                    const contributor = assignment?.contributors;
-                    return (
-                      <tr key={issue.id} className="border-t border-slate-100 text-slate-950">
-                        <td className="px-5 py-3.5">
-                          <span className="mr-2 font-bold text-blue-600">
-                            #{issue.github_issue_number}
+                {issues.map((issue: IssueItem) => {
+                  const assignment = Array.isArray(issue.assignments)
+                    ? issue.assignments[0]
+                    : issue.assignments;
+                  const actorUsername = getActorUsername(issue);
+                  return (
+                    <tr key={issue.id} className="border-t border-slate-100 text-slate-950">
+                      <td className="px-5 py-3.5">
+                        <span className="mr-2 font-bold text-blue-600">
+                          #{issue.github_issue_number}
+                        </span>
+                        <span className="font-semibold text-slate-800">{issue.title}</span>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        {issue.difficulty_label && (
+                          <span className={diffBadge(issue.difficulty_label)}>
+                            {issue.difficulty_label}
                           </span>
-                          <span className="font-semibold text-slate-800">{issue.title}</span>
-                        </td>
-                        <td className="px-5 py-3.5">
-                          {issue.difficulty_label && (
-                            <span className={diffBadge(issue.difficulty_label)}>
-                              {issue.difficulty_label}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-5 py-3.5 font-mono">
-                          <span className="font-black text-slate-950">{issue.reward_amount}</span>{' '}
-                          <span className="text-xs font-semibold text-slate-400">USDC</span>
-                        </td>
-                        <td className="px-5 py-3.5">
-                          <span className={statusBadge(issue.status)}>{issue.status}</span>
-                        </td>
-                        <td className="px-5 py-3.5">
-                          {contributor ? (
-                            <span className="font-semibold">@{contributor.github_username}</span>
-                          ) : (
-                            <span className="text-slate-400">—</span>
-                          )}
-                        </td>
-                        <td className="px-5 py-3.5">
-                          {isRepoMaintainer ? (
-                            <RetryProcessButton
-                              issueId={issue.id}
-                              token={session?.access_token ?? ''}
-                              status={issue.status}
-                              payoutStatus={assignment?.payout_status ?? 'pending'}
-                            />
-                          ) : (
-                            <span className="text-xs font-semibold text-slate-400">N/A</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  }
-                )}
+                        )}
+                      </td>
+                      <td className="px-5 py-3.5 font-mono">
+                        <span className="font-black text-slate-950">{issue.reward_amount}</span>{' '}
+                        <span className="text-xs font-semibold text-slate-400">USDC</span>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span className={statusBadge(issue.status)}>{issue.status}</span>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        {actorUsername ? (
+                          <a
+                            href={`https://github.com/${actorUsername}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-slate-900 transition-colors hover:text-blue-600 hover:underline"
+                          >
+                            @{actorUsername}
+                          </a>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                      <td className="px-5 py-3.5">
+                        {isRepoMaintainer ? (
+                          <RetryProcessButton
+                            issueId={issue.id}
+                            token={session?.access_token ?? ''}
+                            status={issue.status}
+                            payoutStatus={assignment?.payout_status ?? 'pending'}
+                          />
+                        ) : (
+                          <span className="text-xs font-semibold text-slate-400">N/A</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
