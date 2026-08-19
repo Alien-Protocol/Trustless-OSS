@@ -127,7 +127,7 @@ describe('RepoDetailPage - Bounty Actor Cell Rendering', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (createClient as any).mockResolvedValue({
+    vi.mocked(createClient).mockResolvedValue({
       auth: {
         getUser: vi.fn().mockResolvedValue({
           data: { user: { id: 'user_1', user_metadata: { provider_id: '123' } } },
@@ -136,7 +136,7 @@ describe('RepoDetailPage - Bounty Actor Cell Rendering', () => {
           data: { session: { access_token: 'fake-token' } },
         }),
       },
-    });
+    } as ReturnType<typeof createClient>);
   });
 
   it('renders actor username as a link to GitHub profile when assigned, and — when unassigned', async () => {
@@ -183,16 +183,19 @@ describe('RepoDetailPage - Bounty Actor Cell Rendering', () => {
       },
     ];
 
-    global.fetch = vi.fn((url: string | URL | Request) => {
-      const urlString = url.toString();
-      if (urlString.includes('/api/repos/repo_1/issues')) {
-        return Promise.resolve(new Response(JSON.stringify({ data: fakeIssues })));
-      }
-      if (urlString.includes('/api/repos/repo_1')) {
-        return Promise.resolve(new Response(JSON.stringify({ data: fakeRepo })));
-      }
-      return Promise.reject(new Error(`Unhandled fetch: ${urlString}`));
-    }) as any;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string | URL | Request) => {
+        const urlString = url.toString();
+        if (urlString.includes('/api/repos/repo_1/issues')) {
+          return Promise.resolve(new Response(JSON.stringify({ data: fakeIssues })));
+        }
+        if (urlString.includes('/api/repos/repo_1')) {
+          return Promise.resolve(new Response(JSON.stringify({ data: fakeRepo })));
+        }
+        return Promise.reject(new Error(`Unhandled fetch: ${urlString}`));
+      })
+    );
 
     const pageElement = await RepoDetailPage({
       params: Promise.resolve({ repoId: 'repo_1' }),

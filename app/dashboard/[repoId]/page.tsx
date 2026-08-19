@@ -133,11 +133,11 @@ export function getActorUsername(issue: Partial<IssueItem> | null | undefined): 
 
 export function normalizeIssues(rawIssues: unknown): IssueItem[] {
   if (!Array.isArray(rawIssues)) return [];
-  return rawIssues.map((issue: any) => {
-    if (!issue || typeof issue !== 'object') return issue;
-
-    const actor = getActorUsername(issue);
-    let assignments = issue.assignments;
+  return rawIssues.map((issue: unknown) => {
+    if (!issue || typeof issue !== 'object') return issue as IssueItem;
+    const issueObj = issue as Partial<IssueItem>;
+    const actor = getActorUsername(issueObj);
+    let assignments = issueObj.assignments;
 
     if (Array.isArray(assignments)) {
       assignments = assignments[0] ?? null;
