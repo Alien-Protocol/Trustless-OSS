@@ -69,95 +69,12 @@ async function getRepo(repoId: string, token: string): Promise<Repo | null> {
   }
 }
 
-export type IssueAssignment = {
-  contributors?: {
-    github_username?: string;
-  } | null;
-  contributor?: {
-    github_username?: string;
-  } | null;
-  github_username?: string;
-  payout_status?: string;
-};
+import {
+  IssueItem,
+  getActorUsername,
+  normalizeIssues,
+} from './utils';
 
-export type IssueItem = {
-  id: string;
-  github_issue_number: number;
-  title: string;
-  difficulty_label: string | null;
-  reward_amount: number;
-  status: string;
-  assignments?: IssueAssignment | IssueAssignment[] | null;
-  assignee?: { github_username?: string; login?: string } | string | null;
-  actor_username?: string | null;
-  github_username?: string | null;
-};
-
-export function getActorUsername(issue: Partial<IssueItem> | null | undefined): string | null {
-  if (!issue) return null;
-
-  const rawAssignments = issue.assignments;
-  const assignment = Array.isArray(rawAssignments) ? rawAssignments[0] : rawAssignments;
-
-  let username: string | undefined | null = null;
-
-  if (assignment && typeof assignment === 'object') {
-    const contrib = assignment.contributors || assignment.contributor;
-    if (contrib && typeof contrib === 'object' && contrib.github_username) {
-      username = contrib.github_username;
-    } else if (assignment.github_username) {
-      username = assignment.github_username;
-    }
-  }
-
-  if (!username) {
-    if (typeof issue.assignee === 'object' && issue.assignee !== null) {
-      username = issue.assignee.github_username || issue.assignee.login;
-    } else if (typeof issue.assignee === 'string' && issue.assignee.trim()) {
-      username = issue.assignee.trim();
-    } else if (issue.actor_username && typeof issue.actor_username === 'string') {
-      username = issue.actor_username;
-    } else if (issue.github_username && typeof issue.github_username === 'string') {
-      username = issue.github_username;
-    }
-  }
-
-  if (typeof username !== 'string') return null;
-  const cleaned = username.trim().replace(/^@/, '');
-  if (!cleaned || cleaned.toLowerCase() === 'null' || cleaned.toLowerCase() === 'undefined') {
-    return null;
-  }
-
-  return cleaned;
-}
-
-export function normalizeIssues(rawIssues: unknown): IssueItem[] {
-  if (!Array.isArray(rawIssues)) return [];
-  return rawIssues.map((issue: unknown) => {
-    if (!issue || typeof issue !== 'object') return issue as IssueItem;
-    const issueObj = issue as Partial<IssueItem>;
-    const actor = getActorUsername(issueObj);
-    let assignments = issueObj.assignments;
-
-    if (Array.isArray(assignments)) {
-      assignments = assignments[0] ?? null;
-    }
-
-    if (actor) {
-      assignments = {
-        ...assignments,
-        contributors: {
-          github_username: actor,
-        },
-      };
-    }
-
-    return {
-      ...issue,
-      assignments,
-    };
-  });
-}
 
 async function getIssues(repoId: string, token: string): Promise<IssueItem[]> {
   try {

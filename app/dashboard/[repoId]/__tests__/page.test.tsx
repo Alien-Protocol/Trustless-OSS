@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import RepoDetailPage, { getActorUsername, normalizeIssues } from '../page';
+import RepoDetailPage from '../page';
+import { getActorUsername, normalizeIssues } from '../utils';
 
 vi.mock('next/navigation', () => ({
   redirect: vi.fn(),
@@ -82,18 +83,23 @@ describe('getActorUsername', () => {
 
   it('returns github_username from direct assignee or actor properties', () => {
     expect(getActorUsername({ assignee: { github_username: 'assignee-user' } })).toBe('assignee-user');
+    expect(getActorUsername({ assignee: { login: 'login-user' } })).toBe('login-user');
     expect(getActorUsername({ assignee: 'string-assignee' })).toBe('string-assignee');
+    expect(getActorUsername({ assignees: [{ login: 'first-assignee' }] })).toBe('first-assignee');
+    expect(getActorUsername({ actor: { github_username: 'actor-obj' } })).toBe('actor-obj');
+    expect(getActorUsername({ actor: 'actor-str' })).toBe('actor-str');
     expect(getActorUsername({ actor_username: 'actor-user' })).toBe('actor-user');
     expect(getActorUsername({ github_username: 'direct-user' })).toBe('direct-user');
   });
 
-  it('returns null for missing, null, or string literal "null" / "undefined"', () => {
+  it('returns null for missing, null, or invalid string literals', () => {
     expect(getActorUsername(null)).toBeNull();
     expect(getActorUsername({})).toBeNull();
     expect(getActorUsername({ assignments: null })).toBeNull();
     expect(getActorUsername({ assignments: { contributors: { github_username: 'null' } } })).toBeNull();
     expect(getActorUsername({ assignments: { contributors: { github_username: 'undefined' } } })).toBeNull();
     expect(getActorUsername({ assignee: 'null' })).toBeNull();
+    expect(getActorUsername({ assignee: '[object Object]' })).toBeNull();
   });
 });
 
@@ -136,7 +142,7 @@ describe('RepoDetailPage - Bounty Actor Cell Rendering', () => {
           data: { session: { access_token: 'fake-token' } },
         }),
       },
-    } as ReturnType<typeof createClient>);
+    } as unknown as Awaited<ReturnType<typeof createClient>>);
   });
 
   it('renders actor username as a link to GitHub profile when assigned, and — when unassigned', async () => {

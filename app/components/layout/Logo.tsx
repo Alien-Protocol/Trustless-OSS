@@ -27,6 +27,8 @@ export default function Logo({ size = 'md', className = '' }: LogoProps) {
         width={1254}
         height={1254}
         unoptimized
+        loading="eager"
+        priority
         className="h-full w-full scale-[1.2] object-contain"
       />
     </span>

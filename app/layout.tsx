@@ -27,8 +27,8 @@ export const revalidate = 86400;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${jakarta.variable} ${jbMono.variable}`}>
-      <body className="min-h-screen bg-[#f3f6ff] font-sans text-slate-950 antialiased selection:bg-blue-600 selection:text-white">
+    <html lang="en" suppressHydrationWarning className={`${jakarta.variable} ${jbMono.variable}`}>
+      <body suppressHydrationWarning className="min-h-screen bg-[#f3f6ff] font-sans text-slate-950 antialiased selection:bg-blue-600 selection:text-white">
         <div className="page-aurora" aria-hidden="true">
           <span className="page-aurora-one" />
           <span className="page-aurora-two" />
