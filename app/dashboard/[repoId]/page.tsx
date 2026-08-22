@@ -9,6 +9,7 @@ import RetryProcessButton from '@/app/components/escrow/RetryProcessButton';
 import RefundFundButton from '@/app/components/escrow/RefundFundButton';
 import DeleteRepoButton from '@/app/components/dashboard/DeleteRepoButton';
 import Button from '@/app/components/ui/Button';
+import { getActorUsername } from '@/lib/issues';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
@@ -266,13 +267,12 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                     difficulty_label: string | null;
                     reward_amount: number;
                     status: string;
-                    assignments?: {
-                      contributors?: { github_username: string };
-                      payout_status: string;
-                    };
+                    assignments?: any;
                   }) => {
-                    const assignment = issue.assignments;
-                    const contributor = assignment?.contributors;
+                    const assignment = Array.isArray(issue.assignments)
+                      ? issue.assignments[0]
+                      : issue.assignments;
+                    const actorUsername = getActorUsername(issue);
                     return (
                       <tr key={issue.id} className="border-t border-slate-100 text-slate-950">
                         <td className="px-5 py-3.5">
@@ -296,8 +296,15 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                           <span className={statusBadge(issue.status)}>{issue.status}</span>
                         </td>
                         <td className="px-5 py-3.5">
-                          {contributor ? (
-                            <span className="font-semibold">@{contributor.github_username}</span>
+                          {actorUsername ? (
+                            <a
+                              href={`https://github.com/${actorUsername}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-semibold text-slate-900 transition-colors hover:text-blue-600 hover:underline"
+                            >
+                              @{actorUsername}
+                            </a>
                           ) : (
                             <span className="text-slate-400">—</span>
                           )}
