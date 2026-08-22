@@ -267,7 +267,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                     difficulty_label: string | null;
                     reward_amount: number;
                     status: string;
-                    assignments?: any;
+                    assignments?: unknown;
                   }) => {
                     const assignment = Array.isArray(issue.assignments)
                       ? issue.assignments[0]

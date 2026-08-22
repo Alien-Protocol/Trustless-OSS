@@ -1,7 +1,7 @@
 export function getActorUsername(issue: unknown): string | null {
   if (!issue || typeof issue !== 'object') return null;
 
-  const item = issue as Record<string, any>;
+  const item = issue as Record<string, unknown>;
 
   const clean = (val: unknown): string | null => {
     if (typeof val !== 'string') return null;
@@ -27,7 +27,7 @@ export function getActorUsername(issue: unknown): string | null {
     }
     if (typeof userObj === 'string') return clean(userObj);
     if (typeof userObj === 'object') {
-      const u = userObj as Record<string, any>;
+      const u = userObj as Record<string, unknown>;
       return (
         clean(u.github_username) ??
         clean(u.username) ??
@@ -63,7 +63,7 @@ export function getActorUsername(issue: unknown): string | null {
   }
 
   if (assignment && typeof assignment === 'object') {
-    const assignObj = assignment as Record<string, any>;
+    const assignObj = assignment as Record<string, unknown>;
     const assignResult =
       clean(assignObj.github_username) ??
       clean(assignObj.actor_username) ??
