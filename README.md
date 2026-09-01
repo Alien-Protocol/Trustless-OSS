@@ -22,7 +22,13 @@
     <a href="LICENSE">
       <img alt="License" src="https://img.shields.io/badge/license-see%20LICENSE-7c3aed" />
     </a>
+
+ [![Trustless OSS](https://badge.uptimerobot.com/psp/0d0076d2b070ffc2cd5855f45f8b60a2.svg?style=logo&theme=dark)](https://stats.uptimerobot.com/eEV8dUAe3D?utm_source=status_badge&utm_medium=referral)
+
+    
   </p>
+
+  
 
   <p>
     <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white" />
