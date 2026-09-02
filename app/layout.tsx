@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Footer from './components/layout/Footer';
 import { Toaster } from './components/layout/Toaster';
+import { Analytics } from '@vercel/analytics/next';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Footer />
           <Toaster richColors closeButton position="bottom-right" />
         </div>
+        <Analytics />
       </body>
     </html>
   );
