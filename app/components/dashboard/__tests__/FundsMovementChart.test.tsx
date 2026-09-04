@@ -44,14 +44,12 @@ describe('FundsMovementChart', () => {
     expect(screen.getAllByTestId('line').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('shows error when data fails to load', async () => {
+  it('does not repeat the sample-data banner on the chart', () => {
     const mock = vi.fn().mockResolvedValueOnce({ ok: false, status: 500 });
     global.fetch = mock;
 
     render(<FundsMovementChart />);
-    await waitFor(() =>
-      expect(screen.getByText('Live chart unavailable — showing sample data.')).toBeInTheDocument()
-    );
     expect(screen.getByText('Funds movement')).toBeInTheDocument();
+    expect(screen.queryByText(/showing sample data/i)).not.toBeInTheDocument();
   });
 });

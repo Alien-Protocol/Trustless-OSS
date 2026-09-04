@@ -1,7 +1,9 @@
+import { ArrowLeftRight, GitBranch, Trophy } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import DashboardMetrics from '@/app/components/dashboard/DashboardMetrics';
 import FundsMovementChart from '@/app/components/dashboard/FundsMovementChart';
+import MaintainerActivity from '@/app/components/dashboard/MaintainerActivity';
 import Button from '@/app/components/ui/Button';
 
 interface DashboardProps {
@@ -25,9 +27,28 @@ export default async function DashboardPage(props: DashboardProps) {
             Dashboard
           </h1>
         </div>
-        <div className="flex w-full gap-3 sm:w-auto">
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <Button href="/dashboard/repos" variant="outline" size="lg" className="w-full sm:w-auto">
+            <GitBranch className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
             View repositories
+          </Button>
+          <Button
+            href="/dashboard/transactions"
+            variant="outline"
+            size="lg"
+            className="w-full sm:w-auto"
+          >
+            <ArrowLeftRight className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+            Activity
+          </Button>
+          <Button
+            href="/dashboard/contributors"
+            variant="outline"
+            size="lg"
+            className="w-full sm:w-auto"
+          >
+            <Trophy className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
+            Leaderboard
           </Button>
         </div>
       </div>
@@ -35,6 +56,8 @@ export default async function DashboardPage(props: DashboardProps) {
       <DashboardMetrics />
 
       <FundsMovementChart />
+
+      <MaintainerActivity />
     </div>
   );
 }

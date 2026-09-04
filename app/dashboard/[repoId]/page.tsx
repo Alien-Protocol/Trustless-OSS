@@ -173,8 +173,9 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                   external
                   variant="ghost"
                   size="sm"
-                  className="h-auto px-2 py-1 text-blue-600"
+                  className="h-auto gap-1.5 px-2 py-1 text-blue-600"
                 >
+                  <ExternalLink size={14} strokeWidth={2.5} aria-hidden="true" />
                   Inspect
                 </Button>
               </div>

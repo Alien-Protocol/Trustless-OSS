@@ -21,7 +21,9 @@ describe('getActorUsername', () => {
     expect(getActorUsername({ actor_username: 'undefined' })).toBeNull();
     expect(getActorUsername({ actor_username: '  NULL  ' })).toBeNull();
     expect(getActorUsername({ assignments: { contributors: 'null' } })).toBeNull();
-    expect(getActorUsername({ assignments: { contributors: { github_username: 'null' } } })).toBeNull();
+    expect(
+      getActorUsername({ assignments: { contributors: { github_username: 'null' } } })
+    ).toBeNull();
   });
 
   it('extracts username from direct string fields on issue', () => {
@@ -39,10 +41,18 @@ describe('getActorUsername', () => {
   });
 
   it('extracts username from assignments object or array', () => {
-    expect(getActorUsername({ assignments: { contributors: { github_username: 'ryzen-xp' } } })).toBe('ryzen-xp');
-    expect(getActorUsername({ assignments: [{ contributors: { github_username: 'ryzen-xp' } }] })).toBe('ryzen-xp');
-    expect(getActorUsername({ assignments: [{ contributors: [{ github_username: 'ryzen-xp' }] }] })).toBe('ryzen-xp');
-    expect(getActorUsername({ assignments: { contributor_github_username: 'ryzen-xp' } })).toBe('ryzen-xp');
+    expect(
+      getActorUsername({ assignments: { contributors: { github_username: 'ryzen-xp' } } })
+    ).toBe('ryzen-xp');
+    expect(
+      getActorUsername({ assignments: [{ contributors: { github_username: 'ryzen-xp' } }] })
+    ).toBe('ryzen-xp');
+    expect(
+      getActorUsername({ assignments: [{ contributors: [{ github_username: 'ryzen-xp' }] }] })
+    ).toBe('ryzen-xp');
+    expect(getActorUsername({ assignments: { contributor_github_username: 'ryzen-xp' } })).toBe(
+      'ryzen-xp'
+    );
     expect(getActorUsername({ assignments: [{ github_username: 'ryzen-xp' }] })).toBe('ryzen-xp');
   });
 

@@ -11,7 +11,7 @@ import {
   Legend,
   CartesianGrid,
 } from 'recharts';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Point = { month: string; tvl: number; payouts: number };
@@ -35,11 +35,9 @@ export default function FundsMovementChart() {
   return (
     <Card className="rounded-3xl">
       <CardHeader>
-        <Alert className="border-amber-200 bg-amber-50 text-amber-800">
-          <AlertDescription>Live chart unavailable — showing sample data.</AlertDescription>
-        </Alert>
         <div className="flex items-center justify-between gap-4">
-          <CardTitle className="font-display text-xl font-extrabold tracking-tight">
+          <CardTitle className="inline-flex items-center gap-2 font-display text-xl font-extrabold tracking-tight">
+            <TrendingUp className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
             Funds movement
           </CardTitle>
           <CardDescription className="hidden sm:block">

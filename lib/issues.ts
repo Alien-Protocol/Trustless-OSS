@@ -6,11 +6,7 @@ export function getActorUsername(issue: unknown): string | null {
   const clean = (val: unknown): string | null => {
     if (typeof val !== 'string') return null;
     const trimmed = val.trim().replace(/^@/, '');
-    if (
-      !trimmed ||
-      trimmed.toLowerCase() === 'null' ||
-      trimmed.toLowerCase() === 'undefined'
-    ) {
+    if (!trimmed || trimmed.toLowerCase() === 'null' || trimmed.toLowerCase() === 'undefined') {
       return null;
     }
     return trimmed;
@@ -89,4 +85,3 @@ export function getActorUsername(issue: unknown): string | null {
 
   return null;
 }
-

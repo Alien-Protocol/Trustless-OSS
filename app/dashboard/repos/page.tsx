@@ -1,4 +1,4 @@
-import { GitBranch, Plus, RefreshCw } from 'lucide-react';
+import { ArrowLeft, GitBranch, Plus, RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import RepositoryEscrowCard from '@/app/components/escrow/RepositoryEscrowCard';
 import Button from '@/app/components/ui/Button';
@@ -137,6 +137,7 @@ export default async function ReposPage({ searchParams }: ReposProps) {
           </CardHeader>
           <CardContent>
             <Button href="/dashboard" variant="outline" className="px-4 py-2 text-sm">
+              <ArrowLeft className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
               Back to dashboard
             </Button>
             {isSyncing && (

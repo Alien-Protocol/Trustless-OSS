@@ -1,10 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { House, LayoutDashboard, Shield, Users } from 'lucide-react';
+import type { User } from '@supabase/supabase-js';
 import Navbar from '../components/layout/Navbar';
 import Button from '@/app/components/ui/Button';
-import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -104,8 +105,14 @@ export default function DocsPage() {
         <section className="mt-16">
           <Tabs defaultValue="maintainer">
             <TabsList>
-              <TabsTrigger value="maintainer">Maintainer view</TabsTrigger>
-              <TabsTrigger value="contributor">Contributor view</TabsTrigger>
+              <TabsTrigger value="maintainer" className="gap-2">
+                <Shield className="size-4" aria-hidden="true" />
+                Maintainer view
+              </TabsTrigger>
+              <TabsTrigger value="contributor" className="gap-2">
+                <Users className="size-4" aria-hidden="true" />
+                Contributor view
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="maintainer" className="mt-6">
               <h2 className="font-display text-2xl font-extrabold tracking-tight">
@@ -146,9 +153,13 @@ export default function DocsPage() {
           </h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button href="/dashboard" variant="outline" className="bg-background text-foreground">
+              <LayoutDashboard className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
               Go to dashboard
             </Button>
-            <Button href="/">Return home</Button>
+            <Button href="/">
+              <House className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+              Return home
+            </Button>
           </div>
         </div>
       </main>

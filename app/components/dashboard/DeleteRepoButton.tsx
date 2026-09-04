@@ -107,7 +107,10 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
                 >
                   Delete this repository?
                 </h3>
-                <p id="delete-repo-description" className="mt-3 text-sm leading-6 text-muted-foreground">
+                <p
+                  id="delete-repo-description"
+                  className="mt-3 text-sm leading-6 text-muted-foreground"
+                >
                   This permanently removes the repository from Trustless OSS and cannot be undone.
                 </p>
 

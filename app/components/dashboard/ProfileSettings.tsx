@@ -1,5 +1,6 @@
 'use client';
 
+import { Save, Unplug, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import Image from 'next/image';
 import type { User } from '@supabase/supabase-js';
@@ -237,10 +238,14 @@ export default function ProfileSettings({ user }: { user: User }) {
                       Connecting
                     </>
                   ) : (
-                    'Change wallet'
+                    <>
+                      <Wallet className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+                      Change wallet
+                    </>
                   )}
                 </Button>
                 <Button variant="ghost" onClick={handleDisconnectWallet} disabled={saving}>
+                  <Unplug className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
                   Disconnect
                 </Button>
               </div>
@@ -253,7 +258,10 @@ export default function ProfileSettings({ user }: { user: User }) {
                   Connecting
                 </>
               ) : (
-                'Connect Stellar wallet'
+                <>
+                  <Wallet className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+                  Connect Stellar wallet
+                </>
               )}
             </Button>
           )}
@@ -268,7 +276,10 @@ export default function ProfileSettings({ user }: { user: User }) {
               Saving
             </>
           ) : (
-            'Save profile'
+            <>
+              <Save className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+              Save profile
+            </>
           )}
         </Button>
       </div>

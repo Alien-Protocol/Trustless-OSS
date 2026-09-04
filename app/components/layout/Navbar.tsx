@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LogIn } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import Logo from './Logo';
 import Button from '@/app/components/ui/Button';
+import NotificationBell from './NotificationBell';
 import UserMenu from './UserMenu';
 
 interface NavbarProps {
@@ -26,11 +28,15 @@ export default function Navbar({ user }: NavbarProps) {
           </span>
         </Link>
 
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           {user ? (
-            <UserMenu user={user} />
+            <>
+              <UserMenu user={user} />
+              <NotificationBell />
+            </>
           ) : showSignIn ? (
             <Button href="/login" size="sm">
+              <LogIn className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
               Sign in
             </Button>
           ) : null}

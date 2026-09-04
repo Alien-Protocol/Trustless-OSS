@@ -367,6 +367,16 @@ export default async function HomePage() {
                 />
                 <figcaption>Trustless Escrow</figcaption>
               </figure>
+              <figure className="partner-logo-mark">
+                <Image
+                  src="/partners/grantfox.png"
+                  alt="Grantfox"
+                  width={741}
+                  height={838}
+                  className="h-20 w-20 object-contain sm:h-24 sm:w-24"
+                />
+                <figcaption>Grantfox</figcaption>
+              </figure>
             </div>
           </div>
         </section>

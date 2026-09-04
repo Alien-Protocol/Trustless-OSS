@@ -42,6 +42,7 @@ describe('Navbar', () => {
 
     expect(screen.getByRole('link', { name: 'Trustless OSS' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
+    expect(screen.queryByRole('button', { name: /notifications/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Docs' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Repositories' })).not.toBeInTheDocument();
@@ -55,6 +56,7 @@ describe('Navbar', () => {
     expect(screen.queryByRole('link', { name: 'Repositories' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
 
+    expect(screen.getByRole('button', { name: 'Notifications, 3 unread' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /ryzen-xp/i }));
 
     expect(screen.getByRole('menuitem', { name: 'Profile' })).toHaveAttribute(
