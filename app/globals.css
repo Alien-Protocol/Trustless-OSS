@@ -612,6 +612,50 @@ html {
   font-family: var(--font-jakarta), var(--font-sans), sans-serif;
 }
 
+@keyframes nav-wordmark-shine {
+  0% {
+    background-position: 140% 50%;
+  }
+  100% {
+    background-position: -40% 50%;
+  }
+}
+
+@keyframes nav-oss-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.nav-wordmark-name {
+  background-image: linear-gradient(
+    105deg,
+    var(--foreground) 0%,
+    var(--foreground) 42%,
+    color-mix(in oklch, var(--foreground) 42%, white) 50%,
+    var(--foreground) 58%,
+    var(--foreground) 100%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: nav-wordmark-shine 4.8s ease-in-out infinite;
+}
+
+.nav-wordmark-oss {
+  background-image: linear-gradient(90deg, var(--primary), var(--color-cyan), var(--primary));
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: nav-oss-shift 5.2s ease-in-out infinite;
+}
+
 .landing-watermark {
   position: absolute;
   z-index: 0;
@@ -1260,8 +1304,20 @@ img.landing-watermark {
   .cctp-source-launch,
   .cctp-destination-pulse,
   .animate-blink,
-  .bg-dot-drift {
+  .bg-dot-drift,
+  .nav-wordmark-name,
+  .nav-wordmark-oss {
     animation: none;
+  }
+
+  .nav-wordmark-name {
+    background: none;
+    color: var(--foreground);
+  }
+
+  .nav-wordmark-oss {
+    background: none;
+    color: var(--primary);
   }
 
   .fund-progress-step-current::after,

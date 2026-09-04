@@ -20,8 +20,9 @@ export default function Navbar({ user }: NavbarProps) {
       <div className="mx-auto flex h-20 max-w-[96rem] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <Logo size="nav" />
-          <span className="truncate text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-            Trustless <span className="text-primary">OSS</span>
+          <span className="nav-wordmark truncate font-display text-xl font-bold tracking-tight sm:text-2xl">
+            <span className="nav-wordmark-name">Trustless</span>{' '}
+            <span className="nav-wordmark-oss">OSS</span>
           </span>
         </Link>
 

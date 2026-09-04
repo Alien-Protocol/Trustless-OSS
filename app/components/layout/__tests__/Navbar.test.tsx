@@ -27,6 +27,7 @@ describe('Navbar', () => {
   it('keeps the bar free of page routes for guests', () => {
     render(<Navbar />);
 
+    expect(screen.getByRole('link', { name: 'Trustless OSS' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Sign in' })).toHaveAttribute('href', '/login');
     expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Docs' })).not.toBeInTheDocument();
