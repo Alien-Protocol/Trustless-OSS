@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase/server';
 import Navbar from './components/layout/Navbar';
 import HeroSection from './components/home/HeroSection';
 import EscrowEventLog from './components/escrow/EscrowEventLog';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 const workflowItems = [
   {
@@ -77,7 +79,7 @@ export default async function HomePage() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="landing-page-shell relative flex flex-col selection:bg-blue-600 selection:text-white">
+    <div className="landing-page-shell relative flex flex-col selection:bg-primary selection:text-primary-foreground">
       <Navbar user={user} />
 
       <main className="relative flex w-full flex-1 flex-col overflow-hidden px-3 pb-0 pt-4 sm:px-5 md:px-6 lg:px-7">
@@ -92,19 +94,19 @@ export default async function HomePage() {
 
           <div className="relative z-10 mb-9 grid gap-5 md:mb-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(300px,0.55fr)] lg:items-end lg:justify-between">
             <div>
-              <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
+              <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
                 A clear path from issue to payout
               </p>
               <h2
                 id="workflow-title"
-                className="font-display mt-4 max-w-4xl text-3xl font-extrabold leading-[0.98] tracking-tight text-slate-950 sm:text-4xl md:text-5xl"
+                className="font-display mt-4 max-w-4xl text-3xl font-extrabold leading-[0.98] tracking-tight text-foreground sm:text-4xl md:text-5xl"
               >
                 Less payout admin.
                 <br />
                 More work shipped.
               </h2>
             </div>
-            <p className="max-w-xl text-base leading-7 text-slate-600 lg:justify-self-end">
+            <p className="max-w-xl text-base leading-7 text-muted-foreground lg:justify-self-end">
               Trustless OSS follows the contribution lifecycle maintainers already know. The reward
               state stays visible while GitHub remains the place where work happens.
             </p>
@@ -112,33 +114,33 @@ export default async function HomePage() {
 
           <div className="relative z-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {workflowItems.map(({ step, title, desc, detail, icon: Icon }) => (
-              <article
+              <Card
                 key={step}
-                className="surface-card group relative flex min-h-0 flex-col overflow-hidden p-5 transition-transform duration-200 hover:-translate-y-1 md:min-h-72 md:p-6"
+                className="group relative min-h-0 overflow-hidden rounded-3xl py-0 transition-transform duration-200 hover:-translate-y-1 md:min-h-72"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white">
+                <CardHeader className="flex flex-row items-start justify-between gap-4 pt-5 md:pt-6">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
                     <Icon className="h-6 w-6" strokeWidth={2.25} aria-hidden="true" />
                   </span>
-                  <span className="font-display text-5xl font-extrabold tracking-[-0.08em] text-slate-200 transition-colors group-hover:text-blue-100">
+                  <span className="font-display text-5xl font-extrabold tracking-[-0.08em] text-muted/80 transition-colors group-hover:text-primary/20">
                     {step}
                   </span>
-                </div>
-                <h3 className="mt-7 text-2xl font-bold leading-tight text-slate-950 md:mt-10">
-                  {title}
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-slate-600">{desc}</p>
-                <div className="mt-6 flex items-center justify-between pt-2 text-[0.72rem] font-semibold tracking-[0.12em] text-blue-600 uppercase md:mt-auto md:pt-4">
+                </CardHeader>
+                <CardContent>
+                  <CardTitle className="text-2xl font-bold leading-tight">{title}</CardTitle>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{desc}</p>
+                </CardContent>
+                <CardFooter className="mt-auto justify-between border-0 bg-transparent text-[0.72rem] font-semibold tracking-[0.12em] text-primary uppercase">
                   <span>{detail}</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </div>
-              </article>
+                </CardFooter>
+              </Card>
             ))}
           </div>
         </section>
 
         <section
-          className="relative mb-20 overflow-hidden rounded-3xl bg-slate-950 px-5 py-7 text-white sm:px-7 sm:py-9 md:mb-28 md:px-10"
+          className="relative mb-20 overflow-hidden rounded-3xl bg-foreground px-5 py-7 text-background sm:px-7 sm:py-9 md:mb-28 md:px-10"
           aria-labelledby="issue-platforms-title"
         >
           <Image
@@ -166,14 +168,14 @@ export default async function HomePage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <article className="flex items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-foreground">
                   <SiGithub className="h-7 w-7" aria-hidden="true" />
                 </span>
                 <div>
                   <h3 className="text-base font-black">GitHub Issues</h3>
-                  <p className="mt-1 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-emerald-300">
+                  <Badge className="mt-1 h-auto rounded-full bg-emerald-400/20 px-0 font-mono text-[0.62rem] font-black tracking-[0.16em] text-emerald-300 uppercase">
                     Available now
-                  </p>
+                  </Badge>
                 </div>
               </article>
 
@@ -183,9 +185,9 @@ export default async function HomePage() {
                 </span>
                 <div>
                   <h3 className="text-base font-black">GitLab Issues</h3>
-                  <p className="mt-1 font-mono text-[0.62rem] font-black uppercase tracking-[0.16em] text-orange-300">
+                  <Badge className="mt-1 h-auto rounded-full bg-orange-400/20 px-0 font-mono text-[0.62rem] font-black tracking-[0.16em] text-orange-300 uppercase">
                     Planned next
-                  </p>
+                  </Badge>
                 </div>
               </article>
             </div>
@@ -207,18 +209,18 @@ export default async function HomePage() {
           />
           <div className="relative z-10 mb-0 pt-4 md:mb-12 md:pt-8">
             <div className="max-w-5xl">
-              <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
+              <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
                 Cross-chain payout routes
               </p>
               <h2
                 id="payout-routes-title"
-                className="font-display mt-4 text-3xl font-extrabold leading-[0.98] tracking-tight text-slate-950 sm:text-4xl md:text-5xl"
+                className="font-display mt-4 text-3xl font-extrabold leading-[0.98] tracking-tight text-foreground sm:text-4xl md:text-5xl"
               >
                 Fund once on Stellar.
                 <br />
                 Pay where contributors are.
               </h2>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
+              <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">
                 Keep the bounty pool in Stellar USDC while contributors select a supported
                 destination through the CCTP payout flow.
               </p>

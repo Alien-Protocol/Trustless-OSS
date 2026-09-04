@@ -3,6 +3,9 @@ import { createClient } from '@/lib/supabase/server';
 import RepositoryEscrowCard from '@/app/components/escrow/RepositoryEscrowCard';
 import Button from '@/app/components/ui/Button';
 import type { Repo } from '@/app/types';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
 
@@ -100,7 +103,7 @@ export default async function ReposPage({ searchParams }: ReposProps) {
     <div className="w-full">
       <div className="relative mb-10 flex flex-col justify-between gap-7 md:mb-14 md:flex-row md:items-end">
         <div className="max-w-5xl">
-          <h1 className="font-display mt-2 text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl md:text-6xl">
+          <h1 className="font-display mt-2 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             Repositories
           </h1>
         </div>
@@ -114,44 +117,42 @@ export default async function ReposPage({ searchParams }: ReposProps) {
       </div>
 
       {reposError && (
-        <div className="mb-8 rounded-2xl bg-red-50 p-6 ring-1 ring-red-200">
-          <p className="text-sm font-bold text-red-700">Failed to load repositories</p>
-          <p className="mt-2 text-xs text-slate-600">{reposError}</p>
-        </div>
+        <Alert variant="destructive" className="mb-8 rounded-2xl">
+          <AlertTitle>Failed to load repositories</AlertTitle>
+          <AlertDescription>{reposError}</AlertDescription>
+        </Alert>
       )}
 
       {repos.length === 0 ? (
-        <section className="w-full py-12">
-          <div className="max-w-4xl mx-auto text-center px-6">
-            <div className="mb-4 inline-flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-br from-blue-600 to-cyan-400 text-white mx-auto">
+        <Card className="mx-auto max-w-4xl rounded-3xl py-12 text-center">
+          <CardHeader className="items-center">
+            <div className="mb-2 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <GitBranch className="h-7 w-7" strokeWidth={2.5} aria-hidden="true" />
             </div>
-            <h2 className="text-2xl font-extrabold text-slate-900 mb-2">No repositories yet</h2>
-            <p className="mb-4 max-w-2xl mx-auto text-sm text-slate-600">
+            <CardTitle className="text-2xl font-extrabold">No repositories yet</CardTitle>
+            <CardDescription className="mx-auto max-w-2xl">
               There are no repositories connected to your account. Connect a GitHub repository to
               enable rewards and manage contributor payouts.
-            </p>
-            <div className="mt-4">
-              <Button href="/dashboard" variant="outline" className="px-4 py-2 text-sm">
-                Back to dashboard
-              </Button>
-            </div>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button href="/dashboard" variant="outline" className="px-4 py-2 text-sm">
+              Back to dashboard
+            </Button>
             {isSyncing && (
-              <p className="mt-4 text-xs font-mono text-blue-600 inline-flex items-center gap-2 justify-center">
+              <p className="mt-4 inline-flex items-center justify-center gap-2 font-mono text-xs text-primary">
                 <RefreshCw className="h-4 w-4 animate-spin" aria-hidden="true" />
                 Checking for repositories...
               </p>
             )}
-          </div>
-        </section>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3">
           {repos.map((repo) => (
             <div key={repo.id} className="relative">
               {isNew(repo.created_at) && (
-                <div className="absolute -top-3 -right-3 z-10 rounded-full bg-blue-600 px-3 py-1 text-xs font-bold text-white">
-                  New
-                </div>
+                <Badge className="absolute -top-3 -right-3 z-10">New</Badge>
               )}
               <RepositoryEscrowCard
                 repo={repo}

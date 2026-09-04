@@ -11,6 +11,8 @@ import {
   Legend,
   CartesianGrid,
 } from 'recharts';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Point = { month: string; tvl: number; payouts: number };
 
@@ -31,54 +33,62 @@ const SAMPLE: Point[] = [
 
 export default function FundsMovementChart() {
   return (
-    <div className="dashboard-surface p-6">
-      <div className="mb-2 text-sm text-yellow-700">
-        Live chart unavailable — showing sample data.
-      </div>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display text-xl font-extrabold tracking-tight">Funds movement</h2>
-        <div className="text-sm text-slate-600">Escrow TVL Locked ($) / Payouts Released ($)</div>
-      </div>
-      <div className="mb-3 flex gap-3 items-center">
-        <div className="inline-flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-cyan-400 inline-block" />
-          <span className="text-xs text-slate-600">Escrow TVL Locked ($)</span>
+    <Card className="rounded-3xl">
+      <CardHeader>
+        <Alert className="border-amber-200 bg-amber-50 text-amber-800">
+          <AlertDescription>Live chart unavailable — showing sample data.</AlertDescription>
+        </Alert>
+        <div className="flex items-center justify-between gap-4">
+          <CardTitle className="font-display text-xl font-extrabold tracking-tight">
+            Funds movement
+          </CardTitle>
+          <CardDescription className="hidden sm:block">
+            Escrow TVL Locked ($) / Payouts Released ($)
+          </CardDescription>
         </div>
-        <div className="inline-flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-violet-500 inline-block" />
-          <span className="text-xs text-slate-600">Payouts Released ($)</span>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-3 flex items-center gap-3">
+          <div className="inline-flex items-center gap-2">
+            <span className="inline-block h-3 w-3 rounded-full bg-cyan-400" />
+            <span className="text-xs text-muted-foreground">Escrow TVL Locked ($)</span>
+          </div>
+          <div className="inline-flex items-center gap-2">
+            <span className="inline-block h-3 w-3 rounded-full bg-violet-500" />
+            <span className="text-xs text-muted-foreground">Payouts Released ($)</span>
+          </div>
         </div>
-      </div>
-      <div style={{ width: '100%', minHeight: 320 }}>
-        <ResponsiveContainer width="100%" height={320}>
-          <LineChart data={SAMPLE} margin={{ top: 8, right: 24, left: 8, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis yAxisId="left" stroke="#06b6d4" />
-            <YAxis yAxisId="right" orientation="right" stroke="#8b5cf6" />
-            <Tooltip />
-            <Legend wrapperStyle={{ paddingLeft: 8 }} />
-            <Line
-              yAxisId="left"
-              type="monotone"
-              dataKey="tvl"
-              stroke="#06b6d4"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              isAnimationActive
-            />
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="payouts"
-              stroke="#8b5cf6"
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              isAnimationActive
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+        <div style={{ width: '100%', minHeight: 320 }}>
+          <ResponsiveContainer width="100%" height={320}>
+            <LineChart data={SAMPLE} margin={{ top: 8, right: 24, left: 8, bottom: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis yAxisId="left" stroke="#06b6d4" />
+              <YAxis yAxisId="right" orientation="right" stroke="#8b5cf6" />
+              <Tooltip />
+              <Legend wrapperStyle={{ paddingLeft: 8 }} />
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="tvl"
+                stroke="#06b6d4"
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                isAnimationActive
+              />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="payouts"
+                stroke="#8b5cf6"
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                isAnimationActive
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

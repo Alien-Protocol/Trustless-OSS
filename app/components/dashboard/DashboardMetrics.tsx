@@ -2,6 +2,9 @@
 
 import React from 'react';
 import { Lock, Shield, Users } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Metrics = {
   tvl: { amount: number; changePercent: number };
@@ -19,37 +22,37 @@ export default function DashboardMetrics() {
   const metricsToRender = SAMPLE;
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
-      <div className="mb-2 col-span-full text-sm text-yellow-700">
-        Live metrics unavailable — showing sample data.
-      </div>
-      <div className="dashboard-surface p-6">
-        <div className="flex items-start justify-between gap-4">
+    <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <Alert className="col-span-full border-amber-200 bg-amber-50 text-amber-800">
+        <AlertDescription>Live metrics unavailable — showing sample data.</AlertDescription>
+      </Alert>
+      <Card className="rounded-3xl">
+        <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div className="flex-1">
-            <p className="text-xs font-semibold tracking-[0.12em] text-slate-500">
+            <CardTitle className="text-xs font-semibold tracking-[0.12em] text-muted-foreground">
               Total Value Locked
-            </p>
+            </CardTitle>
             <div className="mt-3 flex items-baseline gap-3">
               <span className="text-3xl font-black tracking-tight">
                 ${metricsToRender.tvl.amount.toLocaleString()}
               </span>
-              <span
-                className={`font-mono text-sm font-bold inline-flex items-center gap-1 px-2 py-1 rounded ${
+              <Badge
+                variant="secondary"
+                className={
                   metricsToRender.tvl.changePercent >= 0
-                    ? 'bg-green-50 text-green-600'
+                    ? 'bg-emerald-50 text-emerald-700'
                     : 'bg-red-50 text-red-600'
-                }`}
+                }
               >
                 {metricsToRender.tvl.changePercent >= 0 ? '▲' : '▼'}
                 {Math.abs(metricsToRender.tvl.changePercent)}%
-              </span>
+              </Badge>
             </div>
-
             <div className="mt-4">
-              <div className="text-xs text-slate-500 mb-2 font-mono">78% UTILIZED</div>
-              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="mb-2 font-mono text-xs text-muted-foreground">78% UTILIZED</div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-2 bg-gradient-to-r from-cyan-400 to-blue-500"
+                  className="h-2 bg-primary"
                   style={{
                     width: `${Math.min(100, Math.round((metricsToRender.tvl.amount / 35000) * 100))}%`,
                   }}
@@ -57,59 +60,57 @@ export default function DashboardMetrics() {
               </div>
             </div>
           </div>
-          <div className="flex items-start">
-            <div className="rounded-full bg-white/80 p-2 ring-1 ring-slate-200">
-              <Lock className="h-6 w-6 text-slate-700" />
-            </div>
+          <div className="rounded-full bg-background p-2 ring-1 ring-border">
+            <Lock className="h-6 w-6 text-muted-foreground" />
           </div>
-        </div>
-      </div>
+        </CardHeader>
+      </Card>
 
-      <div className="dashboard-surface p-6">
-        <div className="flex items-center justify-between">
+      <Card className="rounded-3xl">
+        <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <p className="font-mono text-xs font-black uppercase text-slate-500">
+            <p className="font-mono text-xs font-black text-muted-foreground uppercase">
               Active Smart Pools
             </p>
             <div className="mt-4">
               <div className="text-2xl font-black tracking-tight">
                 {metricsToRender.activePools.active} / {metricsToRender.activePools.total}
               </div>
-              <div className="text-sm text-slate-600">
+              <div className="text-sm text-muted-foreground">
                 {metricsToRender.activePools.total > 0
                   ? `${Math.round((metricsToRender.activePools.active / metricsToRender.activePools.total) * 100)}% active`
                   : '0% active'}
               </div>
             </div>
           </div>
-          <div className="rounded-full bg-white/80 p-2 ring-1 ring-slate-200">
-            <Shield className="h-6 w-6 text-slate-700" />
+          <div className="rounded-full bg-background p-2 ring-1 ring-border">
+            <Shield className="h-6 w-6 text-muted-foreground" />
           </div>
-        </div>
-      </div>
+        </CardHeader>
+      </Card>
 
-      <div className="dashboard-surface p-6">
-        <div className="flex items-center justify-between">
+      <Card className="rounded-3xl">
+        <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <p className="font-mono text-xs font-black uppercase text-slate-500">
+            <p className="font-mono text-xs font-black text-muted-foreground uppercase">
               Dev Contributors
             </p>
             <div className="mt-4">
               <div className="text-2xl font-black tracking-tight">
                 {metricsToRender.devContributors.count}
               </div>
-              <div className="text-sm text-slate-600">
+              <div className="text-sm text-muted-foreground">
                 {metricsToRender.devContributors.whitelistedOAuthVerified
                   ? 'Whitelisted OAuth Verified'
                   : 'OAuth unverified'}
               </div>
             </div>
           </div>
-          <div className="rounded-full bg-white/80 p-2 ring-1 ring-slate-200">
-            <Users className="h-6 w-6 text-slate-700" />
+          <div className="rounded-full bg-background p-2 ring-1 ring-border">
+            <Users className="h-6 w-6 text-muted-foreground" />
           </div>
-        </div>
-      </div>
+        </CardHeader>
+      </Card>
     </div>
   );
 }

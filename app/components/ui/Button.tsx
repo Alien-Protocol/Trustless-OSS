@@ -1,20 +1,22 @@
 import Link from 'next/link';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { Button as UiButton } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type Variant = 'solid' | 'outline' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
 
-const variantClass: Record<Variant, string> = {
-  solid: 'ui-button ui-button-solid',
-  outline: 'ui-button ui-button-outline',
-  ghost: 'ui-button ui-button-ghost',
-  danger: 'ui-button ui-button-danger',
-};
+const variantMap = {
+  solid: 'default',
+  outline: 'outline',
+  ghost: 'ghost',
+  danger: 'destructive',
+} as const;
 
 const sizeClass: Record<Size, string> = {
-  sm: 'h-9 px-3.5 text-sm',
-  md: 'h-11 px-5 text-sm',
-  lg: 'h-12 px-6 text-base',
+  sm: 'h-9 rounded-full px-3.5 text-sm',
+  md: 'h-10 rounded-full px-5 text-sm',
+  lg: 'h-12 rounded-full px-6 text-base',
 };
 
 type ButtonBase = {
@@ -45,10 +47,9 @@ function isLinkProps(props: ButtonProps): props is ButtonAsLink {
 }
 
 export default function Button(props: ButtonProps) {
-  const variant = props.variant ?? 'solid';
+  const variant = variantMap[props.variant ?? 'solid'];
   const size = props.size ?? 'md';
-  const className = props.className ?? '';
-  const classes = `${variantClass[variant]} ${sizeClass[size]} ${className}`.trim();
+  const className = cn('font-semibold', sizeClass[size], props.className);
 
   if (isLinkProps(props)) {
     const { href, external, onClick, title, children } = props;
@@ -56,24 +57,27 @@ export default function Button(props: ButtonProps) {
 
     if (external) {
       return (
-        <a
-          href={href}
-          onClick={onClick}
-          title={title}
-          aria-label={ariaLabel}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={classes}
-        >
-          {children}
-        </a>
+        <UiButton variant={variant} className={className} asChild>
+          <a
+            href={href}
+            onClick={onClick}
+            title={title}
+            aria-label={ariaLabel}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {children}
+          </a>
+        </UiButton>
       );
     }
 
     return (
-      <Link href={href} onClick={onClick} title={title} aria-label={ariaLabel} className={classes}>
-        {children}
-      </Link>
+      <UiButton variant={variant} className={className} asChild>
+        <Link href={href} onClick={onClick} title={title} aria-label={ariaLabel}>
+          {children}
+        </Link>
+      </UiButton>
     );
   }
 
@@ -86,8 +90,8 @@ export default function Button(props: ButtonProps) {
   } = props as ButtonAsButton;
 
   return (
-    <button type="button" className={classes} {...rest}>
+    <UiButton type="button" variant={variant} className={className} {...rest}>
       {children}
-    </button>
+    </UiButton>
   );
 }

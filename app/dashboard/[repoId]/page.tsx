@@ -9,6 +9,15 @@ import RetryProcessButton from '@/app/components/escrow/RetryProcessButton';
 import RefundFundButton from '@/app/components/escrow/RefundFundButton';
 import DeleteRepoButton from '@/app/components/dashboard/DeleteRepoButton';
 import Button from '@/app/components/ui/Button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { getActorUsername } from '@/lib/issues';
 
 const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL ?? 'http://localhost:5000').replace(/\/$/, '');
@@ -128,7 +137,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
     <div className="w-full space-y-10">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-slate-950"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft size={16} strokeWidth={2.25} aria-hidden="true" />
         Dashboard
@@ -138,7 +147,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
         <header className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
+              <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">
                 {repoDisplayName(repo.full_name)}
               </h1>
               <Button
@@ -154,7 +163,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
               </Button>
             </div>
             {repo.escrow_contract_id ? (
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
                 <span className="font-mono font-semibold">
                   {repo.escrow_contract_id.slice(0, 8)}…{repo.escrow_contract_id.slice(-6)}
@@ -180,12 +189,12 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
           {repo.escrow_contract_id && (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
               <div className="sm:pr-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+                <p className="text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
                   Balance
                 </p>
-                <p className="text-2xl font-black tracking-tight text-slate-950">
+                <p className="text-2xl font-black tracking-tight text-foreground">
                   {repo.escrow_balance.toFixed(2)}{' '}
-                  <span className="text-sm font-semibold text-slate-400">USDC</span>
+                  <span className="text-sm font-semibold text-muted-foreground">USDC</span>
                 </p>
               </div>
               {isRepoMaintainer && (
@@ -223,42 +232,42 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
       )}
 
       {!isRepoMaintainer && repo && (
-        <p className="text-sm font-semibold text-slate-500">
+        <p className="text-sm font-semibold text-muted-foreground">
           You are viewing this repository as a contributor.
         </p>
       )}
 
       <section>
         <div className="mb-4 flex items-baseline justify-between gap-4">
-          <h2 className="text-xl font-black tracking-tight text-slate-950">Active bounties</h2>
-          <p className="text-sm font-semibold text-slate-400">{issues.length} tracked</p>
+          <h2 className="text-xl font-black tracking-tight text-foreground">Active bounties</h2>
+          <p className="text-sm font-semibold text-muted-foreground">{issues.length} tracked</p>
         </div>
 
         {issues.length === 0 ? (
-          <div className="rounded-2xl bg-white/65 px-6 py-12 text-center">
-            <p className="text-sm font-semibold text-slate-500">No tracked issues yet.</p>
-            <p className="mx-auto mt-2 max-w-xl text-sm text-slate-600">
-              Add a <span className="font-semibold text-slate-950">rewarded</span> label with{' '}
-              <span className="font-semibold text-slate-950">low</span>,{' '}
-              <span className="font-semibold text-slate-950">medium</span>, or{' '}
-              <span className="font-semibold text-slate-950">high</span>, or comment{' '}
-              <span className="font-semibold text-slate-950">@Trustless-OSS 50</span> on an issue.
+          <div className="rounded-2xl bg-card/80 px-6 py-12 text-center ring-1 ring-foreground/10">
+            <p className="text-sm font-semibold text-muted-foreground">No tracked issues yet.</p>
+            <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">
+              Add a <span className="font-semibold text-foreground">rewarded</span> label with{' '}
+              <span className="font-semibold text-foreground">low</span>,{' '}
+              <span className="font-semibold text-foreground">medium</span>, or{' '}
+              <span className="font-semibold text-foreground">high</span>, or comment{' '}
+              <span className="font-semibold text-foreground">@Trustless-OSS 50</span> on an issue.
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl bg-white/70">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
-                  <th className="px-5 py-3">Target</th>
-                  <th className="px-5 py-3">Class</th>
-                  <th className="px-5 py-3">Bounty</th>
-                  <th className="px-5 py-3">State</th>
-                  <th className="px-5 py-3">Actor</th>
-                  <th className="px-5 py-3">Exec</th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="overflow-hidden rounded-2xl bg-card/80 ring-1 ring-foreground/10">
+            <Table>
+              <TableHeader>
+                <TableRow className="text-left text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                  <TableHead className="px-5">Target</TableHead>
+                  <TableHead className="px-5">Class</TableHead>
+                  <TableHead className="px-5">Bounty</TableHead>
+                  <TableHead className="px-5">State</TableHead>
+                  <TableHead className="px-5">Actor</TableHead>
+                  <TableHead className="px-5">Exec</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {issues.map(
                   (issue: {
                     id: string;
@@ -274,59 +283,70 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                       : issue.assignments;
                     const actorUsername = getActorUsername(issue);
                     return (
-                      <tr key={issue.id} className="border-t border-slate-100 text-slate-950">
-                        <td className="px-5 py-3.5">
-                          <span className="mr-2 font-bold text-blue-600">
+                      <TableRow key={issue.id} className="text-foreground">
+                        <TableCell className="px-5 py-3.5">
+                          <span className="mr-2 font-bold text-primary">
                             #{issue.github_issue_number}
                           </span>
-                          <span className="font-semibold text-slate-800">{issue.title}</span>
-                        </td>
-                        <td className="px-5 py-3.5">
+                          <span className="font-semibold">{issue.title}</span>
+                        </TableCell>
+                        <TableCell className="px-5 py-3.5">
                           {issue.difficulty_label && (
                             <span className={diffBadge(issue.difficulty_label)}>
                               {issue.difficulty_label}
                             </span>
                           )}
-                        </td>
-                        <td className="px-5 py-3.5 font-mono">
-                          <span className="font-black text-slate-950">{issue.reward_amount}</span>{' '}
-                          <span className="text-xs font-semibold text-slate-400">USDC</span>
-                        </td>
-                        <td className="px-5 py-3.5">
-                          <span className={statusBadge(issue.status)}>{issue.status}</span>
-                        </td>
-                        <td className="px-5 py-3.5">
+                        </TableCell>
+                        <TableCell className="px-5 py-3.5 font-mono">
+                          <span className="font-black">{issue.reward_amount}</span>{' '}
+                          <span className="text-xs font-semibold text-muted-foreground">USDC</span>
+                        </TableCell>
+                        <TableCell className="px-5 py-3.5">
+                          <Badge variant="secondary" className={statusBadge(issue.status)}>
+                            {issue.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="px-5 py-3.5">
                           {actorUsername ? (
                             <a
                               href={`https://github.com/${actorUsername}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="font-semibold text-slate-900 transition-colors hover:text-blue-600 hover:underline"
+                              className="font-semibold text-foreground transition-colors hover:text-primary hover:underline"
                             >
                               @{actorUsername}
                             </a>
                           ) : (
-                            <span className="text-slate-400">—</span>
+                            <span className="text-muted-foreground">—</span>
                           )}
-                        </td>
-                        <td className="px-5 py-3.5">
+                        </TableCell>
+                        <TableCell className="px-5 py-3.5">
                           {isRepoMaintainer ? (
                             <RetryProcessButton
                               issueId={issue.id}
                               token={session?.access_token ?? ''}
                               status={issue.status}
-                              payoutStatus={assignment?.payout_status ?? 'pending'}
+                              payoutStatus={
+                                assignment &&
+                                typeof assignment === 'object' &&
+                                'payout_status' in assignment
+                                  ? String(
+                                      (assignment as { payout_status?: string }).payout_status ??
+                                        'pending'
+                                    )
+                                  : 'pending'
+                              }
                             />
                           ) : (
-                            <span className="text-xs font-semibold text-slate-400">N/A</span>
+                            <span className="text-xs font-semibold text-muted-foreground">N/A</span>
                           )}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     );
                   }
                 )}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         )}
       </section>

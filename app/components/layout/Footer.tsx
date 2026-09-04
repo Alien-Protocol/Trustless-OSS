@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { FaGithub, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
 import Logo from './Logo';
 import FooterHealth from './FooterHealth';
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 
 const productLinks = [
   { label: 'Home', href: '/' },
@@ -25,11 +27,11 @@ export default function Footer() {
         <div>
           <Link href="/" className="inline-flex items-center gap-3">
             <Logo size="sm" />
-            <span className="text-2xl font-bold tracking-tight">
-              Trustless <span className="text-blue-600">OSS</span>
+            <span className="text-2xl font-semibold tracking-tight">
+              Trustless <span className="text-primary">OSS</span>
             </span>
           </Link>
-          <p className="mt-4 max-w-md text-sm leading-6 text-slate-600">
+          <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground">
             Escrow-backed GitHub bounties. Fund the work, merge the proof, and release USDC without
             payout admin.
           </p>
@@ -39,13 +41,15 @@ export default function Footer() {
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">Product</p>
+          <p className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
+            Product
+          </p>
           <nav className="mt-4 flex flex-col gap-2" aria-label="Footer product links">
             {productLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-slate-600 transition hover:text-blue-600"
+                className="text-sm font-medium text-muted-foreground transition hover:text-primary"
               >
                 {link.label}
               </Link>
@@ -54,31 +58,27 @@ export default function Footer() {
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">
+          <p className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
             Community
           </p>
-          <nav className="mt-4 flex items-center gap-3" aria-label="Footer social links">
+          <nav className="mt-4 flex items-center gap-2" aria-label="Footer social links">
             {socialLinks.map(({ label, href, icon: Icon }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/70 text-slate-700 ring-1 ring-slate-200 transition hover:text-blue-600"
-              >
-                <Icon className="h-4 w-4" aria-hidden="true" />
-              </a>
+              <Button key={label} variant="outline" size="icon" className="rounded-full" asChild>
+                <a href={href} target="_blank" rel="noopener noreferrer" aria-label={label}>
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </Button>
             ))}
           </nav>
-          <p className="mt-6 text-xs text-slate-500">
+          <Separator className="mt-6 mb-4 max-w-xs" />
+          <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Trustless OSS · Made with{' '}
             <span className="text-red-500">♥</span> by{' '}
             <a
               href="https://github.com/ryzen-xp"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-slate-700 hover:text-blue-600"
+              className="font-medium text-foreground hover:text-primary"
             >
               Ryzen-XP
             </a>

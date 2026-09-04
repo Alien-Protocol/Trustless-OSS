@@ -11,6 +11,8 @@ import {
   type EscrowEventType,
   type EventStreamSource,
 } from '@/lib/event-stream';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
 
 /** Hard cap on retained events so a long-lived tab doesn't grow unbounded. */
 const MAX_RETAINED_EVENTS = 500;
@@ -76,27 +78,27 @@ export default function EscrowEventLog({
     <section className="w-full" aria-label="Escrow event logs">
       <div className="mb-8 grid gap-5 md:mb-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(300px,0.55fr)] lg:items-end">
         <div>
-          <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
+          <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
             Live reward updates
           </p>
-          <h2 className="font-display mt-4 max-w-4xl text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl md:text-5xl">
+          <h2 className="font-display mt-4 max-w-4xl text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             See every reward update.
           </h2>
         </div>
 
         <div className="lg:justify-self-end">
-          <p className="max-w-xl text-sm font-semibold leading-6 text-slate-600 sm:text-base sm:leading-7">
+          <p className="max-w-xl text-sm font-semibold leading-6 text-muted-foreground sm:text-base sm:leading-7">
             See when a reward is funded, assigned, completed, or paid.
           </p>
         </div>
       </div>
 
-      <div className="escrow-event-log-feed overflow-hidden rounded-3xl bg-white/70 ring-1 ring-slate-200/80">
-        <div role="log" aria-live="polite">
+      <Card className="escrow-event-log-feed overflow-hidden rounded-3xl py-0">
+        <CardContent className="p-0" role="log" aria-live="polite">
           {renderedEvents.length === 0 ? (
             <div className="p-10 text-center sm:p-12">
-              <p className="title-brutal mb-1 text-lg text-slate-950">Waiting for updates</p>
-              <p className="font-mono text-xs font-bold uppercase text-slate-500">
+              <p className="title-brutal mb-1 text-lg text-foreground">Waiting for updates</p>
+              <p className="font-mono text-xs font-bold text-muted-foreground uppercase">
                 New reward activity will appear here.
               </p>
             </div>
@@ -105,7 +107,7 @@ export default function EscrowEventLog({
               {renderedEvents.map((event) => (
                 <li
                   key={event.id}
-                  className="flex items-start gap-3 border-b border-blue-200/70 bg-transparent p-4 transition-colors last:border-b-0 hover:bg-white/55 sm:gap-4 sm:p-5"
+                  className="flex items-start gap-3 border-b border-border/80 bg-transparent p-4 transition-colors last:border-b-0 hover:bg-card/80 sm:gap-4 sm:p-5"
                 >
                   {event.avatarUrl ? (
                     /* plain <img>: GitHub avatar domains aren't configured for next/image */
@@ -115,30 +117,29 @@ export default function EscrowEventLog({
                       className="h-9 w-9 shrink-0 rounded-full object-cover"
                     />
                   ) : (
-                    <div
-                      aria-hidden="true"
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-300 text-sm font-bold text-slate-950"
-                    >
-                      {event.actor[0]?.toUpperCase() ?? '?'}
-                    </div>
+                    <Avatar className="h-9 w-9">
+                      <AvatarFallback className="bg-emerald-300 text-sm font-bold text-foreground">
+                        {event.actor[0]?.toUpperCase() ?? '?'}
+                      </AvatarFallback>
+                    </Avatar>
                   )}
 
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="font-mono font-bold text-sm text-slate-500">
+                      <span className="font-mono text-sm font-bold text-muted-foreground">
                         @{event.actor}
                       </span>
                       <span className={`status-badge ${BADGE_STYLES[event.type]}`}>
                         {event.type}
                       </span>
-                      <span className="font-mono font-bold text-sm text-blue-600 uppercase truncate">
+                      <span className="truncate font-mono text-sm font-bold text-primary uppercase">
                         {event.project}
                       </span>
-                      <span className="font-mono font-bold text-xs text-slate-500 whitespace-nowrap sm:ml-auto">
+                      <span className="whitespace-nowrap font-mono text-xs font-bold text-muted-foreground sm:ml-auto">
                         🕐 {formatRelativeTime(event.timestamp)}
                       </span>
                     </div>
-                    <p className="font-mono text-sm text-slate-950 mt-2 wrap-break-word">
+                    <p className="wrap-break-word mt-2 font-mono text-sm text-foreground">
                       {event.description}
                     </p>
                   </div>
@@ -146,8 +147,8 @@ export default function EscrowEventLog({
               ))}
             </ul>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </section>
   );
 }

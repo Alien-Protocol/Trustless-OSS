@@ -16,7 +16,7 @@ describe('Button', () => {
   it('renders a solid action button', () => {
     render(<Button>Save</Button>);
 
-    expect(screen.getByRole('button', { name: 'Save' })).toHaveClass('ui-button-solid');
+    expect(screen.getByRole('button', { name: 'Save' })).toHaveAttribute('data-variant', 'default');
   });
 
   it('renders an internal link with the outline style', () => {
@@ -28,7 +28,7 @@ describe('Button', () => {
 
     const link = screen.getByRole('link', { name: 'Dashboard' });
     expect(link).toHaveAttribute('href', '/dashboard');
-    expect(link).toHaveClass('ui-button-outline');
+    expect(link).toHaveAttribute('data-variant', 'outline');
   });
 
   it('renders ghost and danger variants with size classes', () => {
@@ -43,7 +43,12 @@ describe('Button', () => {
       </>
     );
 
-    expect(screen.getByRole('button', { name: 'Edit' })).toHaveClass('ui-button-ghost', 'h-9');
-    expect(screen.getByRole('button', { name: 'Delete' })).toHaveClass('ui-button-danger', 'h-12');
+    expect(screen.getByRole('button', { name: 'Edit' })).toHaveClass('h-9');
+    expect(screen.getByRole('button', { name: 'Edit' })).toHaveAttribute('data-variant', 'ghost');
+    expect(screen.getByRole('button', { name: 'Delete' })).toHaveClass('h-12');
+    expect(screen.getByRole('button', { name: 'Delete' })).toHaveAttribute(
+      'data-variant',
+      'destructive'
+    );
   });
 });

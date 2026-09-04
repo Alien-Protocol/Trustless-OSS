@@ -4,6 +4,9 @@ import { LockKeyhole, ShieldCheck } from 'lucide-react';
 import DeployEscrowButton from './DeployEscrowButton';
 import Button from '@/app/components/ui/Button';
 import type { Repo } from '@/app/types';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface RepositoryEscrowCardProps {
   repo: Repo;
@@ -39,23 +42,23 @@ export default function RepositoryEscrowCard({
 }: RepositoryEscrowCardProps) {
   if (isLoading) {
     return (
-      <article
+      <Card
         aria-busy="true"
         aria-label="Loading repository escrow"
-        className="dashboard-surface flex flex-col p-5"
+        className="flex flex-col rounded-3xl"
       >
-        <div className="mb-5 flex items-start justify-between">
-          <div className="h-10 w-10 bg-slate-200" />
-          <div className="h-6 w-24 bg-slate-200" />
-        </div>
-        <div className="mb-2 h-5 w-3/4 bg-slate-200" />
-        <div className="mb-6 h-3 w-1/3 bg-slate-200" />
-        <div className="space-y-3 border-t border-slate-200 pt-4">
-          <div className="h-5 w-full bg-slate-200" />
-          <div className="h-5 w-full bg-slate-200" />
-          <div className="h-9 w-full bg-slate-200" />
-        </div>
-      </article>
+        <CardHeader className="flex flex-row items-start justify-between">
+          <Skeleton className="h-10 w-10 rounded-2xl" />
+          <Skeleton className="h-6 w-24 rounded-full" />
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Skeleton className="mb-2 h-5 w-3/4" />
+          <Skeleton className="mb-6 h-3 w-1/3" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-9 w-full" />
+        </CardContent>
+      </Card>
     );
   }
 
@@ -72,64 +75,68 @@ export default function RepositoryEscrowCard({
       : repo.escrow_balance;
 
   return (
-    <article className="dashboard-surface flex flex-col p-5">
-      <div className="mb-4 flex items-start justify-between gap-3">
+    <Card className="flex flex-col rounded-3xl py-0">
+      <CardHeader className="flex flex-row items-start justify-between gap-3 pt-5">
         <div className="flex min-w-0 items-start gap-3">
           <div
             aria-hidden="true"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-950 font-display text-lg font-extrabold text-white"
+            className="font-display flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-foreground text-lg font-extrabold text-background"
           >
             {repoName.charAt(0).toUpperCase() || '?'}
           </div>
           <div className="min-w-0">
-            <p className="truncate text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+            <p className="truncate text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
               {owner} / git:main
             </p>
             <h2
-              className="title-brutal mt-1.5 truncate text-xl not-italic tracking-tight text-slate-950 sm:text-2xl"
+              className="title-brutal mt-1.5 truncate text-xl tracking-tight text-foreground not-italic sm:text-2xl"
               title={repoName}
             >
               {repoName}
             </h2>
           </div>
         </div>
-        <span
-          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-[0.65rem] font-bold uppercase tracking-wider ${repo.is_private ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}
+        <Badge
+          variant="secondary"
+          className={`shrink-0 gap-1 ${repo.is_private ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}`}
         >
           <LockKeyhole size={12} strokeWidth={2.5} aria-hidden="true" />
           {repo.is_private ? 'Private' : 'Public'}
-        </span>
-      </div>
+        </Badge>
+      </CardHeader>
 
-      <span
-        className={`mb-4 inline-flex w-fit items-center gap-2 rounded-full px-2.5 py-1 text-[0.7rem] font-bold uppercase tracking-wide ${isSecured ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
-      >
-        <ShieldCheck size={14} aria-hidden="true" />
-        {isSecured ? 'Escrow Secured' : 'Unconfigured'}
-      </span>
+      <CardContent>
+        <Badge
+          variant="secondary"
+          className={`mb-4 gap-2 ${isSecured ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
+        >
+          <ShieldCheck size={14} aria-hidden="true" />
+          {isSecured ? 'Escrow Secured' : 'Unconfigured'}
+        </Badge>
 
-      <dl className="mb-4 grid gap-2 border-y border-slate-200/80 py-3">
-        <div className="flex items-baseline justify-between gap-3">
-          <dt className="text-sm font-semibold text-slate-500">USDC Balance</dt>
-          <dd className="text-lg font-black tracking-tight text-slate-950 sm:text-xl">
-            {formatBalance(repo.escrow_balance)} <span className="text-sm font-bold">USDC</span>
-          </dd>
-        </div>
-        <div className="flex items-baseline justify-between gap-3">
-          <dt className="text-sm font-semibold text-slate-500">XLM Balance</dt>
-          <dd className="text-lg font-black tracking-tight text-slate-950 sm:text-xl">
-            {formatBalance(xlmBalance)} <span className="text-sm font-bold">XLM</span>
-          </dd>
-        </div>
-        <div className="flex items-baseline justify-between gap-3 border-t border-slate-200 pt-2">
-          <dt className="text-sm font-semibold text-slate-500">Combined Value</dt>
-          <dd className="text-base font-black tracking-tight text-blue-700 sm:text-lg">
-            {formatUsd(combinedValueUsd)}
-          </dd>
-        </div>
-      </dl>
+        <dl className="mb-4 grid gap-2 border-y border-border py-3">
+          <div className="flex items-baseline justify-between gap-3">
+            <dt className="text-sm font-semibold text-muted-foreground">USDC Balance</dt>
+            <dd className="text-lg font-black tracking-tight text-foreground sm:text-xl">
+              {formatBalance(repo.escrow_balance)} <span className="text-sm font-bold">USDC</span>
+            </dd>
+          </div>
+          <div className="flex items-baseline justify-between gap-3">
+            <dt className="text-sm font-semibold text-muted-foreground">XLM Balance</dt>
+            <dd className="text-lg font-black tracking-tight text-foreground sm:text-xl">
+              {formatBalance(xlmBalance)} <span className="text-sm font-bold">XLM</span>
+            </dd>
+          </div>
+          <div className="flex items-baseline justify-between gap-3 border-t border-border pt-2">
+            <dt className="text-sm font-semibold text-muted-foreground">Combined Value</dt>
+            <dd className="text-base font-black tracking-tight text-primary sm:text-lg">
+              {formatUsd(combinedValueUsd)}
+            </dd>
+          </div>
+        </dl>
+      </CardContent>
 
-      <div className="mt-auto flex items-stretch gap-2 pt-1">
+      <CardFooter className="mt-auto border-0 bg-transparent">
         {isSecured ? (
           <Button
             href={`/dashboard/${repo.id}`}
@@ -147,7 +154,7 @@ export default function RepositoryEscrowCard({
             className="!bg-amber-400 !text-slate-950"
           />
         )}
-      </div>
-    </article>
+      </CardFooter>
+    </Card>
   );
 }

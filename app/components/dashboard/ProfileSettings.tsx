@@ -8,6 +8,12 @@ import { getWalletKit, withTimeout, WALLET_OPERATION_TIMEOUT_MS } from '@/lib/wa
 import { handleError, notifySuccess } from '@/lib/notifications';
 import Button from '@/app/components/ui/Button';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 type ProfileForm = {
   displayName: string;
@@ -112,134 +118,134 @@ export default function ProfileSettings({ user }: { user: User }) {
     }
   }
 
-  const fieldClass =
-    'mt-1.5 w-full rounded-xl bg-white px-3.5 py-2.5 text-sm text-slate-950 outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500';
-
   return (
     <div className="w-full max-w-3xl space-y-6">
       <div>
-        <h1 className="text-4xl font-bold tracking-tight text-slate-950">Profile</h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <h1 className="text-4xl font-bold tracking-tight text-foreground">Profile</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           Add the details maintainers and payouts need from a contributor.
         </p>
       </div>
 
-      <section className="surface-card p-6">
-        <div className="flex items-center gap-4">
-          {avatar ? (
-            <img src={avatar} alt="" className="h-16 w-16 rounded-full object-cover" />
-          ) : (
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-950 text-xl font-semibold text-white">
+      <Card className="rounded-3xl">
+        <CardHeader className="flex-row items-center gap-4">
+          <Avatar className="h-16 w-16">
+            {avatar ? <AvatarImage src={avatar} alt="" /> : null}
+            <AvatarFallback className="bg-foreground text-xl font-semibold text-background">
               {initial}
-            </span>
-          )}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0">
-            <p className="truncate text-xl font-semibold text-slate-950">
+            <CardTitle className="truncate text-xl font-semibold">
               {form.displayName || githubName}
-            </p>
-            <p className="mt-1 text-sm text-slate-500">@{githubName}</p>
+            </CardTitle>
+            <CardDescription className="mt-1">@{githubName}</CardDescription>
           </div>
-        </div>
+        </CardHeader>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <label className="text-sm font-medium text-slate-600">
-            Display name
-            <input
+        <CardContent className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="display-name">Display name</Label>
+            <Input
+              id="display-name"
               value={form.displayName}
               onChange={(event) => update('displayName', event.target.value)}
-              className={fieldClass}
               autoComplete="name"
+              className="h-10"
             />
-          </label>
-          <label className="text-sm font-medium text-slate-600">
-            Location
-            <input
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="location">Location</Label>
+            <Input
+              id="location"
               value={form.location}
               onChange={(event) => update('location', event.target.value)}
-              className={fieldClass}
               placeholder="City, country"
+              className="h-10"
             />
-          </label>
-          <label className="text-sm font-medium text-slate-600">
-            GitHub
-            <input value={`@${githubName}`} readOnly className={`${fieldClass} bg-slate-50`} />
-          </label>
-          <label className="text-sm font-medium text-slate-600">
-            Email
-            <input value={user.email ?? ''} readOnly className={`${fieldClass} bg-slate-50`} />
-          </label>
-          <label className="sm:col-span-2 text-sm font-medium text-slate-600">
-            Website / portfolio
-            <input
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="github">GitHub</Label>
+            <Input id="github" value={`@${githubName}`} readOnly className="h-10 bg-muted" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" value={user.email ?? ''} readOnly className="h-10 bg-muted" />
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="website">Website / portfolio</Label>
+            <Input
+              id="website"
               type="url"
               value={form.website}
               onChange={(event) => update('website', event.target.value)}
-              className={fieldClass}
               placeholder="https://"
+              className="h-10"
             />
-          </label>
-          <label className="sm:col-span-2 text-sm font-medium text-slate-600">
-            Skills
-            <input
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="skills">Skills</Label>
+            <Input
+              id="skills"
               value={form.skills}
               onChange={(event) => update('skills', event.target.value)}
-              className={fieldClass}
               placeholder="TypeScript, Rust, Solidity"
+              className="h-10"
             />
-          </label>
-          <label className="sm:col-span-2 text-sm font-medium text-slate-600">
-            Bio
-            <textarea
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Textarea
+              id="bio"
               value={form.bio}
               onChange={(event) => update('bio', event.target.value)}
               rows={4}
-              className={`${fieldClass} resize-y`}
               placeholder="What you ship, the stacks you like, and how you work."
             />
-          </label>
-        </div>
-      </section>
+          </div>
+        </CardContent>
+      </Card>
 
-      <section className="surface-card p-6">
-        <div className="flex items-start justify-between gap-4">
+      <Card className="rounded-3xl">
+        <CardHeader className="flex-row items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">
+            <p className="text-xs font-semibold tracking-[0.16em] text-primary uppercase">
               Stellar chain
             </p>
-            <h2 className="mt-1 text-lg font-semibold text-slate-950">Payout wallet</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <CardTitle className="mt-1 text-lg">Payout wallet</CardTitle>
+            <CardDescription className="mt-1">
               Connect a Stellar wallet so merged bounties can release USDC to you.
-            </p>
+            </CardDescription>
           </div>
           <Image src="/stellar-xlm-logo.svg" alt="" width={36} height={36} className="h-9 w-9" />
-        </div>
+        </CardHeader>
 
-        {form.stellarAddress ? (
-          <div className="mt-5 rounded-2xl bg-emerald-50 px-4 py-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
-              Connected
-            </p>
-            <p className="mt-2 break-all font-mono text-sm font-semibold text-slate-950">
-              {shortenAddress(form.stellarAddress)}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Button onClick={handleConnectWallet} disabled={connecting} variant="outline">
-                {connecting ? (
-                  <>
-                    <LoadingLogo size="tiny" variant="circle" />
-                    Connecting
-                  </>
-                ) : (
-                  'Change wallet'
-                )}
-              </Button>
-              <Button variant="ghost" onClick={handleDisconnectWallet} disabled={saving}>
-                Disconnect
-              </Button>
+        <CardContent>
+          {form.stellarAddress ? (
+            <div className="rounded-2xl bg-emerald-50 px-4 py-4">
+              <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+                Connected
+              </Badge>
+              <p className="mt-2 font-mono text-sm font-semibold break-all text-foreground">
+                {shortenAddress(form.stellarAddress)}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button onClick={handleConnectWallet} disabled={connecting} variant="outline">
+                  {connecting ? (
+                    <>
+                      <LoadingLogo size="tiny" variant="circle" />
+                      Connecting
+                    </>
+                  ) : (
+                    'Change wallet'
+                  )}
+                </Button>
+                <Button variant="ghost" onClick={handleDisconnectWallet} disabled={saving}>
+                  Disconnect
+                </Button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="mt-5">
+          ) : (
             <Button onClick={handleConnectWallet} disabled={connecting}>
               {connecting ? (
                 <>
@@ -250,9 +256,9 @@ export default function ProfileSettings({ user }: { user: User }) {
                 'Connect Stellar wallet'
               )}
             </Button>
-          </div>
-        )}
-      </section>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={saving}>

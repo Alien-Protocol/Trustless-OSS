@@ -1,9 +1,5 @@
-import LoadingLogo from '../../components/layout/LoadingLogo';
+import { RepoDetailSkeleton } from '../../components/layout/PageSkeletons';
 
 export default function RepoDetailLoading() {
-  return (
-    <div className="flex min-h-[70vh] items-center justify-center px-4">
-      <LoadingLogo message="Loading repository" size="lg" />
-    </div>
-  );
+  return <RepoDetailSkeleton />;
 }

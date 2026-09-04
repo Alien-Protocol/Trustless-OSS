@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, LayoutDashboard, LogOut, UserRound } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function UserMenu({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
@@ -38,19 +39,18 @@ export default function UserMenu({ user }: { user: User }) {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex max-w-[13rem] items-center gap-2 rounded-full border border-slate-300 bg-white py-1 pr-2.5 pl-1 shadow-sm ring-2 ring-slate-200/90 transition hover:border-blue-400 hover:ring-blue-200"
+        className="flex max-w-[13rem] items-center gap-2 rounded-full border border-border bg-card py-1 pr-2.5 pl-1 shadow-sm transition-colors hover:border-primary/40 hover:bg-accent"
       >
-        {avatar ? (
-          <img src={avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
-        ) : (
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-950 text-xs font-semibold text-white">
+        <Avatar className="h-8 w-8">
+          {avatar ? <AvatarImage src={avatar} alt="" /> : null}
+          <AvatarFallback className="bg-foreground text-xs font-semibold text-background">
             {initial}
-          </span>
-        )}
-        <span className="hidden truncate text-sm font-medium text-slate-800 sm:block">{name}</span>
+          </AvatarFallback>
+        </Avatar>
+        <span className="hidden truncate text-sm font-medium text-foreground sm:block">{name}</span>
         <ChevronDown
           size={14}
-          className={`text-slate-500 transition ${open ? 'rotate-180' : ''}`}
+          className={`text-muted-foreground transition ${open ? 'rotate-180' : ''}`}
           aria-hidden="true"
         />
       </button>
@@ -58,13 +58,13 @@ export default function UserMenu({ user }: { user: User }) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl bg-white p-1.5 text-sm shadow-[0_18px_40px_-24px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/80"
+          className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-xl bg-popover p-1 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10"
         >
           <Link
             href="/dashboard/profile"
             role="menuitem"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 font-medium text-slate-700 hover:bg-slate-50"
+            className="flex items-center gap-2.5 rounded-md px-3 py-2.5 font-medium text-foreground hover:bg-accent"
           >
             <UserRound size={16} aria-hidden="true" />
             Profile
@@ -73,7 +73,7 @@ export default function UserMenu({ user }: { user: User }) {
             href="/dashboard"
             role="menuitem"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 font-medium text-slate-700 hover:bg-slate-50"
+            className="flex items-center gap-2.5 rounded-md px-3 py-2.5 font-medium text-foreground hover:bg-accent"
           >
             <LayoutDashboard size={16} aria-hidden="true" />
             Dashboard
@@ -82,7 +82,7 @@ export default function UserMenu({ user }: { user: User }) {
             <button
               type="submit"
               role="menuitem"
-              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left font-medium text-red-600 hover:bg-red-50"
+              className="flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-left font-medium text-destructive hover:bg-destructive/10"
             >
               <LogOut size={16} aria-hidden="true" />
               Sign out

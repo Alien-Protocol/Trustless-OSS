@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Suspense } from 'react';
 import { getWalletKit, withTimeout, WALLET_OPERATION_TIMEOUT_MS } from '@/lib/wallet-kit';
@@ -12,7 +11,20 @@ import { handleError, notifySuccess } from '@/lib/notifications';
 
 import LoadingLogo from '../components/layout/LoadingLogo';
 import Navbar from '../components/layout/Navbar';
+import { FormFieldsSkeleton } from '../components/layout/PageSkeletons';
 import { backendUrl } from '@/lib/backend';
+import Button from '@/app/components/ui/Button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 function ConnectForm() {
   const searchParams = useSearchParams();
@@ -214,28 +226,18 @@ function ConnectForm() {
   if (done) {
     return (
       <div className="text-center">
-        <div className="label-brutal bg-blue-600 text-white mb-6 w-fit mx-auto border-2 border-slate-950 px-3 py-1">
-          SYS_STATUS // SUCCESS
-        </div>
-        <div className="text-6xl mb-6 animate-bounce">✅</div>
-        <h2 className="title-brutal text-3xl text-slate-950 mb-4">WALLET_LINKED</h2>
-
-        <div className="terminal-block text-left text-sm mb-8">
-          <span className="text-blue-400">log:</span> Payout wallet mapped to issue registry.
-          <br />
-          <span className="text-blue-400">log:</span> You may close this window or wait.
-          <br />
-          <div className="mt-4 pt-4 border-t border-blue-900/30 flex items-center justify-between">
-            <span className="text-blue-400">status:</span>
-            <span className="bg-blue-600 text-white px-2 py-0.5 font-bold animate-pulse">
-              REDIRECTING_IN_{countdown}s...
-            </span>
-          </div>
-        </div>
-
+        <p className="text-xs font-semibold tracking-[0.16em] text-primary uppercase">Success</p>
+        <h2 className="font-display mt-3 text-3xl font-extrabold tracking-tight text-foreground">
+          Wallet linked
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          Your payout address is mapped to this issue. You can close this window or wait to be
+          redirected.
+        </p>
+        <p className="mt-6 text-sm font-medium text-foreground">Redirecting in {countdown}s...</p>
         <a
           href={redirectUrl}
-          className="text-xs font-mono font-bold text-slate-400 hover:text-blue-600 transition-colors uppercase underline underline-offset-4"
+          className="mt-4 inline-block text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-primary"
         >
           Click here if not redirected automatically
         </a>
@@ -245,131 +247,117 @@ function ConnectForm() {
 
   return (
     <>
-      <div className="label-brutal bg-slate-950 text-white mb-6 w-fit border-2 border-slate-950 px-3 py-1">
-        SYS_ACTION // CLAIM_BOUNTY
-      </div>
+      <p className="text-xs font-semibold tracking-[0.16em] text-primary uppercase">Claim bounty</p>
 
       {checking ? (
-        <div className="text-center py-8">
-          <LoadingLogo message="VERIFYING_ACTOR..." size="md" />
-        </div>
+        <FormFieldsSkeleton />
       ) : !isAssigned ? (
         <div className="text-center">
-          <div className="text-6xl mb-6 grayscale">🚫</div>
-          <h2 className="title-brutal text-2xl text-slate-950 mb-4">ACCESS_DENIED</h2>
-          <div className="p-4 bg-red-100 border-[4px] border-slate-950 shadow-[4px_4px_0_0_#000] text-red-600 font-bold font-mono text-sm uppercase text-left mb-8">
-            This bounty is assigned to another contributor. Only the assigned actor can link their
-            wallet to this module.
-          </div>
-          <Link href="/dashboard" className="brutal-button w-full py-3 inline-block">
-            RETURN_TO_BASE
-          </Link>
+          <h2 className="font-display mt-4 text-2xl font-extrabold tracking-tight text-foreground">
+            Access denied
+          </h2>
+          <Alert variant="destructive" className="mt-4 mb-8 text-left">
+            <AlertDescription>
+              This bounty is assigned to another contributor. Only the assigned actor can link their
+              wallet to this module.
+            </AlertDescription>
+          </Alert>
+          <Button href="/dashboard" className="w-full">
+            Return to dashboard
+          </Button>
         </div>
       ) : (
         <>
-          <div className="text-6xl mb-6 grayscale text-center">🚀</div>
-          <h1 className="title-brutal text-3xl text-slate-950 mb-2 text-center">
-            INITIALIZE_PAYOUT
+          <h1 className="font-display mt-3 text-center text-3xl font-extrabold tracking-tight text-foreground">
+            Initialize payout
           </h1>
 
-          <div className="mb-6 mt-6">
-            <label className="block text-xs font-mono font-bold uppercase text-slate-900 mb-2">
-              SELECT_PAYOUT_NETWORK
-            </label>
-            <select
+          <div className="mt-6 mb-6">
+            <Label htmlFor="payout-network">Payout network</Label>
+            <Select
               value={payoutChain}
-              onChange={(e) => {
-                setPayoutChain(e.target.value);
+              onValueChange={(value) => {
+                setPayoutChain(value);
                 setCustomAddress('');
                 setError('');
               }}
-              className="w-full bg-white border-4 border-slate-950 px-3 py-2 font-mono font-bold text-sm uppercase shadow-[2px_2px_0_0_#000] focus:translate-x-0.5 focus:translate-y-0.5 focus:shadow-[1px_1px_0_0_#000] outline-none"
             >
-              <option value="stellar">Stellar (Direct USDC)</option>
-              <option value="base">Base (Circle CCTP)</option>
-              <option value="ethereum">Ethereum (Circle CCTP)</option>
-              <option value="solana">Solana (Circle CCTP)</option>
-            </select>
+              <SelectTrigger id="payout-network" className="mt-2 h-10 w-full">
+                <SelectValue placeholder="Select a network" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="stellar">Stellar (Direct USDC)</SelectItem>
+                <SelectItem value="base">Base (Circle CCTP)</SelectItem>
+                <SelectItem value="ethereum">Ethereum (Circle CCTP)</SelectItem>
+                <SelectItem value="solana">Solana (Circle CCTP)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="terminal-block text-left text-sm mb-6">
-            {payoutChain === 'stellar' && (
-              <>
-                <span className="text-slate-500">// Connect Stellar wallet to receive USDC</span>
-                <br />
-                <span className="text-slate-500">// Funds will be released upon PR merge</span>
-              </>
-            )}
-            {payoutChain !== 'stellar' && (
-              <>
-                <span className="text-slate-500">
-                  // Enter target address on {payoutChain.toUpperCase()}
-                </span>
-                <br />
-                <span className="text-slate-500">
-                  // USDC is burned on Stellar and minted on destination via CCTP
-                </span>
-              </>
-            )}
-          </div>
+          <p className="mb-6 text-sm leading-6 text-muted-foreground">
+            {payoutChain === 'stellar'
+              ? 'Connect a Stellar wallet to receive USDC. Funds are released when the pull request is merged.'
+              : `Enter the destination address on ${payoutChain}. USDC is burned on Stellar and minted on the destination via CCTP.`}
+          </p>
 
           {payoutChain !== 'stellar' && (
             <div className="mb-6">
-              <label className="block text-xs font-mono font-bold uppercase text-slate-900 mb-2">
-                {payoutChain.toUpperCase()}_RECIPIENT_ADDRESS
-              </label>
-              <input
+              <Label htmlFor="payout-address">{payoutChain} recipient address</Label>
+              <Input
+                id="payout-address"
                 type="text"
                 placeholder={payoutChain === 'solana' ? 'Solana Address' : '0x... Address'}
                 value={customAddress}
                 onChange={(e) => setCustomAddress(e.target.value)}
-                className="w-full bg-white border-4 border-slate-950 px-3 py-3 font-mono text-sm shadow-[2px_2px_0_0_#000] outline-none"
+                className="mt-2 h-11 font-mono"
               />
             </div>
           )}
 
           {error && (
-            <div className="mb-8 p-4 bg-red-100 border-[4px] border-slate-950 shadow-[4px_4px_0_0_#ef4444] text-red-600 font-bold font-mono text-sm uppercase">
-              ERR: {error}
-            </div>
+            <Alert variant="destructive" className="mb-8">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
 
           {payoutChain === 'stellar' ? (
-            <button
+            <Button
               id="connect-wallet-btn"
               onClick={handleConnect}
               disabled={loading}
-              className="brutal-button w-full py-4 text-lg flex items-center justify-center gap-3"
+              className="w-full"
+              size="lg"
             >
               {loading ? (
                 <>
                   <LoadingLogo size="tiny" variant="circle" />
-                  <span>CONNECTING...</span>
+                  Connecting
                 </>
               ) : (
-                'CONNECT_WALLET'
+                'Connect wallet'
               )}
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               onClick={handleCustomConnect}
               disabled={loading || !customAddress}
-              className="brutal-button w-full py-4 text-lg flex items-center justify-center gap-3 animate-pulse"
+              className="w-full"
+              size="lg"
             >
               {loading ? (
                 <>
                   <LoadingLogo size="tiny" variant="circle" />
-                  <span>LINKING...</span>
+                  Linking
                 </>
               ) : (
-                'LINK_PAYOUT_ADDRESS'
+                'Link payout address'
               )}
-            </button>
+            </Button>
           )}
 
-          <div className="mt-8 pt-6 border-t-[4px] border-slate-950 border-dashed text-center">
-            <p className="text-xs text-slate-600 font-mono font-bold uppercase">
-              Don't have a wallet?{' '}
+          <div className="mt-8 border-t border-border pt-6 text-center">
+            <p className="text-xs text-muted-foreground">
+              Don&apos;t have a wallet?{' '}
               <a
                 href={
                   payoutChain === 'solana'
@@ -380,13 +368,13 @@ function ConnectForm() {
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:bg-blue-600 hover:text-white transition-colors border-b-2 border-blue-600"
+                className="font-medium text-primary underline-offset-4 hover:underline"
               >
                 {payoutChain === 'solana'
-                  ? 'GET_PHANTOM'
+                  ? 'Get Phantom'
                   : payoutChain === 'stellar'
-                    ? 'GET_LOBSTR'
-                    : 'GET_METAMASK'}
+                    ? 'Get Lobstr'
+                    : 'Get MetaMask'}
               </a>
             </p>
           </div>
@@ -402,22 +390,23 @@ export default function ConnectPage() {
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <div className="flex flex-1 items-center justify-center px-4 py-10">
-        <div className="surface-card relative w-full max-w-md p-8 md:p-10">
-          <button
+        <Card className="relative w-full max-w-md rounded-3xl py-2">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => router.back()}
-            className="absolute top-4 right-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 transition hover:bg-slate-950 hover:text-white"
+            className="absolute top-4 right-4 z-20 h-9 w-9 rounded-full px-0"
             aria-label="Go back"
           >
             <X size={18} strokeWidth={2.25} />
-          </button>
-          <Suspense
-            fallback={
-              <div className="text-sm font-semibold text-slate-500">Loading payout setup...</div>
-            }
-          >
-            <ConnectForm />
-          </Suspense>
-        </div>
+          </Button>
+          <CardContent className="p-8 md:p-10">
+            <Suspense fallback={<FormFieldsSkeleton />}>
+              <ConnectForm />
+            </Suspense>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

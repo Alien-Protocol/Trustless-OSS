@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import Footer from './components/layout/Footer';
 import { Toaster } from './components/layout/Toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -28,17 +29,19 @@ export const revalidate = 86400;
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${jakarta.variable} ${jbMono.variable}`}>
-      <body className="min-h-screen bg-[#f3f6ff] font-sans text-slate-950 antialiased selection:bg-blue-600 selection:text-white">
-        <div className="page-aurora" aria-hidden="true">
-          <span className="page-aurora-one" />
-          <span className="page-aurora-two" />
-          <span className="page-aurora-three" />
-        </div>
-        <div className="relative z-10 flex min-h-screen flex-col">
-          {children}
-          <Footer />
-          <Toaster richColors closeButton position="bottom-right" />
-        </div>
+      <body className="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
+        <TooltipProvider>
+          <div className="page-aurora" aria-hidden="true">
+            <span className="page-aurora-one" />
+            <span className="page-aurora-two" />
+            <span className="page-aurora-three" />
+          </div>
+          <div className="relative z-10 flex min-h-screen flex-col">
+            {children}
+            <Footer />
+            <Toaster richColors closeButton position="bottom-right" />
+          </div>
+        </TooltipProvider>
       </body>
     </html>
   );

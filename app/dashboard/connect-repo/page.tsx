@@ -13,6 +13,8 @@ import {
 } from '@/lib/github-install';
 import { handleError } from '@/lib/notifications';
 import { fetchBackendHealth } from '@/lib/health';
+import Button from '@/app/components/ui/Button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function ConnectRepoPage() {
   const router = useRouter();
@@ -67,22 +69,24 @@ export default function ConnectRepoPage() {
   return (
     <div className="flex w-full flex-1 flex-col">
       <div className="flex flex-1 items-center justify-center px-3 py-8 sm:px-5 md:px-6 md:py-12">
-        <div className="dashboard-surface relative w-full max-w-lg">
-          <button
+        <Card className="relative w-full max-w-lg rounded-3xl py-0">
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={handleBack}
-            className="absolute left-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-950 ring-1 ring-slate-200 transition hover:bg-slate-950 hover:text-white"
+            className="absolute top-4 left-4 z-20 h-10 w-10 rounded-full px-0"
             aria-label="Go back"
           >
             <ArrowLeft size={20} strokeWidth={3} aria-hidden="true" />
-          </button>
+          </Button>
 
-          <div className="px-5 pb-8 pt-14 text-center sm:px-8 sm:pb-10 sm:pt-16 md:px-10">
-            <p className="text-xs font-semibold tracking-[0.2em] text-blue-600 uppercase">
+          <CardContent className="px-5 pt-14 pb-8 text-center sm:px-8 sm:pt-16 sm:pb-10 md:px-10">
+            <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase">
               Connect repository
             </p>
 
-            <span className="mx-auto mt-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white">
+            <span className="mx-auto mt-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
               {installing ? (
                 <RefreshCw className="h-7 w-7 animate-spin" strokeWidth={2.5} aria-hidden="true" />
               ) : (
@@ -90,22 +94,23 @@ export default function ConnectRepoPage() {
               )}
             </span>
 
-            <h1 className="font-display mt-6 text-3xl font-extrabold tracking-tight text-slate-950 sm:text-4xl">
+            <h1 className="font-display mt-6 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
               {installing ? 'Waiting for installation' : 'Install the GitHub App'}
             </h1>
 
-            <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-slate-600 sm:text-base">
+            <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-muted-foreground sm:text-base">
               {installing
                 ? 'Finish installing the app in the GitHub popup. This page will update when the connection is complete.'
                 : 'Connect a repository by installing the Trustless OSS GitHub App and choosing which repos to grant access.'}
             </p>
 
-            <button
+            <Button
               type="button"
               onClick={handleInstall}
               disabled={installing}
               aria-busy={installing}
-              className="ui-button ui-button-solid mt-8 h-12 w-full gap-3 px-6 text-sm disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
+              className="mt-8 h-12 w-full gap-3"
+              size="lg"
             >
               {installing ? (
                 <>
@@ -118,19 +123,19 @@ export default function ConnectRepoPage() {
                   <span>Install GitHub App</span>
                 </>
               )}
-            </button>
+            </Button>
 
             {installing && (
               <p
-                className="mt-5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600"
+                className="mt-5 font-mono text-[11px] font-bold tracking-[0.18em] text-primary uppercase"
                 role="status"
                 aria-live="polite"
               >
                 Keep this tab open
               </p>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

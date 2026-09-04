@@ -11,6 +11,8 @@ import {
   WalletCards,
 } from 'lucide-react';
 import Button from '@/app/components/ui/Button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 interface HeroSectionProps {
   user?: User | null;
@@ -21,13 +23,11 @@ const networkPills = [
     label: 'USDC',
     iconSrc: '/usd-coin-usdc-logo.svg',
     iconAlt: 'USDC logo',
-    className: 'bg-blue-50 text-blue-700',
   },
   {
     label: 'Stellar chain',
     iconSrc: '/stellar-xlm-logo.svg',
     iconAlt: 'Stellar logo',
-    className: 'bg-emerald-50 text-emerald-700',
   },
 ];
 
@@ -79,36 +79,40 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
       <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1.08fr)_minmax(390px,0.72fr)] lg:gap-16">
         <div className="relative z-10 max-w-5xl">
-          <div className="animate-hero-in hero-stagger-1 mb-6 inline-flex max-w-full items-center gap-2 rounded-full bg-white/75 px-3 py-2 text-[0.72rem] font-semibold tracking-[0.08em] text-slate-700 uppercase ring-1 ring-slate-200/80 sm:mb-7 sm:gap-3 sm:px-4">
-            <SiGithub className="h-4 w-4 text-slate-950" aria-hidden="true" />
+          <Badge
+            variant="outline"
+            className="animate-hero-in hero-stagger-1 mb-6 h-auto max-w-full gap-2 rounded-full bg-card/80 px-3 py-2 text-[0.72rem] font-semibold tracking-[0.08em] uppercase sm:mb-7 sm:gap-3 sm:px-4"
+          >
+            <SiGithub className="h-4 w-4 text-foreground" aria-hidden="true" />
             GitHub-native contributor payments
-          </div>
+          </Badge>
 
           <h1
             id="landing-hero-title"
-            className="animate-hero-in hero-stagger-2 font-display max-w-5xl text-[clamp(2.1rem,8vw,6.2rem)] font-extrabold leading-[0.92] tracking-[-0.05em] text-slate-950"
+            className="animate-hero-in hero-stagger-2 font-display max-w-5xl text-[clamp(2.1rem,8vw,6.2rem)] font-extrabold leading-[0.92] tracking-[-0.05em] text-foreground"
           >
             Fund the work
             <br />
             Merge the proof
             <br />
-            <span className="text-blue-600">Release the reward</span>
+            <span className="text-primary">Release the reward</span>
           </h1>
 
-          <p className="animate-hero-in hero-stagger-3 mt-8 max-w-2xl text-lg leading-8 text-slate-600 md:text-xl">
+          <p className="animate-hero-in hero-stagger-3 mt-8 max-w-2xl text-lg leading-8 text-muted-foreground md:text-xl">
             Turn GitHub issues into escrow-backed bounties. Contributors know the reward before they
             start, and maintainers release USDC through the workflow they already use.
           </p>
 
           <div className="animate-hero-in hero-stagger-4 mt-7 flex flex-wrap gap-3">
-            {networkPills.map(({ label, iconSrc, iconAlt, className }) => (
-              <span
+            {networkPills.map(({ label, iconSrc, iconAlt }) => (
+              <Badge
                 key={label}
-                className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[0.72rem] font-semibold ${className}`}
+                variant="secondary"
+                className="h-auto gap-2 rounded-full px-3.5 py-2 text-[0.72rem] font-semibold"
               >
                 <Image src={iconSrc} alt={iconAlt} width={18} height={18} className="h-4 w-4" />
                 {label}
-              </span>
+              </Badge>
             ))}
           </div>
 
@@ -124,47 +128,47 @@ export default function HeroSection({ user }: HeroSectionProps) {
           </div>
         </div>
 
-        <aside
+        <Card
           aria-label="Example bounty lifecycle"
-          className="home-bounty-preview animate-hero-in hero-stagger-6 relative z-10 rounded-3xl p-5 shadow-[0_30px_70px_-38px_rgba(37,99,235,0.55)] ring-1 ring-white/70 sm:p-7"
+          className="home-bounty-preview animate-hero-in hero-stagger-6 relative z-10 rounded-3xl py-0 shadow-[0_30px_70px_-38px_rgba(37,99,235,0.55)] ring-foreground/5"
         >
-          <div className="flex flex-col items-start justify-between gap-4 pb-5 sm:flex-row sm:items-center">
+          <CardHeader className="flex flex-col items-start justify-between gap-4 border-b border-border/70 pb-5 sm:flex-row sm:items-center">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-background">
                 <GitBranch className="h-5 w-5" aria-hidden="true" />
               </span>
               <div>
-                <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-blue-600 uppercase">
+                <p className="text-[0.65rem] font-semibold tracking-[0.18em] text-primary uppercase">
                   Example bounty
                 </p>
-                <p className="mt-1 truncate text-sm font-bold text-slate-950">
+                <p className="mt-1 truncate text-sm font-bold text-foreground">
                   trustless-oss / web
                 </p>
               </div>
             </div>
-            <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[0.62rem] font-bold tracking-wider text-emerald-800 uppercase">
+            <Badge className="rounded-full bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
               Escrow backed
-            </span>
-          </div>
+            </Badge>
+          </CardHeader>
 
-          <div className="py-6">
+          <CardContent className="py-6">
             <div className="flex items-start justify-between gap-5">
               <div>
-                <p className="text-xs font-semibold tracking-[0.14em] text-slate-500 uppercase">
+                <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
                   Issue #128
                 </p>
-                <h2 className="mt-2 max-w-xs text-2xl font-extrabold leading-tight text-slate-950">
+                <h2 className="mt-2 max-w-xs text-2xl font-extrabold leading-tight text-foreground">
                   Improve contributor wallet onboarding
                 </h2>
               </div>
               <CircleCheck
-                className="h-7 w-7 shrink-0 text-blue-600"
+                className="h-7 w-7 shrink-0 text-primary"
                 strokeWidth={2.5}
                 aria-hidden="true"
               />
             </div>
 
-            <div className="mt-6 flex items-center justify-between gap-4 rounded-2xl bg-blue-600 px-4 py-5 text-white">
+            <div className="mt-6 flex items-center justify-between gap-4 rounded-2xl bg-primary px-4 py-5 text-primary-foreground">
               <div className="flex items-center gap-4">
                 <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white">
                   <Image
@@ -189,28 +193,28 @@ export default function HeroSection({ user }: HeroSectionProps) {
                 <p className="mt-1 text-sm font-semibold">USD Coin</p>
               </div>
             </div>
-          </div>
 
-          <ol className="space-y-2.5">
-            {bountySteps.map(({ title, detail, icon: Icon, className }, index) => (
-              <li
-                key={title}
-                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl bg-slate-50/80 p-3.5"
-              >
-                <span
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${className}`}
+            <ol className="mt-6 space-y-2.5">
+              {bountySteps.map(({ title, detail, icon: Icon, className }, index) => (
+                <li
+                  key={title}
+                  className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl bg-muted/80 p-3.5"
                 >
-                  <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
-                </span>
-                <div>
-                  <p className="text-sm font-bold text-slate-950">{title}</p>
-                  <p className="mt-0.5 text-[0.7rem] text-slate-500">{detail}</p>
-                </div>
-                <span className="text-xs font-semibold text-slate-400">0{index + 1}</span>
-              </li>
-            ))}
-          </ol>
-        </aside>
+                  <span
+                    className={`flex h-10 w-10 items-center justify-center rounded-xl ${className}`}
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-foreground">{title}</p>
+                    <p className="mt-0.5 text-[0.7rem] text-muted-foreground">{detail}</p>
+                  </div>
+                  <span className="text-xs font-semibold text-muted-foreground">0{index + 1}</span>
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
       </div>
     </section>
   );
