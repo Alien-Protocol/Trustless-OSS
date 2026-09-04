@@ -36,19 +36,19 @@ const bountySteps = [
     title: 'Reward secured',
     detail: 'USDC reserved in escrow',
     icon: ShieldCheck,
-    className: 'bg-emerald-100 text-emerald-800',
+    className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300',
   },
   {
     title: 'Contributor assigned',
     detail: 'Wallet linked to the issue',
     icon: WalletCards,
-    className: 'bg-blue-100 text-blue-800',
+    className: 'bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300',
   },
   {
     title: 'Merge releases payout',
     detail: 'The pull request is the proof',
     icon: GitPullRequest,
-    className: 'bg-violet-100 text-violet-800',
+    className: 'bg-violet-100 text-violet-800 dark:bg-violet-500/15 dark:text-violet-300',
   },
 ];
 
@@ -130,7 +130,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
         <Card
           aria-label="Example bounty lifecycle"
-          className="home-bounty-preview animate-hero-in hero-stagger-6 relative z-10 rounded-3xl py-0 shadow-[0_30px_70px_-38px_rgba(37,99,235,0.55)] ring-foreground/5"
+          className="home-bounty-preview animate-hero-in hero-stagger-6 relative z-10 rounded-3xl py-0 ring-1 ring-border/80"
         >
           <CardHeader className="flex flex-col items-start justify-between gap-4 border-b border-border/70 pb-5 sm:flex-row sm:items-center">
             <div className="flex min-w-0 items-center gap-3">
@@ -146,7 +146,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
                 </p>
               </div>
             </div>
-            <Badge className="rounded-full bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
+            <Badge className="rounded-full bg-emerald-100 text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:hover:bg-emerald-500/15">
               Escrow backed
             </Badge>
           </CardHeader>
@@ -198,7 +198,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
               {bountySteps.map(({ title, detail, icon: Icon, className }, index) => (
                 <li
                   key={title}
-                  className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl bg-muted/80 p-3.5"
+                  className="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl bg-muted/70 p-3.5 ring-1 ring-border/60"
                 >
                   <span
                     className={`flex h-10 w-10 items-center justify-center rounded-xl ${className}`}

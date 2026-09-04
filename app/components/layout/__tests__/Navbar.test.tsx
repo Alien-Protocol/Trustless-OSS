@@ -15,7 +15,20 @@ vi.mock('next/link', () => ({
   ),
 }));
 
-afterEach(cleanup);
+const setTheme = vi.hoisted(() => vi.fn());
+
+vi.mock('next-themes', () => ({
+  useTheme: () => ({
+    theme: 'light',
+    resolvedTheme: 'light',
+    setTheme,
+  }),
+}));
+
+afterEach(() => {
+  cleanup();
+  setTheme.mockClear();
+});
 
 const user = {
   id: 'user_1',
@@ -52,6 +65,12 @@ describe('Navbar', () => {
       'href',
       '/dashboard'
     );
+    expect(screen.getByRole('menuitemcheckbox', { name: /dark mode/i })).toHaveAttribute(
+      'aria-checked',
+      'false'
+    );
+    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: /dark mode/i }));
+    expect(setTheme).toHaveBeenCalledWith('dark');
     expect(screen.getByRole('menuitem', { name: 'Sign out' })).toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: 'Repositories' })).not.toBeInTheDocument();
   });

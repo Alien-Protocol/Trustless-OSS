@@ -6,6 +6,7 @@
 @reference "tailwindcss";
 
 :root {
+  color-scheme: light;
   --color-bg: #f3f6ff;
   --color-black: #07111f;
   --color-blue: #2563eb;
@@ -54,29 +55,38 @@
 }
 
 .dark {
-  --color-bg: #020617;
-  --color-black: #f8fafc;
-  --color-blue: #3b82f6;
-  --color-text: #f8fafc;
-  --color-border: rgba(248, 250, 252, 0.12);
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  color-scheme: dark;
+  --color-bg: #070b16;
+  --color-black: #e8eefc;
+  --color-blue: #60a5fa;
+  --color-cyan: #22d3ee;
+  --color-text: #e8eefc;
+  --color-muted: #9aa8c7;
+  --color-border: rgba(147, 180, 255, 0.14);
+  --landing-surface-color: #070b16;
+  --landing-surface-image:
+    radial-gradient(ellipse 80% 55% at 8% -10%, rgba(59, 130, 246, 0.28), transparent 58%),
+    radial-gradient(ellipse 55% 45% at 92% 0%, rgba(6, 182, 212, 0.16), transparent 52%),
+    radial-gradient(ellipse 50% 40% at 50% 110%, rgba(139, 92, 246, 0.16), transparent 55%),
+    linear-gradient(180deg, #0a1020 0%, #070b16 48%, #0c1222 100%);
+  --background: oklch(0.155 0.032 264);
+  --foreground: oklch(0.96 0.014 264);
+  --card: oklch(0.205 0.038 264);
+  --card-foreground: oklch(0.96 0.014 264);
+  --popover: oklch(0.195 0.036 264);
+  --popover-foreground: oklch(0.96 0.014 264);
+  --primary: oklch(0.7 0.155 264);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.255 0.04 264);
+  --secondary-foreground: oklch(0.94 0.02 264);
+  --muted: oklch(0.24 0.034 264);
+  --muted-foreground: oklch(0.8 0.03 260);
+  --accent: oklch(0.28 0.05 264);
+  --accent-foreground: oklch(0.96 0.014 264);
+  --destructive: oklch(0.72 0.18 22);
+  --border: oklch(0.76 0.06 264 / 16%);
+  --input: oklch(0.76 0.06 264 / 18%);
+  --ring: oklch(0.7 0.155 264);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -300,6 +310,39 @@ html {
 .diff-custom {
   background: #c7d2fe;
   color: #020617;
+}
+
+.dark .status-pending {
+  background: rgba(250, 204, 21, 0.16);
+  color: #fde68a;
+}
+.dark .status-active {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+.dark .status-completed {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+.dark .status-cancelled {
+  background: rgba(248, 113, 113, 0.18);
+  color: #fca5a5;
+}
+.dark .diff-low {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+.dark .diff-medium {
+  background: rgba(251, 146, 60, 0.18);
+  color: #fdba74;
+}
+.dark .diff-high {
+  background: rgba(248, 113, 113, 0.18);
+  color: #fca5a5;
+}
+.dark .diff-custom {
+  background: rgba(129, 140, 248, 0.2);
+  color: #c7d2fe;
 }
 
 /* Technical Animations */
@@ -587,6 +630,18 @@ html {
   width: 28rem;
   background: rgba(139, 92, 246, 0.12);
   animation-delay: -11s;
+}
+
+.dark .page-aurora-one {
+  background: rgba(59, 130, 246, 0.24);
+}
+
+.dark .page-aurora-two {
+  background: rgba(6, 182, 212, 0.16);
+}
+
+.dark .page-aurora-three {
+  background: rgba(139, 92, 246, 0.18);
 }
 
 @keyframes aurora-drift {
@@ -1122,8 +1177,38 @@ img.landing-watermark {
   pointer-events: none;
 }
 
+.dark .home-hero::before {
+  border-color: rgba(96, 165, 250, 0.2);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.2), transparent 68%);
+}
+
 .home-bounty-preview {
-  background: rgba(255, 255, 255, 0.72);
+  background: color-mix(in oklch, var(--card) 86%, transparent);
+  backdrop-filter: blur(22px);
+  box-shadow:
+    0 28px 70px -36px color-mix(in oklch, var(--primary) 48%, transparent),
+    inset 0 1px 0 color-mix(in oklch, white 55%, transparent);
+}
+
+.dark .home-bounty-preview {
+  background: color-mix(in oklch, var(--card) 92%, transparent);
+  box-shadow:
+    0 32px 80px -34px rgba(37, 99, 235, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.landing-spotlight {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.dark .landing-spotlight {
+  background:
+    radial-gradient(ellipse 80% 70% at 92% -10%, rgba(59, 130, 246, 0.28), transparent 55%),
+    linear-gradient(180deg, oklch(0.22 0.05 264), oklch(0.17 0.04 264));
+  color: var(--foreground);
+  border: 1px solid oklch(0.76 0.08 264 / 18%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .fund-progress-step::after {
@@ -1193,6 +1278,10 @@ img.landing-watermark {
   user-select: none;
 }
 
+.dark .home-hero-wordmark {
+  color: rgba(96, 165, 250, 0.09);
+}
+
 .home-hero-orbit {
   position: absolute;
   right: 2%;
@@ -1202,6 +1291,14 @@ img.landing-watermark {
   border: 1px dashed rgba(37, 99, 235, 0.22);
   border-radius: 9999px;
   animation: hero-orbit-turn 30s linear infinite;
+}
+
+.dark .home-hero-orbit {
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.dark .home-hero-orbit::before {
+  border-color: rgba(96, 165, 250, 0.18);
 }
 
 .home-hero-orbit::before,

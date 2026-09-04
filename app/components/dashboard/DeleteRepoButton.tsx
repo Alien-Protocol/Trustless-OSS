@@ -75,7 +75,7 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
             onClick={closeModal}
           >
             <div
-              className="surface-card w-full max-w-md overflow-hidden bg-white/90"
+              className="surface-card w-full max-w-md overflow-hidden bg-card/95"
               onClick={(event) => event.stopPropagation()}
               role="dialog"
               aria-modal="true"
@@ -92,7 +92,7 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
                     onClick={closeModal}
                     disabled={loading}
                     aria-label="Close delete dialog"
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-red-200 hover:text-red-600 disabled:opacity-50"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-red-200 hover:text-red-600 disabled:opacity-50"
                   >
                     <X className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
                   </button>
@@ -103,11 +103,11 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
                 </p>
                 <h3
                   id="delete-repo-title"
-                  className="font-display mt-1 text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl"
+                  className="font-display mt-1 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl"
                 >
                   Delete this repository?
                 </h3>
-                <p id="delete-repo-description" className="mt-3 text-sm leading-6 text-slate-600">
+                <p id="delete-repo-description" className="mt-3 text-sm leading-6 text-muted-foreground">
                   This permanently removes the repository from Trustless OSS and cannot be undone.
                 </p>
 
@@ -120,7 +120,7 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
                   </div>
                 )}
 
-                <ul className="mt-5 space-y-2 rounded-2xl bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                <ul className="mt-5 space-y-2 rounded-2xl bg-muted px-4 py-4 text-sm leading-6 text-muted-foreground">
                   <li>Tracked issues and bounty records will be deleted.</li>
                   <li>The GitHub App connection for this repository will be revoked.</li>
                   <li>The repository will be removed from your dashboard.</li>

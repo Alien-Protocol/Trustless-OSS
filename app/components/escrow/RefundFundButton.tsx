@@ -96,7 +96,7 @@ export default function RefundFundButton({
             }}
           >
             <div
-              className="surface-card w-full max-w-md overflow-hidden bg-white/90"
+              className="surface-card w-full max-w-md overflow-hidden bg-card/95"
               onClick={(event) => event.stopPropagation()}
               role="dialog"
               aria-modal="true"
@@ -110,7 +110,7 @@ export default function RefundFundButton({
                     </p>
                     <h3
                       id="refund-funds-title"
-                      className="mt-1 text-2xl font-bold tracking-tight text-slate-950"
+                      className="mt-1 text-2xl font-bold tracking-tight text-foreground"
                     >
                       Refund all funds
                     </h3>
@@ -120,7 +120,7 @@ export default function RefundFundButton({
                     onClick={() => setShowModal(false)}
                     disabled={loading}
                     aria-label="Close refund dialog"
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-red-200 hover:text-red-600 disabled:opacity-50"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-red-200 hover:text-red-600 disabled:opacity-50"
                   >
                     <X className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
                   </button>
@@ -139,7 +139,7 @@ export default function RefundFundButton({
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
                     Refundable balance
                   </p>
-                  <p className="mt-1 text-3xl font-bold tracking-tight text-slate-950">
+                  <p className="mt-1 text-3xl font-bold tracking-tight text-foreground">
                     {currentBalance.toFixed(2)}{' '}
                     <span className="text-sm font-semibold text-slate-400">USDC</span>
                   </p>

@@ -122,7 +122,7 @@ export default async function HomePage() {
                   <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
                     <Icon className="h-6 w-6" strokeWidth={2.25} aria-hidden="true" />
                   </span>
-                  <span className="font-display text-5xl font-extrabold tracking-[-0.08em] text-muted/80 transition-colors group-hover:text-primary/20">
+                  <span className="font-display text-5xl font-extrabold tracking-[-0.08em] text-foreground/12 transition-colors group-hover:text-primary/25">
                     {step}
                   </span>
                 </CardHeader>
@@ -140,7 +140,7 @@ export default async function HomePage() {
         </section>
 
         <section
-          className="relative mb-20 overflow-hidden rounded-3xl bg-foreground px-5 py-7 text-background sm:px-7 sm:py-9 md:mb-28 md:px-10"
+          className="landing-spotlight relative mb-20 overflow-hidden rounded-3xl px-5 py-7 sm:px-7 sm:py-9 md:mb-28 md:px-10"
           aria-labelledby="issue-platforms-title"
         >
           <Image
@@ -168,7 +168,7 @@ export default async function HomePage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <article className="flex items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-foreground">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-neutral-950">
                   <SiGithub className="h-7 w-7" aria-hidden="true" />
                 </span>
                 <div>

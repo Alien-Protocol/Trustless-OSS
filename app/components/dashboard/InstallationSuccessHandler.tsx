@@ -201,12 +201,12 @@ export default function InstallationSuccessHandler() {
             aria-hidden="true"
           />
         </span>
-        <h2 className="font-display mt-5 text-2xl font-extrabold tracking-tight text-slate-950">
+        <h2 className="font-display mt-5 text-2xl font-extrabold tracking-tight text-foreground">
           {status === 'syncing' && 'Finishing GitHub installation'}
           {status === 'success' && 'GitHub App connected'}
           {status === 'error' && 'Could not finish installation'}
         </h2>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
           {status === 'syncing' &&
             'Syncing repositories from GitHub. This window should close automatically.'}
           {status === 'success' &&

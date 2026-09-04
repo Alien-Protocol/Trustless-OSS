@@ -14,22 +14,22 @@ const WAKING_HINT_MS = 2500;
 const STATUS_COPY: Record<HealthStatus, { label: string; className: string; dot: string }> = {
   checking: {
     label: 'Checking API',
-    className: 'text-slate-600',
+    className: 'text-muted-foreground',
     dot: 'bg-slate-400',
   },
   waking: {
     label: 'Waking API',
-    className: 'text-amber-700',
+    className: 'text-amber-700 dark:text-amber-400',
     dot: 'bg-amber-500',
   },
   ok: {
     label: 'Operational',
-    className: 'text-emerald-700',
+    className: 'text-emerald-700 dark:text-emerald-400',
     dot: 'bg-emerald-500',
   },
   down: {
     label: 'API down',
-    className: 'text-red-700',
+    className: 'text-red-700 dark:text-red-400',
     dot: 'bg-red-500',
   },
 };

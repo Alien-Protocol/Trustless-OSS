@@ -222,8 +222,8 @@ export default function ProfileSettings({ user }: { user: User }) {
 
         <CardContent>
           {form.stellarAddress ? (
-            <div className="rounded-2xl bg-emerald-50 px-4 py-4">
-              <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+            <div className="rounded-2xl bg-emerald-50 px-4 py-4 dark:bg-emerald-500/10">
+              <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:hover:bg-emerald-500/15">
                 Connected
               </Badge>
               <p className="mt-2 font-mono text-sm font-semibold break-all text-foreground">

@@ -2,16 +2,25 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, LayoutDashboard, LogOut, UserRound } from 'lucide-react';
+import { ChevronDown, LayoutDashboard, LogOut, Moon, UserRound } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import type { User } from '@supabase/supabase-js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function UserMenu({ user }: { user: User }) {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
   const menuRef = useRef<HTMLDivElement>(null);
   const name = user.user_metadata?.user_name ?? user.email?.split('@')[0] ?? 'Account';
   const avatar = user.user_metadata?.avatar_url as string | undefined;
   const initial = name[0]?.toUpperCase() ?? 'U';
+
+  const isDark = mounted && resolvedTheme === 'dark';
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function onPointerDown(event: PointerEvent) {
@@ -58,7 +67,7 @@ export default function UserMenu({ user }: { user: User }) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-xl bg-popover p-1 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10"
+          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl bg-popover p-1 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10"
         >
           <Link
             href="/dashboard/profile"
@@ -78,6 +87,17 @@ export default function UserMenu({ user }: { user: User }) {
             <LayoutDashboard size={16} aria-hidden="true" />
             Dashboard
           </Link>
+          <button
+            type="button"
+            role="menuitemcheckbox"
+            aria-checked={isDark}
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
+            className="flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-left font-medium text-foreground hover:bg-accent"
+          >
+            <Moon size={16} aria-hidden="true" />
+            Dark mode
+            <span className="ml-auto text-xs text-muted-foreground">{isDark ? 'On' : 'Off'}</span>
+          </button>
           <form action="/auth/signout" method="post">
             <button
               type="submit"

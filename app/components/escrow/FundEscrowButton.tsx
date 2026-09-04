@@ -297,7 +297,7 @@ export default function FundEscrowButton({
           >
             <div
               ref={dialogRef}
-              className="surface-card w-full max-w-xl overflow-hidden bg-white/90"
+              className="surface-card w-full max-w-xl overflow-hidden bg-card/95"
               onClick={(event) => event.stopPropagation()}
               role="dialog"
               aria-modal="true"
@@ -312,7 +312,7 @@ export default function FundEscrowButton({
                     </p>
                     <h3
                       id="fund-repository-title"
-                      className="mt-1 truncate text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl"
+                      className="mt-1 truncate text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
                     >
                       Fund repository
                     </h3>
@@ -332,7 +332,7 @@ export default function FundEscrowButton({
                     onClick={resetModal}
                     disabled={loading}
                     aria-label="Close fund repository dialog"
-                    className="group flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-blue-300 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="group flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <X
                       className="h-4 w-4 transition-transform group-hover:rotate-90"
@@ -345,7 +345,7 @@ export default function FundEscrowButton({
 
               <ol
                 aria-label="Funding progress"
-                className="flex items-start px-5 py-3 text-slate-950 sm:px-6"
+                className="flex items-start px-5 py-3 text-foreground sm:px-6"
               >
                 {['Amount', 'Wallet', 'Sign', 'Done'].map((label, index) => {
                   const isComplete = index < currentStep || phase === 'success';
@@ -365,17 +365,17 @@ export default function FundEscrowButton({
                       <span
                         className={`fund-progress-dot relative z-10 mx-auto flex h-4 w-4 items-center justify-center rounded-full font-mono text-[0.5rem] font-black ${
                           isComplete
-                            ? 'bg-slate-950 text-white'
+                            ? 'bg-foreground text-background'
                             : isCurrent
                               ? 'bg-blue-600 text-white'
-                              : 'bg-blue-100 text-slate-500'
+                              : 'bg-primary/15 text-muted-foreground'
                         }`}
                       >
                         {isComplete ? <Check className="h-2.5 w-2.5" strokeWidth={4} /> : index + 1}
                       </span>
                       <span
                         className={`mt-1 block truncate font-mono text-[0.52rem] font-black uppercase tracking-[0.08em] sm:text-[0.58rem] sm:tracking-[0.12em] ${
-                          isCurrent || isComplete ? 'text-slate-950' : 'text-slate-400'
+                          isCurrent || isComplete ? 'text-foreground' : 'text-muted-foreground'
                         }`}
                       >
                         {label}
@@ -386,7 +386,7 @@ export default function FundEscrowButton({
               </ol>
 
               <div className="space-y-3 px-5 pb-5 pt-1 sm:px-6">
-                <section className="rounded-2xl bg-slate-50/80 px-4 py-4 sm:px-5">
+                <section className="rounded-2xl bg-muted/80 px-4 py-4 sm:px-5">
                   <div className="mb-2 flex items-center justify-between gap-3">
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">
                       Deposit amount
@@ -421,7 +421,7 @@ export default function FundEscrowButton({
                         setAmount(event.target.value);
                         setAmountTouched(true);
                       }}
-                      className="min-w-0 flex-1 bg-transparent p-0 font-mono text-4xl font-bold tracking-tight text-slate-950 outline-none placeholder:text-slate-300 disabled:cursor-not-allowed disabled:opacity-60 sm:text-5xl"
+                      className="min-w-0 flex-1 bg-transparent p-0 font-mono text-4xl font-bold tracking-tight text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60 sm:text-5xl"
                       placeholder="0.00"
                       aria-invalid={showValidationError}
                       aria-describedby="deposit-validation"
@@ -511,10 +511,10 @@ export default function FundEscrowButton({
                     )}
                   </span>
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-950">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-foreground">
                       {phaseMessage.label}
                     </p>
-                    <p className="text-sm leading-5 text-slate-600">{phaseMessage.detail}</p>
+                    <p className="text-sm leading-5 text-muted-foreground">{phaseMessage.detail}</p>
                     {error ? <p className="mt-2 text-sm font-bold text-red-700">{error}</p> : null}
                     {phase === 'success' && transactionHash ? (
                       <a

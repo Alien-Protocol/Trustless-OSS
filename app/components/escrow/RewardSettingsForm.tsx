@@ -16,9 +16,21 @@ interface RewardSettingsFormProps {
 }
 
 const TIERS = [
-  { key: 'low' as const, label: 'Low', accent: 'border-l-emerald-400 bg-emerald-50/80' },
-  { key: 'medium' as const, label: 'Medium', accent: 'border-l-amber-400 bg-amber-50/80' },
-  { key: 'high' as const, label: 'High', accent: 'border-l-rose-400 bg-rose-50/80' },
+  {
+    key: 'low' as const,
+    label: 'Low',
+    accent: 'border-l-emerald-400 bg-emerald-50/80 dark:bg-emerald-500/12',
+  },
+  {
+    key: 'medium' as const,
+    label: 'Medium',
+    accent: 'border-l-amber-400 bg-amber-50/80 dark:bg-amber-500/12',
+  },
+  {
+    key: 'high' as const,
+    label: 'High',
+    accent: 'border-l-rose-400 bg-rose-50/80 dark:bg-rose-500/12',
+  },
 ];
 
 export default function RewardSettingsForm({
@@ -86,7 +98,7 @@ export default function RewardSettingsForm({
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2
           id="reward-parameters-heading"
-          className="text-xl font-black tracking-tight text-slate-950"
+          className="text-xl font-black tracking-tight text-foreground"
         >
           Reward parameters
         </h2>
@@ -119,11 +131,11 @@ export default function RewardSettingsForm({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {TIERS.map((tier) => {
           const value = values[tier.key];
-          const cardClass = `w-full rounded-2xl border-l-4 ${tier.accent} px-4 py-3 text-left`;
+          const cardClass = `w-full rounded-2xl border-l-4 ${tier.accent} px-4 py-3 text-left ring-1 ring-border/50`;
 
           const body = (
             <>
-              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {tier.label}
               </span>
               {editing ? (
@@ -142,14 +154,14 @@ export default function RewardSettingsForm({
                     }
                     className="w-full bg-transparent py-1 font-mono text-xl font-black outline-none"
                   />
-                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-slate-400">
+                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-muted-foreground">
                     USDC
                   </span>
                 </div>
               ) : (
                 <div className="mt-1 flex items-baseline gap-1.5">
-                  <span className="text-xl font-black tracking-tight text-slate-950">{value}</span>
-                  <span className="text-[11px] font-semibold text-slate-400">USDC</span>
+                  <span className="text-xl font-black tracking-tight text-foreground">{value}</span>
+                  <span className="text-[11px] font-semibold text-muted-foreground">USDC</span>
                 </div>
               )}
             </>
@@ -178,7 +190,7 @@ export default function RewardSettingsForm({
       </div>
 
       {editing && (
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-sm text-muted-foreground">
           New amounts apply to newly discovered issues. Existing bounties keep their original
           reward.
         </p>
