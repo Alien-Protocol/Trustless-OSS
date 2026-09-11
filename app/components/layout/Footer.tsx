@@ -12,9 +12,9 @@ const productLinks = [
 ];
 
 const socialLinks = [
-  { label: 'X', href: 'https://x.com/ryzen__xp', icon: FaXTwitter },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ryzen_xp/', icon: FaLinkedinIn },
-  { label: 'GitHub', href: 'https://github.com/ryzen-xp/Trustless-OSS', icon: FaGithub },
+  { label: 'X', href: 'https://x.com/Trustless_OSS', icon: FaXTwitter },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/trustless-oss', icon: FaLinkedinIn },
+  { label: 'GitHub', href: 'https://github.com/Trustless-OSS', icon: FaGithub },
 ];
 
 export default function Footer() {

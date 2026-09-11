@@ -29,6 +29,7 @@ describe('Button', () => {
     const link = screen.getByRole('link', { name: 'Dashboard' });
     expect(link).toHaveAttribute('href', '/dashboard');
     expect(link).toHaveAttribute('data-variant', 'outline');
+    expect(link).toHaveClass('border-border');
   });
 
   it('renders ghost and danger variants with size classes', () => {
@@ -44,11 +45,13 @@ describe('Button', () => {
     );
 
     expect(screen.getByRole('button', { name: 'Edit' })).toHaveClass('h-9');
+    expect(screen.getByRole('button', { name: 'Edit' })).toHaveClass('border-border');
     expect(screen.getByRole('button', { name: 'Edit' })).toHaveAttribute('data-variant', 'ghost');
     expect(screen.getByRole('button', { name: 'Delete' })).toHaveClass('h-12');
     expect(screen.getByRole('button', { name: 'Delete' })).toHaveAttribute(
       'data-variant',
       'destructive'
     );
+    expect(screen.getByRole('button', { name: 'Delete' })).toHaveClass('bg-destructive');
   });
 });

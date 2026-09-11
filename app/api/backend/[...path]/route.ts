@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { remoteBackendUrl } from '@/lib/backend';
 
-export const maxDuration = 60;
+export const maxDuration = 180;
 
 const PROXY_TIMEOUT_MS = 55_000;
+const SYNC_PROXY_TIMEOUT_MS = 170_000;
 const PROXY_ATTEMPTS = 3;
 
 const HOP_BY_HOP = new Set([
@@ -24,13 +25,32 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function isRetryableNetworkError(error: unknown) {
-  if (!(error instanceof Error)) return false;
+function errorText(error: unknown) {
+  if (!(error instanceof Error)) return '';
   const cause =
     'cause' in error && error.cause instanceof Error
       ? `${error.cause.name} ${error.cause.message}`
       : '';
-  const haystack = `${error.name} ${error.message} ${cause}`;
+  return `${error.name} ${error.message} ${cause}`;
+}
+
+function isTimeoutError(error: unknown) {
+  if (!(error instanceof Error)) return false;
+  if (error.name === 'TimeoutError' || error.name === 'AbortError') return true;
+  return /operation was aborted|aborted due to timeout/i.test(errorText(error));
+}
+
+function proxyTimeoutMs(path: string[], method: string) {
+  if (method === 'POST' && path.join('/') === 'api/repos/sync-installation') {
+    return SYNC_PROXY_TIMEOUT_MS;
+  }
+  return PROXY_TIMEOUT_MS;
+}
+
+function isRetryableNetworkError(error: unknown, method: string) {
+  const haystack = errorText(error);
+  if (!haystack) return false;
+  if (isTimeoutError(error) && method !== 'GET' && method !== 'HEAD') return false;
   return /ECONNRESET|ECONNREFUSED|ETIMEDOUT|UND_ERR_SOCKET|socket hang up|fetch failed|aborted|timeout/i.test(
     haystack
   );
@@ -59,7 +79,7 @@ async function proxy(request: NextRequest, path: string[]): Promise<Response> {
         body: body && body.byteLength > 0 ? body : undefined,
         cache: 'no-store',
         redirect: 'manual',
-        signal: AbortSignal.timeout(PROXY_TIMEOUT_MS),
+        signal: AbortSignal.timeout(proxyTimeoutMs(path, request.method)),
       });
 
       const outbound = new Headers();
@@ -76,7 +96,7 @@ async function proxy(request: NextRequest, path: string[]): Promise<Response> {
       });
     } catch (error: unknown) {
       lastError = error;
-      if (attempt < PROXY_ATTEMPTS && isRetryableNetworkError(error)) {
+      if (attempt < PROXY_ATTEMPTS && isRetryableNetworkError(error, request.method)) {
         await sleep(2000 * attempt);
         continue;
       }
@@ -85,12 +105,15 @@ async function proxy(request: NextRequest, path: string[]): Promise<Response> {
   }
 
   const detail = lastError instanceof Error ? lastError.message : 'connection reset';
+  const timedOut = isTimeoutError(lastError);
   return NextResponse.json(
     {
-      error: `${remoteBackendUrl()} is waking up or temporarily unavailable.`,
+      error: timedOut
+        ? `${remoteBackendUrl()} did not respond in time.`
+        : `${remoteBackendUrl()} is waking up or temporarily unavailable.`,
       detail,
     },
-    { status: 502 }
+    { status: timedOut ? 504 : 502 }
   );
 }
 

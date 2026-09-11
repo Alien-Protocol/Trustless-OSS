@@ -1,115 +1,86 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, LayoutDashboard, LogOut, Moon, UserRound } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { Check, ChevronDown, LayoutDashboard, LogOut, Menu, UserRound } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function UserMenu({ user }: { user: User }) {
-  const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const { resolvedTheme, setTheme } = useTheme();
-  const menuRef = useRef<HTMLDivElement>(null);
   const name = user.user_metadata?.user_name ?? user.email?.split('@')[0] ?? 'Account';
   const avatar = user.user_metadata?.avatar_url as string | undefined;
   const initial = name[0]?.toUpperCase() ?? 'U';
 
-  const isDark = mounted && resolvedTheme === 'dark';
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    function onPointerDown(event: PointerEvent) {
-      if (!menuRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setOpen(false);
-    }
-
-    document.addEventListener('pointerdown', onPointerDown);
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, []);
-
   return (
-    <div ref={menuRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        className="flex max-w-[13rem] items-center gap-2 rounded-full border border-border bg-card py-1 pr-2.5 pl-1 shadow-sm transition-colors hover:border-primary/40 hover:bg-accent"
-      >
-        <Avatar className="h-8 w-8">
-          {avatar ? <AvatarImage src={avatar} alt="" /> : null}
-          <AvatarFallback className="bg-foreground text-xs font-semibold text-background">
-            {initial}
-          </AvatarFallback>
-        </Avatar>
-        <span className="hidden truncate text-sm font-medium text-foreground sm:block">{name}</span>
-        <ChevronDown
-          size={14}
-          className={`text-muted-foreground transition ${open ? 'rotate-180' : ''}`}
-          aria-hidden="true"
-        />
-      </button>
-
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl bg-popover p-1 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10"
-        >
-          <Link
-            href="/dashboard/profile"
-            role="menuitem"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 rounded-md px-3 py-2.5 font-medium text-foreground hover:bg-accent"
-          >
-            <UserRound size={16} aria-hidden="true" />
+    <DropdownMenu>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              aria-label={`Open settings for ${name}`}
+              className="h-9 gap-1.5 rounded-full border-border bg-card px-1.5 text-foreground shadow-sm hover:border-primary/40 hover:shadow-md sm:pr-2.5"
+            >
+              <span className="relative hidden sm:inline-flex">
+                <Avatar className="size-7 sm:size-8">
+                  {avatar ? (
+                    <AvatarImage src={avatar} alt="" className="object-cover object-center" />
+                  ) : null}
+                  <AvatarFallback className="bg-foreground text-[10px] font-semibold text-background">
+                    {initial}
+                  </AvatarFallback>
+                </Avatar>
+                <span
+                  className="absolute -right-0.5 -bottom-0.5 flex size-3.5 items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-card"
+                  aria-hidden="true"
+                >
+                  <Check className="size-2.5" strokeWidth={3} />
+                </span>
+              </span>
+              <span className="hidden max-w-[7.5rem] truncate text-sm font-medium sm:inline">
+                {name}
+              </span>
+              <ChevronDown className="hidden size-4 shrink-0 text-muted-foreground sm:inline" />
+              <Menu className="size-5 sm:hidden" strokeWidth={2.25} aria-hidden="true" />
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">Open settings</TooltipContent>
+      </Tooltip>
+      <DropdownMenuContent align="end" sideOffset={8} className="w-56 min-w-56">
+        <DropdownMenuLabel className="font-medium text-foreground">{name}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/profile">
+            <UserRound aria-hidden="true" />
             Profile
           </Link>
-          <Link
-            href="/dashboard"
-            role="menuitem"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 rounded-md px-3 py-2.5 font-medium text-foreground hover:bg-accent"
-          >
-            <LayoutDashboard size={16} aria-hidden="true" />
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard">
+            <LayoutDashboard aria-hidden="true" />
             Dashboard
           </Link>
-          <button
-            type="button"
-            role="menuitemcheckbox"
-            aria-checked={isDark}
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            className="flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-left font-medium text-foreground hover:bg-accent"
-          >
-            <Moon size={16} aria-hidden="true" />
-            Dark mode
-            <span className="ml-auto text-xs text-muted-foreground">{isDark ? 'On' : 'Off'}</span>
-          </button>
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              role="menuitem"
-              className="flex w-full items-center gap-2.5 rounded-md px-3 py-2.5 text-left font-medium text-destructive hover:bg-destructive/10"
-            >
-              <LogOut size={16} aria-hidden="true" />
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <form action="/auth/signout" method="post">
+          <DropdownMenuItem variant="destructive" asChild>
+            <button type="submit">
+              <LogOut aria-hidden="true" />
               Sign out
             </button>
-          </form>
-        </div>
-      )}
-    </div>
+          </DropdownMenuItem>
+        </form>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

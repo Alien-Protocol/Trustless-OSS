@@ -8,9 +8,9 @@ vi.mock('recharts', () => {
   return {
     ResponsiveContainer: (props: { children?: React.ReactNode }) =>
       React.createElement('div', null, props.children),
-    LineChart: (props: { children?: React.ReactNode }) =>
+    AreaChart: (props: { children?: React.ReactNode }) =>
       React.createElement('div', null, props.children),
-    Line: () => React.createElement('div', { 'data-testid': 'line' }),
+    Area: () => React.createElement('div', { 'data-testid': 'area' }),
     XAxis: () => React.createElement('div', { 'data-testid': 'xaxis' }),
     YAxis: () => React.createElement('div', { 'data-testid': 'yaxis' }),
     Tooltip: () => React.createElement('div', { 'data-testid': 'tooltip' }),
@@ -41,7 +41,7 @@ describe('FundsMovementChart', () => {
 
     await waitFor(() => expect(screen.getByText('Funds movement')).toBeInTheDocument());
     expect(screen.getByTestId('legend')).toBeInTheDocument();
-    expect(screen.getAllByTestId('line').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByTestId('area').length).toBeGreaterThanOrEqual(1);
   });
 
   it('does not repeat the sample-data banner on the chart', () => {

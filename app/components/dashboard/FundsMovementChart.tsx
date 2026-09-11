@@ -3,8 +3,8 @@
 import React from 'react';
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
@@ -33,7 +33,7 @@ const SAMPLE: Point[] = [
 
 export default function FundsMovementChart() {
   return (
-    <Card className="rounded-3xl">
+    <Card className="overflow-visible rounded-3xl">
       <CardHeader>
         <div className="flex items-center justify-between gap-4">
           <CardTitle className="inline-flex items-center gap-2 font-display text-xl font-extrabold tracking-tight">
@@ -56,34 +56,48 @@ export default function FundsMovementChart() {
             <span className="text-xs text-muted-foreground">Payouts Released ($)</span>
           </div>
         </div>
-        <div style={{ width: '100%', minHeight: 320 }}>
+        <div className="h-[320px] w-full min-h-[320px]">
           <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={SAMPLE} margin={{ top: 8, right: 24, left: 8, bottom: 8 }}>
+            <AreaChart data={SAMPLE} margin={{ top: 8, right: 24, left: 8, bottom: 8 }}>
+              <defs>
+                <linearGradient id="fundsTvlFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.04} />
+                </linearGradient>
+                <linearGradient id="fundsPayoutsFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.04} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis yAxisId="left" stroke="#06b6d4" />
               <YAxis yAxisId="right" orientation="right" stroke="#8b5cf6" />
               <Tooltip />
               <Legend wrapperStyle={{ paddingLeft: 8 }} />
-              <Line
+              <Area
                 yAxisId="left"
                 type="monotone"
                 dataKey="tvl"
+                name="Escrow TVL Locked ($)"
                 stroke="#06b6d4"
+                fill="url(#fundsTvlFill)"
                 strokeWidth={2}
-                dot={{ r: 4 }}
+                dot={{ r: 3 }}
                 isAnimationActive
               />
-              <Line
+              <Area
                 yAxisId="right"
                 type="monotone"
                 dataKey="payouts"
+                name="Payouts Released ($)"
                 stroke="#8b5cf6"
+                fill="url(#fundsPayoutsFill)"
                 strokeWidth={2}
-                dot={{ r: 4 }}
+                dot={{ r: 3 }}
                 isAnimationActive
               />
-            </LineChart>
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

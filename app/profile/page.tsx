@@ -7,7 +7,7 @@ export default async function ProfilePage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
+  if (!user) redirect('/login?next=/profile');
 
   return <ProfileSettings user={user} />;
 }

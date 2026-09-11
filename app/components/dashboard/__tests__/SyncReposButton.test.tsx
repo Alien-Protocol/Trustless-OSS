@@ -1,0 +1,84 @@
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import SyncReposButton from '../SyncReposButton';
+
+const refresh = vi.fn();
+const handleError = vi.fn();
+const notifySuccess = vi.fn();
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh }),
+}));
+
+vi.mock('@/lib/notifications', () => ({
+  handleError: (...args: unknown[]) => handleError(...args),
+  notifySuccess: (...args: unknown[]) => notifySuccess(...args),
+}));
+
+afterEach(() => {
+  cleanup();
+  refresh.mockReset();
+  handleError.mockReset();
+  notifySuccess.mockReset();
+  vi.unstubAllGlobals();
+});
+
+describe('SyncReposButton', () => {
+  it('syncs repositories and refreshes the page', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, text: async () => '' });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<SyncReposButton token="token" installationIds={[42]} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Sync' }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/backend/api/repos/sync-installation',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ installationId: 42 }),
+        })
+      );
+      expect(notifySuccess).toHaveBeenCalledWith(
+        'Repositories synced',
+        'GitHub repositories are up to date.'
+      );
+      expect(refresh).toHaveBeenCalled();
+    });
+    expect(fetchMock).not.toHaveBeenCalledWith('/api/backend/api/repos/sync', expect.anything());
+  });
+
+  it('does not refresh when there is no GitHub installation to sync', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<SyncReposButton token="token" installationIds={[]} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Sync' }));
+
+    await waitFor(() => {
+      expect(handleError).toHaveBeenCalled();
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(refresh).not.toHaveBeenCalled();
+  });
+
+  it('does not refresh when sync fails', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: async () => JSON.stringify({ error: 'Redis unavailable' }),
+      })
+    );
+
+    render(<SyncReposButton token="token" installationIds={[7]} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Sync' }));
+
+    await waitFor(() => {
+      expect(handleError).toHaveBeenCalled();
+    });
+    expect(refresh).not.toHaveBeenCalled();
+    expect(notifySuccess).not.toHaveBeenCalled();
+  });
+});

@@ -151,7 +151,7 @@ export default async function HomePage() {
             className="landing-watermark -right-12 -top-16 h-56 w-56 rotate-12 opacity-[0.09]"
             aria-hidden="true"
           />
-          <div className="relative z-10 grid gap-7 lg:grid-cols-[minmax(0,0.75fr)_minmax(420px,1fr)] lg:items-center">
+          <div className="relative z-10 grid gap-7 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] lg:items-center">
             <div>
               <p className="text-xs font-semibold tracking-[0.2em] text-blue-300 uppercase">
                 Repository-native rewards
@@ -166,27 +166,27 @@ export default async function HomePage() {
               </h2>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <article className="flex items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
+            <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
+              <article className="flex min-w-0 items-center gap-3 overflow-hidden rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-neutral-950">
                   <SiGithub className="h-7 w-7" aria-hidden="true" />
                 </span>
-                <div>
-                  <h3 className="text-base font-black">GitHub Issues</h3>
-                  <Badge className="mt-1 h-auto rounded-full bg-emerald-400/20 px-0 font-mono text-[0.62rem] font-black tracking-[0.16em] text-emerald-300 uppercase">
-                    Available now
+                <div className="min-w-0">
+                  <h3 className="truncate text-base font-black">GitHub Issues</h3>
+                  <Badge className="mt-1 h-auto max-w-full rounded-full bg-emerald-400/20 px-2.5 font-mono text-[0.62rem] font-black tracking-wider text-emerald-300 uppercase">
+                    Available
                   </Badge>
                 </div>
               </article>
 
-              <article className="flex items-center gap-4 rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
+              <article className="flex min-w-0 items-center gap-3 overflow-hidden rounded-2xl bg-white/10 p-4 ring-1 ring-white/15 backdrop-blur-sm">
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-[#FC6D26]">
                   <SiGitlab className="h-8 w-8" aria-hidden="true" />
                 </span>
-                <div>
-                  <h3 className="text-base font-black">GitLab Issues</h3>
-                  <Badge className="mt-1 h-auto rounded-full bg-orange-400/20 px-0 font-mono text-[0.62rem] font-black tracking-[0.16em] text-orange-300 uppercase">
-                    Planned next
+                <div className="min-w-0">
+                  <h3 className="truncate text-base font-black">GitLab Issues</h3>
+                  <Badge className="mt-1 h-auto max-w-full rounded-full bg-orange-400/20 px-2.5 font-mono text-[0.62rem] font-black tracking-wider text-orange-300 uppercase">
+                    Planned
                   </Badge>
                 </div>
               </article>

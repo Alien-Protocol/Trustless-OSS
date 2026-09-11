@@ -130,9 +130,9 @@ export default function HeroSection({ user }: HeroSectionProps) {
 
         <Card
           aria-label="Example bounty lifecycle"
-          className="home-bounty-preview animate-hero-in hero-stagger-6 relative z-10 rounded-3xl py-0 ring-1 ring-border/80"
+          className="home-bounty-preview animate-hero-in hero-stagger-6 relative z-10 overflow-hidden rounded-3xl py-6 ring-1 ring-border/80"
         >
-          <CardHeader className="flex flex-col items-start justify-between gap-4 border-b border-border/70 pb-5 sm:flex-row sm:items-center">
+          <CardHeader className="flex flex-col items-start justify-between gap-4 border-b border-border/70 px-6 pb-5 sm:flex-row sm:items-center">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-foreground text-background">
                 <GitBranch className="h-5 w-5" aria-hidden="true" />
@@ -151,7 +151,7 @@ export default function HeroSection({ user }: HeroSectionProps) {
             </Badge>
           </CardHeader>
 
-          <CardContent className="py-6">
+          <CardContent className="px-6 py-6">
             <div className="flex items-start justify-between gap-5">
               <div>
                 <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">

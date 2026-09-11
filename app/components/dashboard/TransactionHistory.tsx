@@ -46,8 +46,10 @@ import {
   type ActivityFilter,
   type ActivityRow,
 } from '@/app/components/dashboard/MaintainerActivity';
+import { paginateItems } from '@/lib/paginate';
 
 export const TX_PAGE_SIZE = 20;
+export { paginateItems };
 
 const FILTER_ICONS = {
   all: Layers,
@@ -58,17 +60,6 @@ const FILTER_ICONS = {
   unassigned: UserMinus,
   rejected: Ban,
 } as const;
-
-export function paginateItems<T>(items: T[], page: number, pageSize = TX_PAGE_SIZE) {
-  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
-  const current = Math.min(Math.max(1, page), totalPages);
-  const start = (current - 1) * pageSize;
-  return {
-    page: current,
-    totalPages,
-    items: items.slice(start, start + pageSize),
-  };
-}
 
 function IssueCell({ row }: { row: ActivityRow }) {
   if (!row.issueNumber) {
@@ -136,7 +127,7 @@ function Pagination({
         {pages.map((number) => (
           <Button
             key={number}
-            variant={number === page ? 'solid' : 'ghost'}
+            variant={number === page ? 'solid' : 'outline'}
             size="sm"
             onClick={() => onPage(number)}
             aria-current={number === page ? 'page' : undefined}
@@ -164,7 +155,7 @@ export default function TransactionHistory({ rows = DEMO_ACTIVITY }: { rows?: Ac
   const [filter, setFilter] = useState<ActivityFilter>('all');
   const [page, setPage] = useState(1);
   const filtered = useMemo(() => filterActivity(rows, filter), [rows, filter]);
-  const paged = useMemo(() => paginateItems(filtered, page), [filtered, page]);
+  const paged = useMemo(() => paginateItems(filtered, page, TX_PAGE_SIZE), [filtered, page]);
 
   return (
     <Tabs

@@ -6,8 +6,7 @@ import { LogIn } from 'lucide-react';
 import type { User } from '@supabase/supabase-js';
 import Logo from './Logo';
 import Button from '@/app/components/ui/Button';
-import NotificationBell from './NotificationBell';
-import UserMenu from './UserMenu';
+import AccountBar from './AccountBar';
 
 interface NavbarProps {
   user?: User | null;
@@ -28,12 +27,9 @@ export default function Navbar({ user }: NavbarProps) {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           {user ? (
-            <>
-              <UserMenu user={user} />
-              <NotificationBell />
-            </>
+            <AccountBar user={user} />
           ) : showSignIn ? (
             <Button href="/login" size="sm">
               <LogIn className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />

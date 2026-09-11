@@ -56,24 +56,33 @@ describe('Navbar', () => {
     expect(screen.queryByRole('link', { name: 'Repositories' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
 
+    expect(screen.getByTestId('account-bar')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Notifications, 3 unread' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /ryzen-xp/i }));
+    expect(screen.queryByRole('link', { name: 'Open profile' })).not.toBeInTheDocument();
+    const settings = screen.getByRole('button', { name: /open settings for ryzen-xp/i });
+    const labels = screen
+      .getAllByRole('button')
+      .map((button) => button.getAttribute('aria-label'))
+      .filter(Boolean);
+    expect(labels).toEqual([
+      'Open settings for ryzen-xp',
+      'Notifications, 3 unread',
+      'Switch to dark mode',
+    ]);
 
-    expect(screen.getByRole('menuitem', { name: 'Profile' })).toHaveAttribute(
-      'href',
-      '/dashboard/profile'
-    );
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to dark mode' }));
+    expect(setTheme).toHaveBeenCalledWith('dark');
+
+    fireEvent.pointerDown(settings);
+    fireEvent.click(settings);
+
+    expect(screen.getByRole('menuitem', { name: 'Profile' })).toHaveAttribute('href', '/profile');
     expect(screen.getByRole('menuitem', { name: 'Dashboard' })).toHaveAttribute(
       'href',
       '/dashboard'
     );
-    expect(screen.getByRole('menuitemcheckbox', { name: /dark mode/i })).toHaveAttribute(
-      'aria-checked',
-      'false'
-    );
-    fireEvent.click(screen.getByRole('menuitemcheckbox', { name: /dark mode/i }));
-    expect(setTheme).toHaveBeenCalledWith('dark');
     expect(screen.getByRole('menuitem', { name: 'Sign out' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitemcheckbox', { name: /dark mode/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: 'Repositories' })).not.toBeInTheDocument();
   });
 });

@@ -13,6 +13,13 @@ const variantMap = {
   danger: 'destructive',
 } as const;
 
+const variantClass: Record<Variant, string> = {
+  solid: '',
+  outline: 'border-border bg-card shadow-sm',
+  ghost: 'border-border bg-card',
+  danger: 'border-destructive bg-destructive text-white hover:bg-destructive/90',
+};
+
 const sizeClass: Record<Size, string> = {
   sm: 'h-9 rounded-full px-3.5 text-sm',
   md: 'h-10 rounded-full px-5 text-sm',
@@ -49,7 +56,12 @@ function isLinkProps(props: ButtonProps): props is ButtonAsLink {
 export default function Button(props: ButtonProps) {
   const variant = variantMap[props.variant ?? 'solid'];
   const size = props.size ?? 'md';
-  const className = cn('font-semibold', sizeClass[size], props.className);
+  const className = cn(
+    'font-semibold',
+    sizeClass[size],
+    variantClass[props.variant ?? 'solid'],
+    props.className
+  );
 
   if (isLinkProps(props)) {
     const { href, external, onClick, title, children } = props;

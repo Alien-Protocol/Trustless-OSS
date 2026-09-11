@@ -1,6 +1,11 @@
 import { ArrowLeft, GitBranch, Plus, RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import RepositoryEscrowCard from '@/app/components/escrow/RepositoryEscrowCard';
+import ReposPagination, { REPO_PAGE_SIZE } from '@/app/components/dashboard/ReposPagination';
+import ReposToolbar from '@/app/components/dashboard/ReposToolbar';
+import SyncReposButton from '@/app/components/dashboard/SyncReposButton';
+import { paginateItems } from '@/lib/paginate';
+import { filterAndSortRepos, parseRepoQuery, parseRepoSort } from '@/lib/repo-filters';
 import Button from '@/app/components/ui/Button';
 import type { Repo } from '@/app/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -14,7 +19,10 @@ function toNumber(value: unknown): number {
   return Number.isFinite(numberValue) ? numberValue : 0;
 }
 
-type DashboardRepo = Repo & { created_at: string };
+type DashboardRepo = Repo & {
+  created_at: string;
+  github_installation_id?: number | null;
+};
 
 function normalizeRepo(data: unknown): DashboardRepo | null {
   if (!data || typeof data !== 'object') return null;
@@ -71,6 +79,23 @@ async function getRepos(token: string): Promise<{ repos: DashboardRepo[]; error:
   }
 }
 
+function installationIdsFrom(repos: DashboardRepo[]) {
+  return [
+    ...new Set(
+      repos
+        .map((repo) => Number(repo.github_installation_id))
+        .filter((id) => Number.isInteger(id) && id > 0)
+    ),
+  ];
+}
+
+function pageFromSearchParams(searchParams?: { [key: string]: string | string[] | undefined }) {
+  const raw = searchParams?.page;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 1;
+}
+
 interface ReposProps {
   // Match Next's PageProps: searchParams is a Promise or undefined
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -89,7 +114,12 @@ export default async function ReposPage({ searchParams }: ReposProps) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const [{ repos, error: reposError }] = await Promise.all([getRepos(session?.access_token ?? '')]);
+  const token = session?.access_token ?? '';
+  const [{ repos, error: reposError }] = await Promise.all([getRepos(token)]);
+  const query = parseRepoQuery(paramsObj?.q);
+  const sort = parseRepoSort(paramsObj?.sort);
+  const filtered = filterAndSortRepos(repos, query, sort);
+  const paged = paginateItems(filtered, pageFromSearchParams(paramsObj), REPO_PAGE_SIZE);
 
   const isNew = (createdAt: string) => {
     const created = new Date(createdAt).getTime();
@@ -101,15 +131,20 @@ export default async function ReposPage({ searchParams }: ReposProps) {
 
   return (
     <div className="w-full">
-      <div className="relative mb-10 flex flex-col justify-between gap-7 md:mb-14 md:flex-row md:items-end">
+      <div className="relative mb-8 flex flex-col justify-between gap-4 md:mb-14 md:flex-row md:items-end md:gap-7">
         <div className="max-w-5xl">
           <h1 className="font-display mt-2 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
             Repositories
           </h1>
         </div>
 
-        <div className="flex w-full gap-3 sm:w-auto">
-          <Button href="/dashboard/connect-repo" size="lg" className="w-full sm:w-auto">
+        <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
+          <SyncReposButton token={token} installationIds={installationIdsFrom(repos)} />
+          <Button
+            href="/dashboard/connect-repo"
+            size="lg"
+            className="min-w-0 flex-1 text-sm sm:w-auto sm:text-base"
+          >
             <Plus className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
             Add repository
           </Button>
@@ -149,20 +184,38 @@ export default async function ReposPage({ searchParams }: ReposProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3">
-          {repos.map((repo) => (
-            <div key={repo.id} className="relative">
-              {isNew(repo.created_at) && (
-                <Badge className="absolute -top-3 -right-3 z-10">New</Badge>
-              )}
-              <RepositoryEscrowCard
-                repo={repo}
-                token={session?.access_token ?? ''}
-                xlmUsdPrice={undefined}
+        <>
+          <ReposToolbar query={query} sort={sort} />
+          {filtered.length === 0 ? (
+            <Card className="rounded-3xl py-12 text-center">
+              <CardHeader className="items-center">
+                <CardTitle className="text-2xl font-extrabold">No matching repositories</CardTitle>
+                <CardDescription>
+                  Nothing matches that search or filter. Try another name or choose a different
+                  option.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          ) : (
+            <>
+              <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3">
+                {paged.items.map((repo) => (
+                  <div key={repo.id} className="relative">
+                    {isNew(repo.created_at) && (
+                      <Badge className="absolute -top-3 -right-3 z-10">New</Badge>
+                    )}
+                    <RepositoryEscrowCard repo={repo} token={token} xlmUsdPrice={undefined} />
+                  </div>
+                ))}
+              </div>
+              <ReposPagination
+                page={paged.page}
+                totalPages={paged.totalPages}
+                query={{ q: query, sort }}
               />
-            </div>
-          ))}
-        </div>
+            </>
+          )}
+        </>
       )}
     </div>
   );

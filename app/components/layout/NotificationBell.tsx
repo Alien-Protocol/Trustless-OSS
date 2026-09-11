@@ -131,11 +131,11 @@ export default function NotificationBell({
         aria-expanded={open}
         aria-haspopup="dialog"
         aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
-        className="relative flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-accent"
+        className="relative flex size-9 items-center justify-center rounded-xl border border-border bg-card text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-accent hover:shadow-md"
       >
         <Bell className="h-[18px] w-[18px]" strokeWidth={2.25} aria-hidden="true" />
         {unread > 0 ? (
-          <span className="absolute -top-1 -right-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-background">
+          <span className="absolute -top-0.5 -right-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-background">
             {unread > 9 ? '9+' : unread}
           </span>
         ) : null}

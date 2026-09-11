@@ -235,9 +235,16 @@ export function ReposPageSkeleton() {
   return (
     <div className="w-full" aria-busy="true" aria-live="polite">
       <ScreenReaderStatus label="Loading repositories" />
-      <div className="mb-10 flex flex-col justify-between gap-7 md:mb-14 md:flex-row md:items-end">
+      <div className="mb-8 flex flex-col justify-between gap-4 md:mb-14 md:flex-row md:items-end md:gap-7">
         <Skeleton className="h-12 w-64 sm:h-14" />
-        <Skeleton className="h-12 w-full rounded-full sm:w-48" />
+        <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
+          <Skeleton className="h-12 min-w-0 flex-1 rounded-full sm:w-28 sm:flex-none" />
+          <Skeleton className="h-12 min-w-0 flex-1 rounded-full sm:w-48 sm:flex-none" />
+        </div>
+      </div>
+      <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+        <Skeleton className="h-10 w-full rounded-lg" />
+        <Skeleton className="h-10 w-full rounded-lg sm:w-56" />
       </div>
       <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3">
         {Array.from({ length: 6 }).map((_, index) => (
@@ -305,39 +312,62 @@ export function RepoDetailSkeleton() {
 
 export function ProfilePageSkeleton() {
   return (
-    <div className="w-full max-w-3xl space-y-6" aria-busy="true" aria-live="polite">
+    <div className="w-full space-y-6" aria-busy="true" aria-live="polite">
       <ScreenReaderStatus label="Loading profile" />
-      <div className="space-y-2">
-        <Skeleton className="h-10 w-40" />
-        <Skeleton className="h-4 w-72" />
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-20" />
+          <Skeleton className="h-10 w-40" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <Skeleton className="h-8 w-full max-w-sm" />
       </div>
-      <Card className="rounded-3xl">
-        <CardHeader className="flex-row items-center gap-4">
-          <Skeleton className="h-16 w-16 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-5 w-40" />
-            <Skeleton className="h-4 w-24" />
-          </div>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="space-y-2">
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(340px,0.9fr)_minmax(0,1.1fr)]">
+        <div className="space-y-6">
+          <Card className="overflow-hidden rounded-3xl py-0">
+            <Skeleton className="h-40 w-full rounded-none" />
+            <CardContent className="space-y-5 pb-6">
+              <div className="flex items-end gap-4">
+                <Skeleton className="-mt-12 h-24 w-24 rounded-full" />
+                <div className="space-y-2 pb-1">
+                  <Skeleton className="h-6 w-40" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+              </div>
+              <Skeleton className="h-4 w-3/4" />
+              <div className="grid gap-3 sm:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <Skeleton key={index} className="h-16 rounded-2xl" />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="rounded-3xl">
+            <CardHeader className="space-y-2">
               <Skeleton className="h-3 w-24" />
-              <Skeleton className="h-10 w-full rounded-lg" />
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-      <Card className="rounded-3xl">
-        <CardHeader className="space-y-2">
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="h-5 w-36" />
-          <Skeleton className="h-4 w-64" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-24 w-full rounded-2xl" />
-        </CardContent>
-      </Card>
+              <Skeleton className="h-5 w-36" />
+              <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-28 w-full rounded-2xl" />
+            </CardContent>
+          </Card>
+        </div>
+        <Card className="rounded-3xl">
+          <CardHeader className="space-y-2">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="space-y-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
