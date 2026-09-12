@@ -31,11 +31,7 @@ describe('ReposPagination', () => {
   it('renders a bottom page switcher with numbered pages', () => {
     render(<ReposPagination page={1} totalPages={2} />);
 
-    expect(screen.getByRole('navigation', { name: 'Repository pages' })).toHaveClass(
-      'flex',
-      'items-center',
-      'justify-between'
-    );
+    expect(screen.getByRole('navigation', { name: 'Repository pages' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
     expect(screen.getByRole('link', { name: 'Page 1' })).toHaveAttribute(
       'href',
@@ -45,7 +41,7 @@ describe('ReposPagination', () => {
       'href',
       '/dashboard/repos?page=2'
     );
-    expect(screen.getByRole('link', { name: 'Page 2' })).toHaveAttribute('data-variant', 'outline');
+    expect(screen.getByRole('link', { name: 'Page 1' })).toHaveAttribute('data-active', 'true');
     expect(screen.getByRole('link', { name: 'Next' })).toHaveAttribute(
       'href',
       '/dashboard/repos?page=2'

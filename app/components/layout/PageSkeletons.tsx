@@ -237,9 +237,9 @@ export function ReposPageSkeleton() {
       <ScreenReaderStatus label="Loading repositories" />
       <div className="mb-8 flex flex-col justify-between gap-4 md:mb-14 md:flex-row md:items-end md:gap-7">
         <Skeleton className="h-12 w-64 sm:h-14" />
-        <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
-          <Skeleton className="h-12 min-w-0 flex-1 rounded-full sm:w-28 sm:flex-none" />
-          <Skeleton className="h-12 min-w-0 flex-1 rounded-full sm:w-48 sm:flex-none" />
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
+          <Skeleton className="h-11 min-w-0 flex-1 rounded-full sm:w-44 sm:flex-none" />
         </div>
       </div>
       <div className="mb-8 flex flex-col gap-3 sm:flex-row">

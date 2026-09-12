@@ -1,18 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import {
-  ArrowUpRight,
-  Ban,
-  ChevronLeft,
-  ChevronRight,
-  Layers,
-  Lock,
-  Tag,
-  Unlock,
-  UserMinus,
-  UserPlus,
-} from 'lucide-react';
+import { ArrowUpRight, Ban, Layers, Lock, Tag, Unlock, UserMinus, UserPlus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
@@ -31,7 +20,14 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Button from '@/app/components/ui/Button';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import GithubUserLink from '@/app/components/dashboard/GithubUserLink';
 import {
   ACTIVITY_FILTERS,
@@ -103,7 +99,7 @@ function TxCell({ hash }: { hash: string }) {
   );
 }
 
-function Pagination({
+function ActivityPagination({
   page,
   totalPages,
   onPage,
@@ -115,39 +111,41 @@ function Pagination({
   const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
 
   return (
-    <nav
+    <Pagination
       aria-label="Transaction pages"
-      className="flex flex-col gap-3 border-t border-border/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+      className="border-t border-border/70 px-4 py-4 sm:px-6"
     >
-      <Button variant="outline" size="sm" onClick={() => onPage(page - 1)} disabled={page <= 1}>
-        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-        Back
-      </Button>
-      <div className="flex flex-wrap items-center justify-center gap-1">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            text="Back"
+            aria-label="Back"
+            onClick={() => onPage(page - 1)}
+            disabled={page <= 1}
+          />
+        </PaginationItem>
+
         {pages.map((number) => (
-          <Button
-            key={number}
-            variant={number === page ? 'solid' : 'outline'}
-            size="sm"
-            onClick={() => onPage(number)}
-            aria-current={number === page ? 'page' : undefined}
-            aria-label={`Page ${number}`}
-            className="min-w-9 px-3"
-          >
-            {number}
-          </Button>
+          <PaginationItem key={number}>
+            <PaginationLink
+              isActive={number === page}
+              onClick={() => onPage(number)}
+              aria-label={`Page ${number}`}
+            >
+              {number}
+            </PaginationLink>
+          </PaginationItem>
         ))}
-      </div>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onPage(page + 1)}
-        disabled={page >= totalPages}
-      >
-        Next
-        <ChevronRight className="h-4 w-4" aria-hidden="true" />
-      </Button>
-    </nav>
+
+        <PaginationItem>
+          <PaginationNext
+            aria-label="Next"
+            onClick={() => onPage(page + 1)}
+            disabled={page >= totalPages}
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
   );
 }
 
@@ -310,7 +308,7 @@ export default function TransactionHistory({ rows = DEMO_ACTIVITY }: { rows?: Ac
               </Table>
             </>
           )}
-          <Pagination page={paged.page} totalPages={paged.totalPages} onPage={setPage} />
+          <ActivityPagination page={paged.page} totalPages={paged.totalPages} onPage={setPage} />
         </CardContent>
       </Card>
     </Tabs>

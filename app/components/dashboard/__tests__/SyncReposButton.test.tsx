@@ -24,6 +24,14 @@ afterEach(() => {
 });
 
 describe('SyncReposButton', () => {
+  it('renders an icon-only sync control', () => {
+    render(<SyncReposButton token="token" installationIds={[42]} />);
+
+    const button = screen.getByRole('button', { name: 'Sync' });
+    expect(button).toHaveAttribute('aria-label', 'Sync');
+    expect(button).not.toHaveTextContent('Syncing');
+  });
+
   it('syncs repositories and refreshes the page', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, text: async () => '' });
     vi.stubGlobal('fetch', fetchMock);

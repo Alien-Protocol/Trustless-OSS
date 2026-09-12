@@ -6,7 +6,6 @@ import { RefreshCw } from 'lucide-react';
 import { handleError, notifySuccess } from '@/lib/notifications';
 import { backendUrl } from '@/lib/backend';
 import Button from '@/app/components/ui/Button';
-import LoadingLogo from '@/app/components/layout/LoadingLogo';
 
 async function readError(response: Response, fallback: string) {
   const text = await response.text();
@@ -75,19 +74,15 @@ export default function SyncReposButton({
       onClick={handleSync}
       disabled={syncing}
       aria-busy={syncing}
-      className="min-w-0 flex-1 text-sm sm:w-auto sm:text-base"
+      aria-label="Sync"
+      title="Sync"
+      className="h-11 w-11 shrink-0 rounded-xl px-0 text-muted-foreground shadow-none"
     >
-      {syncing ? (
-        <>
-          <LoadingLogo size="tiny" variant="circle" />
-          Syncing
-        </>
-      ) : (
-        <>
-          <RefreshCw className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
-          Sync
-        </>
-      )}
+      <RefreshCw
+        className={`h-5 w-5 ${syncing ? 'animate-spin' : ''}`}
+        strokeWidth={2}
+        aria-hidden="true"
+      />
     </Button>
   );
 }

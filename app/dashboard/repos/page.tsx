@@ -138,12 +138,12 @@ export default async function ReposPage({ searchParams }: ReposProps) {
           </h1>
         </div>
 
-        <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
+        <div className="flex w-full items-center gap-2 sm:w-auto">
           <SyncReposButton token={token} installationIds={installationIdsFrom(repos)} />
           <Button
             href="/dashboard/connect-repo"
             size="lg"
-            className="min-w-0 flex-1 text-sm sm:w-auto sm:text-base"
+            className="h-11 min-w-0 flex-1 rounded-full bg-emerald-500 px-5 text-sm text-white shadow-none hover:bg-emerald-600 sm:w-auto sm:flex-none dark:bg-emerald-500 dark:hover:bg-emerald-600"
           >
             <Plus className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
             Add repository
