@@ -1,0 +1,173 @@
+import { GitMerge, GitPullRequest, Trophy } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import GithubUserLink from '@/app/components/dashboard/GithubUserLink';
+import {
+  DEMO_ACTIVITY,
+  buildLeaderboard,
+  formatUsdc,
+  type ActivityRow,
+  type LeaderboardEntry,
+} from '@/app/components/dashboard/MaintainerActivity';
+
+const RANK_STYLE: Record<number, string> = {
+  1: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
+  2: 'bg-slate-200 text-slate-700 dark:bg-white/10 dark:text-foreground',
+  3: 'bg-orange-100 text-orange-800 dark:bg-orange-500/15 dark:text-orange-300',
+};
+
+function RankBadge({ rank }: { rank: number }) {
+  return (
+    <span
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-full text-base font-black ${
+        RANK_STYLE[rank] ?? 'bg-muted text-muted-foreground'
+      }`}
+    >
+      {rank}
+    </span>
+  );
+}
+
+function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
+  const raised = entry.rank === 1;
+
+  return (
+    <Card
+      className={`rounded-3xl ${raised ? 'ring-2 ring-amber-300/80 dark:ring-amber-500/40 md:-mt-3' : ''}`}
+    >
+      <CardHeader className="space-y-4">
+        <div className="flex items-center justify-between">
+          <RankBadge rank={entry.rank} />
+          {entry.rank === 1 ? (
+            <Trophy className="h-5 w-5 text-amber-500" aria-hidden="true" />
+          ) : null}
+        </div>
+        <GithubUserLink name={entry.name} size="lg" className="text-lg" />
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-3xl font-black tracking-tight">{formatUsdc(entry.earnedUsdc)}</p>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="secondary" className="h-auto rounded-full px-3 py-1 text-sm">
+            {entry.mergedPrs} merged PR{entry.mergedPrs === 1 ? '' : 's'}
+          </Badge>
+          <Badge variant="outline" className="h-auto rounded-full px-3 py-1 text-sm">
+            {entry.assigned} assigned
+          </Badge>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function ContributorLeaderboard({ rows = DEMO_ACTIVITY }: { rows?: ActivityRow[] }) {
+  const leaderboard = buildLeaderboard(rows);
+  const podium = leaderboard.slice(0, 3);
+
+  return (
+    <div className="space-y-6">
+      {podium.length > 0 ? (
+        <section aria-labelledby="leaderboard-podium-heading">
+          <h2 id="leaderboard-podium-heading" className="sr-only">
+            Top contributors
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {podium.map((entry) => (
+              <div
+                key={entry.name}
+                className={
+                  entry.rank === 1 ? 'md:order-2' : entry.rank === 2 ? 'md:order-1' : 'md:order-3'
+                }
+              >
+                <PodiumCard entry={entry} />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <Card className="rounded-3xl py-0">
+        <CardHeader className="border-b border-border/70 pt-6">
+          <CardTitle className="font-display text-2xl font-extrabold tracking-tight">
+            Leaderboard
+          </CardTitle>
+          <CardDescription className="text-base">
+            Ranked by USDC earned from merged pull requests.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="px-0 pb-0">
+          {leaderboard.length === 0 ? (
+            <p className="px-6 py-16 text-center text-base font-semibold text-muted-foreground">
+              No contributors yet.
+            </p>
+          ) : (
+            <Table className="text-base">
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="h-14 px-6 text-sm font-semibold tracking-wide text-muted-foreground">
+                    Rank
+                  </TableHead>
+                  <TableHead className="h-14 px-6 text-sm font-semibold tracking-wide text-muted-foreground">
+                    Contributor
+                  </TableHead>
+                  <TableHead className="h-14 px-6 text-sm font-semibold tracking-wide text-muted-foreground">
+                    Earned
+                  </TableHead>
+                  <TableHead className="h-14 px-6 text-sm font-semibold tracking-wide text-muted-foreground">
+                    Merged PRs
+                  </TableHead>
+                  <TableHead className="h-14 px-6 text-sm font-semibold tracking-wide text-muted-foreground">
+                    Assigned
+                  </TableHead>
+                  <TableHead className="h-14 px-6 text-sm font-semibold tracking-wide text-muted-foreground">
+                    Repositories
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {leaderboard.map((entry) => (
+                  <TableRow key={entry.name} className="hover:bg-muted/40">
+                    <TableCell className="px-6 py-5">
+                      <RankBadge rank={entry.rank} />
+                    </TableCell>
+                    <TableCell className="px-6 py-5">
+                      <GithubUserLink name={entry.name} size="lg" className="text-lg" />
+                    </TableCell>
+                    <TableCell className="px-6 py-5 font-mono text-lg font-black tracking-tight">
+                      {formatUsdc(entry.earnedUsdc)}
+                    </TableCell>
+                    <TableCell className="px-6 py-5">
+                      <span className="inline-flex items-center gap-2 font-semibold">
+                        <GitMerge className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                        {entry.mergedPrs}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-6 py-5">
+                      <span className="inline-flex items-center gap-2 font-semibold">
+                        <GitPullRequest
+                          className="h-4 w-4 text-muted-foreground"
+                          aria-hidden="true"
+                        />
+                        {entry.assigned}
+                      </span>
+                    </TableCell>
+                    <TableCell className="px-6 py-5 text-muted-foreground">
+                      {entry.repos.join(', ')}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

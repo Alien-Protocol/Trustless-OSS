@@ -1,0 +1,23 @@
+overrides:
+  axios: ">=1.18.0"
+  brace-expansion: ">=5.0.8"
+  protobufjs: ">=7.6.3"
+  postcss: ">=8.5.10"
+  sharp: ">=0.35.4"
+  uuid: ">=11.1.1"
+  ws: ">=8.21.0"
+  undici: ">=7.28.0"
+  toml: "^4.2.0"
+
+allowBuilds:
+  '@reown/appkit': true
+  '@stellar/stellar-sdk': true
+  blake-hash: true
+  bufferutil: true
+  protobufjs: true
+  secp256k1: true
+  sharp: true
+  tiny-secp256k1: true
+  unrs-resolver: true
+  usb: true
+  utf-8-validate: true
