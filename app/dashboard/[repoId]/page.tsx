@@ -31,6 +31,7 @@ type Repo = {
   installer_github_id: number | null;
   github_installation_id: number | null;
   escrow_contract_id: string | null;
+  escrow_funder_wallet?: string | null;
   escrow_balance: number;
   reward_low: number;
   reward_medium: number;
@@ -211,6 +212,7 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
                       repoId={repoId}
                       token={session?.access_token ?? ''}
                       currentBalance={repo.escrow_balance}
+                      destinationAddress={repo.escrow_funder_wallet}
                     />
                   ) : (
                     <DeleteRepoButton repoId={repoId} token={session?.access_token ?? ''} />

@@ -28,7 +28,7 @@ const maintainerSteps = [
   },
   {
     title: 'Manage liquidity',
-    body: 'Use Refund funds in the dashboard to pull unused USDC from escrow back to your wallet.',
+    body: 'Use Withdraw in the dashboard to pull unused USDC from escrow back to your wallet.',
   },
 ];
 

@@ -191,5 +191,7 @@ Public `NEXT_PUBLIC_*` values are included in the browser bundle. Never place pr
 | `pnpm lint`          | Run ESLint across `app/` and `lib/`                     |
 | `pnpm typecheck`     | Check TypeScript without emitting files                 |
 | `pnpm format:check`  | Check TypeScript and TSX formatting                     |
+| `pnpm audit`         | Fail on high or critical dependency advisories          |
+| `pnpm check`         | Run format, lint, typecheck, tests, and audit           |
 
 Commands used in GitHub issue comments are documented separately in the [bot command guide](docs/BOT_COMMANDS.md).

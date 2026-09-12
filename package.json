@@ -17,6 +17,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write '**/*.{ts,tsx}'",
     "format:check": "prettier --check '**/*.{ts,tsx}'",
+    "audit": "pnpm audit --audit-level=high",
+    "check": "pnpm format && pnpm lint && pnpm typecheck && pnpm test && pnpm run audit",
     "clean": "rm -rf .next out"
   },
   "dependencies": {
