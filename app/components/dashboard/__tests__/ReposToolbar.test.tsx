@@ -14,13 +14,12 @@ afterEach(() => {
 });
 
 describe('ReposToolbar', () => {
-  it('renders a search field and filter dropdown', () => {
+  it('renders a merged search field and filter control', () => {
     render(<ReposToolbar query="" sort="deployed-first" />);
 
     expect(screen.getByLabelText('Search repositories')).toBeInTheDocument();
     expect(screen.getByLabelText('Filter repositories')).toBeInTheDocument();
-    expect(screen.getByText('Deployed first')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Search repositories')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Search…')).toBeInTheDocument();
   });
 
   it('updates the search query in the URL', () => {
@@ -35,5 +34,17 @@ describe('ReposToolbar', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('applies a quick filter from the menu', () => {
+    render(<ReposToolbar query="" sort="deployed-first" />);
+
+    const filter = screen.getByLabelText('Filter repositories');
+    fireEvent.pointerDown(filter);
+    fireEvent.click(filter);
+
+    fireEvent.click(screen.getByRole('menuitemradio', { name: /Escrow is live/i }));
+
+    expect(push).toHaveBeenCalledWith('/dashboard/repos?sort=deployed');
   });
 });

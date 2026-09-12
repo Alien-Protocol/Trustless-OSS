@@ -131,25 +131,35 @@ export default async function ReposPage({ searchParams }: ReposProps) {
 
   return (
     <div className="w-full">
-      <div className="relative mb-8 flex flex-col justify-between gap-4 md:mb-14 md:flex-row md:items-end md:gap-7">
-        <div className="max-w-5xl">
-          <h1 className="font-display mt-2 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-            Repositories
-          </h1>
-        </div>
+      <header className="mb-6 md:mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+              Repositories
+            </h1>
+            {repos.length > 0 && (
+              <p className="mt-1 text-sm font-medium text-muted-foreground">
+                {filtered.length === repos.length
+                  ? `${repos.length} connected`
+                  : `${filtered.length} of ${repos.length} shown`}
+              </p>
+            )}
+          </div>
 
-        <div className="flex w-full items-center gap-2 sm:w-auto">
-          <SyncReposButton token={token} installationIds={installationIdsFrom(repos)} />
-          <Button
-            href="/dashboard/connect-repo"
-            size="lg"
-            className="h-11 min-w-0 flex-1 rounded-full bg-emerald-500 px-5 text-sm text-white shadow-none hover:bg-emerald-600 sm:w-auto sm:flex-none dark:bg-emerald-500 dark:hover:bg-emerald-600"
-          >
-            <Plus className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
-            Add repository
-          </Button>
+          <div className="flex shrink-0 items-center gap-2">
+            {repos.length > 0 && <ReposToolbar query={query} sort={sort} />}
+            <SyncReposButton token={token} installationIds={installationIdsFrom(repos)} />
+            <Button
+              href="/dashboard/connect-repo"
+              size="md"
+              className="h-10 shrink-0 rounded-full bg-emerald-500 px-4 text-sm whitespace-nowrap text-white shadow-sm hover:bg-emerald-600 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+            >
+              <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+              Add repository
+            </Button>
+          </div>
         </div>
-      </div>
+      </header>
 
       {reposError && (
         <Alert variant="destructive" className="mb-8 rounded-2xl">
@@ -183,38 +193,32 @@ export default async function ReposPage({ searchParams }: ReposProps) {
             )}
           </CardContent>
         </Card>
+      ) : filtered.length === 0 ? (
+        <Card className="rounded-3xl py-12 text-center">
+          <CardHeader className="items-center">
+            <CardTitle className="text-2xl font-extrabold">No matching repositories</CardTitle>
+            <CardDescription>
+              Nothing matches that search or filter. Try another name or choose a different option.
+            </CardDescription>
+          </CardHeader>
+        </Card>
       ) : (
         <>
-          <ReposToolbar query={query} sort={sort} />
-          {filtered.length === 0 ? (
-            <Card className="rounded-3xl py-12 text-center">
-              <CardHeader className="items-center">
-                <CardTitle className="text-2xl font-extrabold">No matching repositories</CardTitle>
-                <CardDescription>
-                  Nothing matches that search or filter. Try another name or choose a different
-                  option.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          ) : (
-            <>
-              <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3">
-                {paged.items.map((repo) => (
-                  <div key={repo.id} className="relative">
-                    {isNew(repo.created_at) && (
-                      <Badge className="absolute -top-3 -right-3 z-10">New</Badge>
-                    )}
-                    <RepositoryEscrowCard repo={repo} token={token} xlmUsdPrice={undefined} />
-                  </div>
-                ))}
+          <div className="grid gap-7 sm:grid-cols-2 xl:grid-cols-3">
+            {paged.items.map((repo) => (
+              <div key={repo.id} className="relative">
+                {isNew(repo.created_at) && (
+                  <Badge className="absolute -top-3 -right-3 z-10">New</Badge>
+                )}
+                <RepositoryEscrowCard repo={repo} token={token} xlmUsdPrice={undefined} />
               </div>
-              <ReposPagination
-                page={paged.page}
-                totalPages={paged.totalPages}
-                query={{ q: query, sort }}
-              />
-            </>
-          )}
+            ))}
+          </div>
+          <ReposPagination
+            page={paged.page}
+            totalPages={paged.totalPages}
+            query={{ q: query, sort }}
+          />
         </>
       )}
     </div>
