@@ -31,18 +31,18 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund' }));
 
-    expect(screen.queryByText(/ERR_INVALID_AMOUNT/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Enter an amount greater than 0/i)).not.toBeInTheDocument();
 
-    const amountInput = screen.getByLabelText(/deposit amount/i);
+    const amountInput = screen.getByLabelText(/^amount$/i);
     fireEvent.change(amountInput, { target: { value: '0' } });
 
-    expect(screen.queryByText(/ERR_INVALID_AMOUNT/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Enter an amount greater than 0/i)).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /REVIEW_DEPOSIT/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
 
-    expect(screen.getByText(/ERR_INVALID_AMOUNT/i)).toBeInTheDocument();
+    expect(screen.getByText(/Enter an amount greater than 0/i)).toBeInTheDocument();
   });
 
   it('shows a wallet-connection state while the funding request is in flight', () => {
@@ -60,17 +60,17 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund' }));
 
-    const amountInput = screen.getByLabelText(/deposit amount/i);
+    const amountInput = screen.getByLabelText(/^amount$/i);
     fireEvent.change(amountInput, { target: { value: '25' } });
 
-    fireEvent.click(screen.getByRole('button', { name: /REVIEW_DEPOSIT/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
 
-    expect(screen.getByText(/CONNECTING_WALLET/i)).toBeInTheDocument();
+    expect(screen.getByText(/Connecting wallet/i)).toBeInTheDocument();
   });
 
-  it('uses an escrow-based quick amount label when wallet balance is unavailable', () => {
+  it('offers quick amount chips', () => {
     render(
       <FundEscrowButton
         repoId="repo-1"
@@ -80,12 +80,14 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund' }));
 
-    expect(screen.getByRole('button', { name: /75% ESCROW/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '+25' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '+50' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '+100' })).toBeInTheDocument();
   });
 
-  it('disables the primary action after a failed transaction', async () => {
+  it('hides the primary action after a failed transaction', async () => {
     vi.mocked(walletKit.getWalletKit).mockRejectedValue(new Error('wallet failed'));
 
     render(
@@ -97,13 +99,14 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund' }));
 
-    fireEvent.change(screen.getByLabelText(/deposit amount/i), { target: { value: '25' } });
-    fireEvent.click(screen.getByRole('button', { name: /REVIEW_DEPOSIT/i }));
+    fireEvent.change(screen.getByLabelText(/^amount$/i), { target: { value: '25' } });
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
 
-    expect(await screen.findByText(/TRANSACTION_FAILED/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /RETRY_TRANSACTION/i })).toBeDisabled();
+    expect(await screen.findByText(/Deposit failed/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Continue/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Close$/i })).toBeEnabled();
   });
 
   it('keeps the success state visible until the user closes it', async () => {
@@ -134,11 +137,11 @@ describe('FundEscrowButton', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Fund repository' }));
-    fireEvent.change(screen.getByLabelText(/deposit amount/i), { target: { value: '25' } });
-    fireEvent.click(screen.getByRole('button', { name: /REVIEW_DEPOSIT/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fund' }));
+    fireEvent.change(screen.getByLabelText(/^amount$/i), { target: { value: '25' } });
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
 
-    expect(await screen.findByText(/CONFIRMED/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /CLOSE_AND_REFRESH/i })).toBeEnabled();
+    expect(await screen.findByText(/Deposit confirmed/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Done$/i })).toBeEnabled();
   });
 });

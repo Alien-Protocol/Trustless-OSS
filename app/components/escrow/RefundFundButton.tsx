@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, ArrowDownToLine, Copy, Check, ExternalLink, Wallet, X } from 'lucide-react';
+import { AlertTriangle, ArrowDownToLine, Copy, Check, ExternalLink, X } from 'lucide-react';
 import { handleError, notifySuccess } from '@/lib/notifications';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
 import Button from '@/app/components/ui/Button';
@@ -182,10 +182,10 @@ export default function RefundFundButton({
   return (
     <Dialog open={open} onOpenChange={closeDialog}>
       <Button
-        variant="outline"
+        variant="warning"
         onClick={openDialog}
         disabled={loading || available <= 0}
-        className="w-full sm:w-auto"
+        className="w-full gap-1.5 sm:w-auto"
       >
         {loading ? (
           <>
@@ -194,7 +194,7 @@ export default function RefundFundButton({
           </>
         ) : (
           <>
-            <Wallet className="h-4 w-4" aria-hidden="true" />
+            <ArrowDownToLine className="h-4 w-4" aria-hidden="true" />
             Withdraw
           </>
         )}

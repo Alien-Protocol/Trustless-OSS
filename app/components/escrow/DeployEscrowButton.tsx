@@ -84,7 +84,12 @@ export default function DeployEscrowButton({
 
   return (
     <div className="flex w-full flex-col items-stretch">
-      <Button onClick={handleDeploy} disabled={loading || !token} className={`w-full ${className}`}>
+      <Button
+        variant="solid"
+        onClick={handleDeploy}
+        disabled={loading || !token}
+        className={`w-full gap-1.5 ${className}`}
+      >
         <Settings
           size={17}
           strokeWidth={2.5}

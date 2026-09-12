@@ -8,14 +8,6 @@ vi.mock('@/lib/notifications', () => ({
   handleError: vi.fn(),
 }));
 
-vi.mock('next/link', () => ({
-  default: ({ href, children, ...props }: React.ComponentProps<'a'>) => (
-    <a href={href} {...props}>
-      {children}
-    </a>
-  ),
-}));
-
 const defaultProps = {
   repoId: 'repo_123',
   token: 'session_token',
@@ -31,48 +23,58 @@ afterEach(() => {
 });
 
 describe('RewardSettingsForm', () => {
-  it('renders reward tiers and an inline edit control instead of a config tab', () => {
+  it('renders a separate edit control on each reward tier', () => {
     render(<RewardSettingsForm {...defaultProps} />);
 
     expect(screen.getByText('Reward parameters')).toBeInTheDocument();
-    expect(screen.getByText('0.1')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /^Edit$/ })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'CONFIG' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Edit Low reward' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Edit Medium reward' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Edit High reward' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Discard' })).not.toBeInTheDocument();
   });
 
-  it('enters edit mode from the header action', () => {
+  it('edits one tier and asks for confirmation after leaving the input', () => {
     render(<RewardSettingsForm {...defaultProps} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /^Edit$/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Low reward' }));
+    const input = screen.getByLabelText('Low reward in USDC');
+    fireEvent.change(input, { target: { value: '9' } });
+    fireEvent.blur(input);
 
-    expect(screen.getByLabelText('Low reward in USDC')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Discard' })).toBeInTheDocument();
+    const dialog = screen.getByRole('alertdialog');
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByText(/Update low reward/i)).toBeInTheDocument();
+    expect(screen.getByText('Current')).toBeInTheDocument();
+    expect(screen.getByText('New')).toBeInTheDocument();
+    expect(dialog.textContent).toMatch(/0\.1/);
+    expect(dialog.textContent).toMatch(/9/);
   });
 
-  it('enters edit mode from a reward card', () => {
+  it('skips the confirm dialog when the value is unchanged', () => {
     render(<RewardSettingsForm {...defaultProps} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Edit Medium reward' }));
+    fireEvent.blur(screen.getByLabelText('Medium reward in USDC'));
 
-    expect(screen.getByLabelText('Medium reward in USDC')).toBeInTheDocument();
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
   });
 
-  it('discards in-progress edits and restores the last saved values', () => {
+  it('cancels a pending change and restores the saved value', () => {
     render(<RewardSettingsForm {...defaultProps} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /^Edit$/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Low reward' }));
     fireEvent.change(screen.getByLabelText('Low reward in USDC'), { target: { value: '9' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+    fireEvent.blur(screen.getByLabelText('Low reward in USDC'));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
-    expect(screen.queryByLabelText('Low reward in USDC')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
     expect(screen.getByText('0.1')).toBeInTheDocument();
     expect(screen.queryByText('9')).not.toBeInTheDocument();
   });
 
-  it('saves updated reward levels', async () => {
+  it('saves the confirmed tier update', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({}),
@@ -81,9 +83,10 @@ describe('RewardSettingsForm', () => {
 
     render(<RewardSettingsForm {...defaultProps} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /^Edit$/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit High reward' }));
     fireEvent.change(screen.getByLabelText('High reward in USDC'), { target: { value: '8' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    fireEvent.blur(screen.getByLabelText('High reward in USDC'));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
@@ -102,14 +105,11 @@ describe('RewardSettingsForm', () => {
       reward_medium: 2,
       reward_high: 8,
     });
-    expect(notifySuccess).toHaveBeenCalledWith(
-      'Configuration Updated',
-      'Reward levels have been saved successfully.'
-    );
-    expect(screen.getByRole('button', { name: /^Edit$/ })).toBeInTheDocument();
+    expect(notifySuccess).toHaveBeenCalled();
+    expect(await screen.findByText('8')).toBeInTheDocument();
   });
 
-  it('reports save failures without leaving edit mode', async () => {
+  it('keeps the confirm dialog open when save fails', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
       json: async () => ({ error: 'Reward update blocked' }),
@@ -118,14 +118,16 @@ describe('RewardSettingsForm', () => {
 
     render(<RewardSettingsForm {...defaultProps} />);
 
-    fireEvent.click(screen.getByRole('button', { name: /^Edit$/ }));
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Low reward' }));
+    fireEvent.change(screen.getByLabelText('Low reward in USDC'), { target: { value: '4' } });
+    fireEvent.blur(screen.getByLabelText('Low reward in USDC'));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
 
     await waitFor(() => {
       expect(handleError).toHaveBeenCalled();
     });
 
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
     expect(notifySuccess).not.toHaveBeenCalled();
   });
 });

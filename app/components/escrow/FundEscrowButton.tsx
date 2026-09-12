@@ -1,15 +1,35 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
-import { AlertTriangle, ArrowRight, Check, ExternalLink, ShieldCheck, X } from 'lucide-react';
+import { useState } from 'react';
+import { AlertTriangle, ArrowRight, Check, ExternalLink, Plus, X } from 'lucide-react';
 import { getWalletKit, withTimeout, WALLET_OPERATION_TIMEOUT_MS } from '@/lib/wallet-kit';
-import Portal from '@/app/components/layout/Portal';
 import LoadingLogo from '@/app/components/layout/LoadingLogo';
 import Button from '@/app/components/ui/Button';
 import { backendUrl } from '@/lib/backend';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 
 type ModalPhase = 'amount' | 'wallet' | 'sign' | 'processing' | 'success' | 'error';
+
+function formatUsdc(value: number) {
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+const QUICK_AMOUNTS = [25, 50, 100] as const;
 
 export default function FundEscrowButton({
   repoId,
@@ -22,123 +42,86 @@ export default function FundEscrowButton({
   repoName?: string;
   currentBalance?: number;
 }) {
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showModal, setShowModal] = useState(false);
   const [amount, setAmount] = useState('');
-  const [amountTouched, setAmountTouched] = useState(false);
-  const [submissionAttempted, setSubmissionAttempted] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [phase, setPhase] = useState<ModalPhase>('amount');
   const [transactionHash, setTransactionHash] = useState('');
-  const dialogRef = useRef<HTMLDivElement>(null);
-  const refreshTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
   const parsedAmount = Number(amount);
   const isAmountValid = Number.isFinite(parsedAmount) && parsedAmount > 0;
-  const showValidationError = submissionAttempted && amountTouched && !isAmountValid;
+  const showAmountError = submitAttempted && !isAmountValid;
   const currentBalanceValue = currentBalance ?? 0;
   const nextBalance = currentBalanceValue + (isAmountValid ? parsedAmount : 0);
-  const quickAmounts = [25, 50, 100];
-  const escrowPreviewAmount = Math.max(1, Math.round(currentBalanceValue * 0.75));
+  const amountLocked = loading || phase === 'success' || phase === 'error';
 
-  function clearPendingRefresh() {
-    if (refreshTimeoutRef.current) {
-      window.clearTimeout(refreshTimeoutRef.current);
-      refreshTimeoutRef.current = null;
-    }
-  }
+  const progressValue =
+    phase === 'amount'
+      ? 0
+      : phase === 'wallet'
+        ? 35
+        : phase === 'sign'
+          ? 65
+          : phase === 'processing'
+            ? 85
+            : phase === 'success'
+              ? 100
+              : 20;
 
-  function resetModal() {
-    clearPendingRefresh();
-    setShowModal(false);
+  const statusLabel =
+    phase === 'wallet'
+      ? 'Connecting wallet…'
+      : phase === 'sign'
+        ? 'Sign the transaction in your wallet'
+        : phase === 'processing'
+          ? 'Submitting to Stellar…'
+          : phase === 'success'
+            ? 'Deposit confirmed'
+            : phase === 'error'
+              ? 'Deposit failed'
+              : null;
+
+  function resetState() {
     setAmount('');
-    setAmountTouched(false);
-    setSubmissionAttempted(false);
+    setSubmitAttempted(false);
     setPhase('amount');
     setTransactionHash('');
     setError('');
     setLoading(false);
   }
 
-  function handleOpen() {
-    clearPendingRefresh();
-    setShowModal(true);
-    setAmount('');
-    setAmountTouched(false);
-    setSubmissionAttempted(false);
-    setPhase('amount');
-    setTransactionHash('');
-    setError('');
-    setLoading(false);
+  function openDialog() {
+    resetState();
+    setOpen(true);
+  }
+
+  function closeDialog(nextOpen: boolean) {
+    if (loading) return;
+    setOpen(nextOpen);
+    if (!nextOpen) resetState();
   }
 
   function handleCloseAndRefresh() {
-    clearPendingRefresh();
-    setShowModal(false);
+    setOpen(false);
     window.location.reload();
   }
 
-  useEffect(() => {
-    if (!showModal) return undefined;
-
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !loading) {
-        event.preventDefault();
-        resetModal();
-      }
-
-      if (event.key === 'Tab' && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusable.length === 0) {
-          event.preventDefault();
-          return;
-        }
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>(
-      'input, button, [tabindex]:not([tabindex="-1"])'
-    );
-    firstFocusable?.focus();
-
-    document.addEventListener('keydown', handleKeydown);
-    return () => {
-      document.removeEventListener('keydown', handleKeydown);
-      clearPendingRefresh();
-    };
-  }, [showModal, loading]);
-
   async function handleFund() {
-    const numAmount = Number(amount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setAmountTouched(true);
-      setSubmissionAttempted(true);
+    setSubmitAttempted(true);
+    setError('');
+
+    if (!isAmountValid) {
       setPhase('amount');
-      setError('');
       return;
     }
 
     setLoading(true);
-    setAmountTouched(true);
-    setSubmissionAttempted(true);
-    setError('');
     setPhase('wallet');
 
     try {
       const kit = await getWalletKit();
-      setPhase('wallet');
 
       const { address } = await withTimeout(
         kit.authModal(),
@@ -157,7 +140,7 @@ export default function FundEscrowButton({
         },
         body: JSON.stringify({
           repoId,
-          amount: numAmount,
+          amount: parsedAmount,
           funderWallet: address,
         }),
       });
@@ -186,7 +169,7 @@ export default function FundEscrowButton({
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ repoId, amount: numAmount, signedXdr: signedTxXdr }),
+        body: JSON.stringify({ repoId, amount: parsedAmount, signedXdr: signedTxXdr }),
       });
 
       if (!res2.ok) {
@@ -207,375 +190,226 @@ export default function FundEscrowButton({
     }
   }
 
-  function handlePrimaryAction() {
-    if (!isAmountValid) {
-      setAmountTouched(true);
-      setSubmissionAttempted(true);
-      setPhase('amount');
-      setError('');
-      return;
-    }
-
-    void handleFund();
-  }
-
-  const currentStep =
-    phase === 'amount'
-      ? 0
-      : phase === 'wallet'
-        ? 1
-        : phase === 'sign' || phase === 'processing'
-          ? 2
-          : phase === 'success'
-            ? 3
-            : 1;
-
-  const phaseMessage =
-    phase === 'wallet'
-      ? {
-          label: 'CONNECTING_WALLET',
-          detail: 'Choose a wallet and approve the connection request.',
-        }
-      : phase === 'sign'
-        ? {
-            label: 'PREPARING_SIGNATURE',
-            detail: 'Review and sign the generated escrow transaction in your wallet.',
-          }
-        : phase === 'processing'
-          ? {
-              label: 'SUBMITTING_TRANSACTION',
-              detail: 'Your signed transaction is being submitted to Stellar.',
-            }
-          : phase === 'success'
-            ? {
-                label: 'CONFIRMED',
-                detail: 'The repository escrow has been funded successfully.',
-              }
-            : phase === 'error'
-              ? {
-                  label: 'TRANSACTION_FAILED',
-                  detail: 'No funds were moved. Close this window and try again.',
-                }
-              : {
-                  label: 'READY_TO_REVIEW',
-                  detail: 'Enter a deposit amount, then continue to your wallet.',
-                };
-
   return (
-    <>
-      <style jsx global>{`
-        input[type='number']::-webkit-inner-spin-button,
-        input[type='number']::-webkit-outer-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        input[type='number'] {
-          -moz-appearance: textfield;
-        }
-      `}</style>
-
-      <Button onClick={() => handleOpen()} disabled={loading} className="w-full sm:w-auto">
+    <Dialog open={open} onOpenChange={closeDialog}>
+      <Button
+        variant="solid"
+        onClick={openDialog}
+        disabled={loading}
+        className="w-full gap-1.5 sm:w-auto"
+      >
         {loading ? (
           <>
             <LoadingLogo size="tiny" variant="circle" />
             Processing
           </>
         ) : (
-          'Fund repository'
+          <>
+            <Plus className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
+            Fund
+          </>
         )}
       </Button>
 
-      {showModal && (
-        <Portal>
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/75 p-3 backdrop-blur-sm sm:p-6"
-            onClick={() => {
-              if (!loading) {
-                resetModal();
-              }
-            }}
-          >
-            <div
-              ref={dialogRef}
-              className="surface-card w-full max-w-xl overflow-hidden bg-card/95"
-              onClick={(event) => event.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="fund-repository-title"
-              aria-describedby="fund-repository-description"
-            >
-              <header className="px-5 pb-2 pt-5 sm:px-6 sm:pt-6">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-                      Escrow funding
-                    </p>
-                    <h3
-                      id="fund-repository-title"
-                      className="mt-1 truncate text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
-                    >
-                      Fund repository
-                    </h3>
-                    <p id="fund-repository-description" className="sr-only">
-                      Add USDC to the escrow balance used to secure contributor rewards.
-                    </p>
-                    <p className="mt-2 flex min-w-0 items-center gap-2 text-sm font-medium text-slate-500">
-                      <Image src="/usd-coin-usdc-logo.svg" alt="" width={16} height={16} />
-                      <span className="truncate">{repoName || 'Trustless OSS / Repository'}</span>
-                      <span className="shrink-0 text-xs uppercase tracking-wider text-slate-400">
-                        · Stellar
-                      </span>
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={resetModal}
-                    disabled={loading}
-                    aria-label="Close fund repository dialog"
-                    className="group flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <X
-                      className="h-4 w-4 transition-transform group-hover:rotate-90"
-                      strokeWidth={2.5}
-                      aria-hidden="true"
-                    />
-                  </button>
-                </div>
-              </header>
-
-              <ol
-                aria-label="Funding progress"
-                className="flex items-start px-5 py-3 text-foreground sm:px-6"
-              >
-                {['Amount', 'Wallet', 'Sign', 'Done'].map((label, index) => {
-                  const isComplete = index < currentStep || phase === 'success';
-                  const isCurrent = index === currentStep && phase !== 'success';
-
-                  return (
-                    <li
-                      key={label}
-                      className={`fund-progress-step relative min-w-0 flex-1 text-center ${
-                        isComplete
-                          ? 'fund-progress-step-complete'
-                          : isCurrent
-                            ? 'fund-progress-step-current'
-                            : ''
-                      }`}
-                    >
-                      <span
-                        className={`fund-progress-dot relative z-10 mx-auto flex h-4 w-4 items-center justify-center rounded-full font-mono text-[0.5rem] font-black ${
-                          isComplete
-                            ? 'bg-foreground text-background'
-                            : isCurrent
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-primary/15 text-muted-foreground'
-                        }`}
-                      >
-                        {isComplete ? <Check className="h-2.5 w-2.5" strokeWidth={4} /> : index + 1}
-                      </span>
-                      <span
-                        className={`mt-1 block truncate font-mono text-[0.52rem] font-black uppercase tracking-[0.08em] sm:text-[0.58rem] sm:tracking-[0.12em] ${
-                          isCurrent || isComplete ? 'text-foreground' : 'text-muted-foreground'
-                        }`}
-                      >
-                        {label}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ol>
-
-              <div className="space-y-3 px-5 pb-5 pt-1 sm:px-6">
-                <section className="rounded-2xl bg-muted/80 px-4 py-4 sm:px-5">
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-600">
-                      Deposit amount
-                    </p>
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-slate-400">
-                      USDC · Stellar
-                    </p>
-                  </div>
-
-                  <label htmlFor="fund-amount" className="sr-only">
-                    Deposit amount
-                  </label>
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 sm:h-12 sm:w-12">
-                      <Image
-                        src="/usd-coin-usdc-logo.svg"
-                        alt=""
-                        width={38}
-                        height={38}
-                        className="h-8 w-8 sm:h-10 sm:w-10"
-                      />
-                    </span>
-                    <input
-                      id="fund-amount"
-                      type="number"
-                      inputMode="decimal"
-                      min="0"
-                      step="0.01"
-                      value={amount}
-                      disabled={loading || phase === 'success' || phase === 'error'}
-                      onChange={(event) => {
-                        setAmount(event.target.value);
-                        setAmountTouched(true);
-                      }}
-                      className="min-w-0 flex-1 bg-transparent p-0 font-mono text-4xl font-bold tracking-tight text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60 sm:text-5xl"
-                      placeholder="0.00"
-                      aria-invalid={showValidationError}
-                      aria-describedby="deposit-validation"
-                    />
-                    <span className="pointer-events-none shrink-0 font-mono text-xs font-black uppercase tracking-[0.1em] text-blue-600 sm:text-sm">
-                      USDC
-                    </span>
-                  </div>
-
-                  <div className="mt-2 flex flex-wrap items-center gap-x-1 gap-y-1">
-                    {quickAmounts.map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        disabled={loading || phase === 'success' || phase === 'error'}
-                        onClick={() => {
-                          setAmount(String(value));
-                          setAmountTouched(true);
-                        }}
-                        className="rounded-full bg-blue-50 px-2.5 py-1.5 font-mono text-[0.58rem] font-black uppercase tracking-[0.08em] text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 sm:text-[0.62rem]"
-                      >
-                        +{value} USDC
-                      </button>
-                    ))}
-                    <button
-                      type="button"
-                      disabled={loading || phase === 'success' || phase === 'error'}
-                      onClick={() => {
-                        setAmount(String(escrowPreviewAmount));
-                        setAmountTouched(true);
-                      }}
-                      className="rounded-full bg-blue-50 px-2.5 py-1.5 font-mono text-[0.58rem] font-black uppercase tracking-[0.08em] text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 sm:text-[0.62rem]"
-                    >
-                      75% ESCROW
-                    </button>
-                  </div>
-
-                  <div id="deposit-validation" className="mt-1" aria-live="polite">
-                    {showValidationError ? (
-                      <p className="inline-block rounded-lg bg-red-50 px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-red-600">
-                        ERR_INVALID_AMOUNT: Enter more than 0 USDC.
-                      </p>
-                    ) : null}
-                  </div>
-
-                  <div
-                    aria-label={`Balance changes from ${currentBalanceValue.toFixed(2)} to ${nextBalance.toFixed(2)} USDC`}
-                    className="mt-2 flex items-center justify-between gap-3 font-mono text-[0.58rem] font-black uppercase tracking-[0.08em] text-slate-500 sm:text-[0.62rem]"
-                  >
-                    <span>Current {currentBalanceValue.toFixed(2)}</span>
-                    <ArrowRight
-                      className="h-3.5 w-3.5 text-blue-600"
-                      strokeWidth={3}
-                      aria-hidden="true"
-                    />
-                    <span className="text-blue-700">New balance {nextBalance.toFixed(2)}</span>
-                  </div>
-                </section>
-
-                <section
-                  aria-live="polite"
-                  className={`flex items-center gap-2.5 rounded-2xl px-4 py-3 ${
-                    phase === 'success'
-                      ? 'bg-emerald-50'
-                      : phase === 'error'
-                        ? 'bg-red-50'
-                        : 'bg-slate-50'
-                  }`}
-                >
-                  <span
-                    className={`shrink-0 ${
-                      phase === 'success'
-                        ? 'text-emerald-700'
-                        : phase === 'error'
-                          ? 'text-red-600'
-                          : 'text-blue-600'
-                    }`}
-                  >
-                    {loading ? (
-                      <LoadingLogo size="tiny" variant="circle" />
-                    ) : phase === 'success' ? (
-                      <Check className="h-5 w-5" strokeWidth={3} aria-hidden="true" />
-                    ) : phase === 'error' ? (
-                      <AlertTriangle className="h-5 w-5" strokeWidth={3} aria-hidden="true" />
-                    ) : (
-                      <ShieldCheck className="h-5 w-5" strokeWidth={2.5} aria-hidden="true" />
-                    )}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-foreground">
-                      {phaseMessage.label}
-                    </p>
-                    <p className="text-sm leading-5 text-muted-foreground">{phaseMessage.detail}</p>
-                    {error ? <p className="mt-2 text-sm font-bold text-red-700">{error}</p> : null}
-                    {phase === 'success' && transactionHash ? (
-                      <a
-                        href={`https://stellar.expert/explorer/public/tx/${transactionHash}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-2 inline-flex max-w-full items-center gap-1.5 font-mono text-[0.65rem] font-black uppercase tracking-[0.12em] text-blue-700 underline decoration-2 underline-offset-2"
-                      >
-                        <span className="truncate">View transaction</span>
-                        <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                      </a>
-                    ) : null}
-                  </div>
-                </section>
+      <DialogContent
+        showCloseButton={false}
+        className="gap-0 overflow-hidden rounded-3xl p-0 sm:max-w-md"
+        onPointerDownOutside={(event) => {
+          if (loading) event.preventDefault();
+        }}
+        onEscapeKeyDown={(event) => {
+          if (loading) event.preventDefault();
+        }}
+      >
+        <DialogHeader className="border-b border-border/70 px-5 py-5 sm:px-6">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15">
+                <Plus className="size-5" strokeWidth={2.5} aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <DialogTitle className="font-display text-2xl font-extrabold tracking-tight">
+                  Fund
+                </DialogTitle>
+                <DialogDescription className="mt-0.5 truncate text-sm text-muted-foreground">
+                  {repoName || 'Repository escrow'}
+                </DialogDescription>
               </div>
-
-              <footer className="flex flex-col-reverse gap-2 px-5 pb-5 sm:flex-row sm:justify-end sm:px-6 sm:pb-6">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    if (!loading) {
-                      resetModal();
-                    }
-                  }}
-                  disabled={loading}
-                  className="sm:min-w-28"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={phase === 'success' ? handleCloseAndRefresh : handlePrimaryAction}
-                  disabled={loading || phase === 'error'}
-                  className="sm:min-w-48"
-                >
-                  {loading ? (
-                    <>
-                      <LoadingLogo size="tiny" variant="circle" />
-                      <span>PROCESSING...</span>
-                    </>
-                  ) : phase === 'amount' ? (
-                    <>
-                      <span>REVIEW_DEPOSIT</span>
-                      <ArrowRight className="h-4 w-4" strokeWidth={2.5} aria-hidden="true" />
-                    </>
-                  ) : phase === 'wallet' ? (
-                    'CONNECT_WALLET'
-                  ) : phase === 'sign' ? (
-                    'SIGN_TRANSACTION'
-                  ) : phase === 'processing' ? (
-                    'PROCESSING'
-                  ) : phase === 'success' ? (
-                    'CLOSE_AND_REFRESH'
-                  ) : (
-                    'RETRY_TRANSACTION'
-                  )}
-                </Button>
-              </footer>
             </div>
+            <DialogClose asChild>
+              <button
+                type="button"
+                disabled={loading}
+                aria-label="Close fund dialog"
+                className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition hover:border-primary/40 hover:text-primary disabled:pointer-events-none disabled:opacity-50"
+              >
+                <X className="size-4" strokeWidth={2.5} aria-hidden="true" />
+              </button>
+            </DialogClose>
           </div>
-        </Portal>
-      )}
-    </>
+        </DialogHeader>
+
+        <div className="space-y-5 px-5 py-5 sm:px-6">
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-muted/70 px-4 py-3">
+            <div>
+              <p className="text-[0.65rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                Current balance
+              </p>
+              <p className="mt-1 text-2xl font-black tracking-tight tabular-nums">
+                {formatUsdc(currentBalanceValue)}{' '}
+                <span className="text-sm font-semibold text-muted-foreground">USDC</span>
+              </p>
+            </div>
+            <Image src="/usd-coin-usdc-logo.svg" alt="" width={36} height={36} className="size-9" />
+          </div>
+
+          <div className="space-y-3">
+            <Label htmlFor="fund-amount" className="text-sm font-semibold">
+              Amount
+            </Label>
+
+            <div
+              className={`flex items-center gap-2 rounded-2xl border bg-background px-3 py-2 transition-colors ${
+                showAmountError
+                  ? 'border-destructive ring-3 ring-destructive/20'
+                  : 'border-input focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50'
+              }`}
+            >
+              <Image
+                src="/usd-coin-usdc-logo.svg"
+                alt=""
+                width={22}
+                height={22}
+                className="size-5"
+              />
+              <Input
+                id="fund-amount"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                value={amount}
+                disabled={amountLocked}
+                aria-invalid={showAmountError || undefined}
+                placeholder="0.00"
+                className="h-11 border-0 bg-transparent px-0 text-2xl font-black tracking-tight shadow-none focus-visible:border-0 focus-visible:ring-0 md:text-2xl"
+                onChange={(event) => {
+                  setAmount(event.target.value);
+                  setError('');
+                }}
+              />
+              <span className="shrink-0 text-sm font-semibold text-muted-foreground">USDC</span>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {QUICK_AMOUNTS.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  disabled={amountLocked}
+                  onClick={() => {
+                    setAmount(String(value));
+                    setError('');
+                  }}
+                  className="rounded-full border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground transition hover:border-primary/40 hover:text-primary disabled:pointer-events-none disabled:opacity-50"
+                >
+                  +{value}
+                </button>
+              ))}
+            </div>
+
+            {showAmountError ? (
+              <p className="text-xs font-medium text-destructive">
+                Enter an amount greater than 0.
+              </p>
+            ) : (
+              <p
+                aria-label={`Balance changes from ${formatUsdc(currentBalanceValue)} to ${formatUsdc(nextBalance)} USDC`}
+                className="flex items-center gap-2 text-xs text-muted-foreground"
+              >
+                <span>New balance</span>
+                <ArrowRight className="size-3.5 text-primary" aria-hidden="true" />
+                <span className="font-semibold tabular-nums text-foreground">
+                  {formatUsdc(nextBalance)} USDC
+                </span>
+              </p>
+            )}
+          </div>
+
+          {statusLabel ? (
+            <div className="space-y-2">
+              {phase !== 'error' && phase !== 'success' ? (
+                <Progress value={progressValue} aria-label="Funding progress" />
+              ) : null}
+              <Alert
+                variant={phase === 'error' ? 'destructive' : 'default'}
+                className={`rounded-2xl ${
+                  phase === 'success'
+                    ? 'border-emerald-500/20 bg-emerald-500/5'
+                    : phase === 'error'
+                      ? 'border-destructive/20 bg-destructive/5'
+                      : 'bg-muted/50'
+                }`}
+              >
+                {loading ? (
+                  <LoadingLogo size="tiny" variant="circle" />
+                ) : phase === 'success' ? (
+                  <Check className="size-4 text-emerald-600" aria-hidden="true" />
+                ) : phase === 'error' ? (
+                  <AlertTriangle aria-hidden="true" />
+                ) : null}
+                <AlertDescription
+                  className={
+                    phase === 'success' ? 'text-emerald-800 dark:text-emerald-200' : undefined
+                  }
+                >
+                  {statusLabel}
+                  {error ? <span className="mt-1 block">{error}</span> : null}
+                  {phase === 'success' && transactionHash ? (
+                    <a
+                      href={`https://stellar.expert/explorer/public/tx/${transactionHash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-2 inline-flex items-center gap-1 font-medium text-primary"
+                    >
+                      View transaction
+                      <ExternalLink className="size-3.5" aria-hidden="true" />
+                    </a>
+                  ) : null}
+                </AlertDescription>
+              </Alert>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col-reverse gap-2 border-t border-border/70 bg-muted/40 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
+          <Button variant="ghost" onClick={() => closeDialog(false)} disabled={loading}>
+            {phase === 'success' || phase === 'error' ? 'Close' : 'Cancel'}
+          </Button>
+          {phase === 'error' ? null : (
+            <Button
+              variant="solid"
+              onClick={phase === 'success' ? handleCloseAndRefresh : handleFund}
+              disabled={loading}
+              className="min-w-28 gap-1.5"
+            >
+              {loading ? (
+                <>
+                  <LoadingLogo size="tiny" variant="circle" />
+                  Waiting…
+                </>
+              ) : phase === 'success' ? (
+                'Done'
+              ) : (
+                <>
+                  Continue
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

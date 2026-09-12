@@ -57,7 +57,7 @@ export default function RetryProcessButton({
   if (status === 'completed' || status === 'cancelled') return null;
 
   return (
-    <Button size="sm" onClick={handleRetry} disabled={loading}>
+    <Button variant="solid" size="sm" onClick={handleRetry} disabled={loading}>
       {loading ? (
         <>
           <LoadingLogo size="tiny" variant="circle" />

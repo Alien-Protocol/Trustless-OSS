@@ -25,7 +25,7 @@ describe('DeleteRepoButton', () => {
   it('opens a product-styled confirmation dialog', () => {
     render(<DeleteRepoButton repoId="repo-1" token="token" />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete repo' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
 
     expect(screen.getByRole('dialog', { name: 'Delete this repository?' })).toBeInTheDocument();
     expect(screen.getByText('Remove repository')).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('DeleteRepoButton', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     render(<DeleteRepoButton repoId="repo-1" token="token" />);
-    fireEvent.click(screen.getByRole('button', { name: 'Delete repo' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -57,7 +57,7 @@ describe('DeleteRepoButton', () => {
     );
 
     render(<DeleteRepoButton repoId="repo-1" token="token" />);
-    fireEvent.click(screen.getByRole('button', { name: 'Delete repo' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
     fireEvent.click(screen.getByRole('button', { name: 'Delete repository' }));
 
     await waitFor(() => {

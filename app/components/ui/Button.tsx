@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Button as UiButton } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-type Variant = 'solid' | 'outline' | 'ghost' | 'danger';
+type Variant = 'solid' | 'outline' | 'ghost' | 'danger' | 'warning';
 type Size = 'sm' | 'md' | 'lg';
 
 const variantMap = {
@@ -11,6 +11,7 @@ const variantMap = {
   outline: 'outline',
   ghost: 'ghost',
   danger: 'destructive',
+  warning: 'outline',
 } as const;
 
 const variantClass: Record<Variant, string> = {
@@ -18,6 +19,8 @@ const variantClass: Record<Variant, string> = {
   outline: 'border-border bg-card shadow-sm',
   ghost: 'border-border bg-card',
   danger: 'border-destructive bg-destructive text-white hover:bg-destructive/90',
+  warning:
+    'border-amber-500/30 bg-amber-500 text-white shadow-sm hover:bg-amber-600 hover:text-white dark:border-amber-400/20 dark:bg-amber-500 dark:hover:bg-amber-600',
 };
 
 const sizeClass: Record<Size, string> = {

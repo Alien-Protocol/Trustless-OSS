@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import DeployEscrowButton from '@/app/components/escrow/DeployEscrowButton';
 import FundEscrowButton from '@/app/components/escrow/FundEscrowButton';
@@ -136,14 +135,6 @@ export default async function RepoDetailPage({ params }: { params: Promise<{ rep
 
   return (
     <div className="w-full space-y-10">
-      <Link
-        href="/dashboard"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
-      >
-        <ArrowLeft size={16} strokeWidth={2.25} aria-hidden="true" />
-        Dashboard
-      </Link>
-
       {repo && (
         <header className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">

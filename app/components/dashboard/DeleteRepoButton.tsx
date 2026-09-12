@@ -56,7 +56,7 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
           setError('');
         }}
         disabled={loading}
-        className="w-full sm:w-auto"
+        className="w-full gap-1.5 sm:w-auto"
       >
         {loading ? (
           <>
@@ -64,7 +64,10 @@ export default function DeleteRepoButton({ repoId, token }: { repoId: string; to
             Deleting
           </>
         ) : (
-          'Delete repo'
+          <>
+            <Trash2 className="h-4 w-4" aria-hidden="true" />
+            Delete
+          </>
         )}
       </Button>
 

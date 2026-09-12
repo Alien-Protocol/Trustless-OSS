@@ -32,7 +32,7 @@ describe('Button', () => {
     expect(link).toHaveClass('border-border');
   });
 
-  it('renders ghost and danger variants with size classes', () => {
+  it('renders ghost, danger, and warning variants with size classes', () => {
     render(
       <>
         <Button variant="ghost" size="sm">
@@ -41,6 +41,7 @@ describe('Button', () => {
         <Button variant="danger" size="lg">
           Delete
         </Button>
+        <Button variant="warning">Withdraw</Button>
       </>
     );
 
@@ -53,5 +54,6 @@ describe('Button', () => {
       'destructive'
     );
     expect(screen.getByRole('button', { name: 'Delete' })).toHaveClass('bg-destructive');
+    expect(screen.getByRole('button', { name: 'Withdraw' })).toHaveClass('bg-amber-500');
   });
 });
